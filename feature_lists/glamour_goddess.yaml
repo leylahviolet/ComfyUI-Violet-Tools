@@ -187,81 +187,81 @@ highlight_color:
 - light rose-red highlights
 - dark rose-red highlights
 
-tips_color:
-- white tips
-- silver tips
-- gray tips
-- black tips
-- charcoal tips
-- red tips
-- light red tips
-- dark red tips
-- red-orange tips
-- light red-orange tips
-- dark red-orange tips
-- orange tips
-- light orange tips
-- dark orange tips
-- yellow-orange tips
-- light yellow-orange tips
-- dark yellow-orange tips
-- yellow tips
-- light yellow tips
-- dark yellow tips
-- yellow-green tips
-- light yellow-green tips
-- dark yellow-green tips
-- lime-green tips
-- light lime-green tips
-- dark lime-green tips
-- green tips
-- light green tips
-- dark green tips
-- teal-green tips
-- light teal-green tips
-- dark teal-green tips
-- teal tips
-- light teal tips
-- dark teal tips
-- cyan-teal tips
-- light cyan-teal tips
-- dark cyan-teal tips
-- cyan tips
-- light cyan tips
-- dark cyan tips
-- sky-blue tips
-- light sky-blue tips
-- dark sky-blue tips
-- blue tips
-- light blue tips
-- dark blue tips
-- blue-indigo tips
-- light blue-indigo tips
-- dark blue-indigo tips
-- indigo tips
-- light indigo tips
-- dark indigo tips
-- blue-violet tips
-- light blue-violet tips
-- dark blue-violet tips
-- violet tips
-- light violet tips
-- dark violet tips
-- purple tips
-- light purple tips
-- dark purple tips
-- magenta tips
-- light magenta tips
-- dark magenta tips
-- pink-magenta tips
-- light pink-magenta tips
-- dark pink-magenta tips
-- pink tips
-- light pink tips
-- dark pink tips
-- rose-red tips
-- light rose-red tips
-- dark rose-red tips
+dip_dye_color:
+- white dip-dyed hair
+- silver dip-dyed hair
+- gray dip-dyed hair
+- black dip-dyed hair
+- charcoal dip-dyed hair
+- red dip-dyed hair
+- light red dip-dyed hair
+- dark red dip-dyed hair
+- red-orange dip-dyed hair
+- light red-orange dip-dyed hair
+- dark red-orange dip-dyed hair
+- orange dip-dyed hair
+- light orange dip-dyed hair
+- dark orange dip-dyed hair
+- yellow-orange dip-dyed hair
+- light yellow-orange dip-dyed hair
+- dark yellow-orange dip-dyed hair
+- yellow dip-dyed hair
+- light yellow dip-dyed hair
+- dark yellow dip-dyed hair
+- yellow-green dip-dyed hair
+- light yellow-green dip-dyed hair
+- dark yellow-green dip-dyed hair
+- lime-green dip-dyed hair
+- light lime-green dip-dyed hair
+- dark lime-green dip-dyed hair
+- green dip-dyed hair
+- light green dip-dyed hair
+- dark green dip-dyed hair
+- teal-green dip-dyed hair
+- light teal-green dip-dyed hair
+- dark teal-green dip-dyed hair
+- teal dip-dyed hair
+- light teal dip-dyed hair
+- dark teal dip-dyed hair
+- cyan-teal dip-dyed hair
+- light cyan-teal dip-dyed hair
+- dark cyan-teal dip-dyed hair
+- cyan dip-dyed hair
+- light cyan dip-dyed hair
+- dark cyan dip-dyed hair
+- sky-blue dip-dyed hair
+- light sky-blue dip-dyed hair
+- dark sky-blue dip-dyed hair
+- blue dip-dyed hair
+- light blue dip-dyed hair
+- dark blue dip-dyed hair
+- blue-indigo dip-dyed hair
+- light blue-indigo dip-dyed hair
+- dark blue-indigo dip-dyed hair
+- indigo dip-dyed hair
+- light indigo dip-dyed hair
+- dark indigo dip-dyed hair
+- blue-violet dip-dyed hair
+- light blue-violet dip-dyed hair
+- dark blue-violet dip-dyed hair
+- violet dip-dyed hair
+- light violet dip-dyed hair
+- dark violet dip-dyed hair
+- purple dip-dyed hair
+- light purple dip-dyed hair
+- dark purple dip-dyed hair
+- magenta dip-dyed hair
+- light magenta dip-dyed hair
+- dark magenta dip-dyed hair
+- pink-magenta dip-dyed hair
+- light pink-magenta dip-dyed hair
+- dark pink-magenta dip-dyed hair
+- pink dip-dyed hair
+- light pink dip-dyed hair
+- dark pink dip-dyed hair
+- rose-red dip-dyed hair
+- light rose-red dip-dyed hair
+- dark rose-red dip-dyed hair
 
 eye_color:
 - white eyes
