@@ -65,7 +65,21 @@ The color picker allows:
 
 ## Technical Implementation
 
-### Color Quantization Algorithm
+## Technical Implementation
+
+### Color Picker Widget
+ComfyUI color picker is implemented using:
+```python
+("INT", {
+    "default": 0x8B4513,  # Default color as hex integer
+    "min": 0x000000,      # Black (minimum)
+    "max": 0xFFFFFF,      # White (maximum) 
+    "step": 1,
+    "display": "color"    # Triggers color picker widget
+})
+```
+
+The `"display": "color"` parameter is the key that tells ComfyUI to render an actual color picker widget instead of a number input.
 1. **Parse hex input** and convert to RGB values
 2. **Convert to HSV** for perceptual color analysis
 3. **Check saturation** for grayscale detection

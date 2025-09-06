@@ -27,22 +27,30 @@ class GlamourGoddess:
     }
 
     @classmethod
-    def rgb_to_name(cls, hexrgb: str) -> str:
+    def rgb_to_name(cls, color_input) -> str:
         """
-        Convert hex RGB color to natural color name using HSV quantization.
+        Convert color input (hex string or integer) to natural color name using HSV quantization.
         
         Args:
-            hexrgb (str): Hex color string (with or without #)
+            color_input (str|int): Hex color string or integer color value
             
         Returns:
             str: Natural color name with optional light/dark modifier
         """
         try:
-            # Clean and parse hex color
-            hexrgb = hexrgb.lstrip("#")
-            if len(hexrgb) != 6:
+            # Handle different input types
+            if isinstance(color_input, int):
+                # Convert integer to hex string
+                hexrgb = f"{color_input:06X}"
+            elif isinstance(color_input, str):
+                # Clean hex string
+                hexrgb = color_input.lstrip("#")
+                if len(hexrgb) != 6:
+                    return "natural"
+            else:
                 return "natural"
                 
+            # Parse RGB values
             r, g, b = [int(hexrgb[i:i+2], 16)/255.0 for i in (0, 2, 4)]
             
             # Convert to HSV for analysis
@@ -91,7 +99,7 @@ class GlamourGoddess:
     def INPUT_TYPES(cls):
         """
         Define the input parameters for the ComfyUI node interface.
-        Color fields use color picker input, others use dropdown selections.
+        Color fields use INT type with color display widget, others use dropdown selections.
         
         Returns:
             dict: Node input configuration with mix of color pickers and dropdowns
@@ -100,10 +108,13 @@ class GlamourGoddess:
         
         for key, options in cls.FEATURES.items():
             if key in cls.COLOR_FIELDS:
-                # Color picker input for color-related fields
-                types["required"][key] = ("STRING", {
-                    "default": "#8B4513",  # Default brown color
-                    "multiline": False
+                # Use INT type with color display widget for color picker
+                types["required"][key] = ("INT", {
+                    "default": 0x8B4513,  # Default brown color as integer
+                    "min": 0x000000,      # Black
+                    "max": 0xFFFFFF,      # White
+                    "step": 1,
+                    "display": "color"    # This triggers the color picker widget!
                 })
             else:
                 # Standard dropdown for non-color fields
@@ -127,20 +138,20 @@ class GlamourGoddess:
 
     def pick(self, key, choice):
         """
-        Process field selection, converting color hex codes to natural names.
+        Process field selection, converting color integer values to natural names.
         
         Args:
             key (str): Field name
-            choice (str): User selection (dropdown choice or hex color)
+            choice (str|int): User selection (dropdown choice or color integer)
             
         Returns:
             str: Processed field value
         """
         if key in self.COLOR_FIELDS:
-            # Handle color picker input
-            if not choice or choice.strip() == "":
-                return ""
-            # Convert hex color to natural color name
+            # Handle color picker input (integer value)
+            if choice is None or choice == 0 or choice == 0x000000:
+                return ""  # Skip black/empty colors
+            # Convert color integer to natural color name
             color_name = self.rgb_to_name(choice)
             return f"{color_name} {key.replace('_', ' ')}"
         else:
