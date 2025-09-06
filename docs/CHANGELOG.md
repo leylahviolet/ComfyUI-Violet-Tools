@@ -5,6 +5,35 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-09-06
+
+### Added
+- **Color Picker Enhancement for Glamour Goddess**: Major upgrade replacing hardcoded color dropdowns with intelligent color picker functionality
+- **Intelligent Color Quantization**: Automatic conversion of hex colors to natural color names using HSV color space analysis
+- **24 Base Hue Categories**: Comprehensive color mapping covering the full spectrum
+- **Lightness Modifiers**: Automatic light/dark prefixes based on brightness analysis
+- **Grayscale Detection**: Smart handling of neutral colors (white, black, gray, silver, charcoal)
+- **violet_colors.yaml**: New configuration file for color mapping parameters
+- **Enhanced Field Structure**: Split fields for better control (eyeliner_style + eyeliner_color, etc.)
+
+### Enhanced
+- **9 Color Picker Fields**: hair_color, highlight_color, tips_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color
+- **Glamour Goddess Node**: Now supports unlimited color selection while maintaining natural language output
+- **Field Organization**: Better separation between style and color properties
+
+### Changed
+- **eyeliner** → **eyeliner_style** + **eyeliner_color** (separate style and color control)
+- **blush** → **blush_weight** + **blush_color** (separate intensity and color control)
+- **lipstick** → **lipstick_type** + **lipstick_color** (separate finish and color control)
+- **brows** → **brows** + **brow_color** (added separate color control)
+
+### Technical Details
+- HSV color space analysis for accurate hue matching
+- Angular distance calculation for closest hue detection
+- Configurable thresholds for lightness modifiers
+- Robust error handling for invalid color inputs
+- Natural language output optimized for AI image generation
+
 ## [1.0.0] - 2025-09-05
 
 ### Added

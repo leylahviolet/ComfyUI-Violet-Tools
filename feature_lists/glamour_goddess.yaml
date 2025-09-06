@@ -1,15 +1,18 @@
+# Hair styling options
 hair_length:
 - short hair
 - chin-length hair
 - shoulder-length hair
 - long hair
 - very long hair
+
 hair_texture:
 - straight hair
 - wavy hair
 - curly hair
 - coily hair
 - frizzy hair
+
 hairstyle:
 - loose hairstyle
 - sleek hairstyle
@@ -30,57 +33,14 @@ hairstyle:
 - bangs
 - afro
 - dreadlocks
-hair_color:
-- black hair
-- brown hair
-- blonde hair
-- red hair
-- platinum hair
-- auburn hair
-- pink hair
-- blue hair
-- purple hair
-- green hair
-- white hair
-- silver hair
-- multicolored hair
-highlight_color:
-- black highlights
-- brown highlights
-- blonde highlights
-- red highlights
-- platinum highlights
-- auburn highlights
-- pink highlights
-- blue highlights
-- purple highlights
-- green highlights
-- white highlights
-tips_color:
-- black tips
-- brown tips
-- blonde tips
-- red tips
-- platinum tips
-- auburn tips
-- pink tips
-- blue tips
-- purple tips
-- green tips
-- white tips
-eye_color:
-- brown eyes
-- blue eyes
-- green eyes
-- hazel eyes
-- gray eyes
-- amber eyes
-- violet eyes
-- golden eyes
-- red eyes
-- black eyes
-- white eyes
-- multicolored eyes
+
+# Color fields (handled by color picker)
+hair_color: []        # Color picker input
+highlight_color: []   # Color picker input
+tips_color: []        # Color picker input
+eye_color: []         # Color picker input
+
+# Makeup application weight/intensity
 makeup_weight:
 - natural makeup
 - light makeup
@@ -89,24 +49,36 @@ makeup_weight:
 - bold makeup
 - glam makeup
 - ruined makeup
-eyeliner:
+
+# Eyeliner styles (separated from color)
+eyeliner_style:
 - no eyeliner
-- winged-eyeliner
-- cat-eye-eyeliner
-- graphic-eyeliner
-- underlined-eyeliner
+- winged eyeliner
+- cat-eye eyeliner
+- graphic eyeliner
+- underlined eyeliner
 - smudged eyeliner
-blush:
+
+eyeliner_color: []    # Color picker input
+
+# Blush application (separated from color)
+blush_weight:
 - no blush
 - light blush
 - medium blush
 - heavy blush
+
+blush_color: []       # Color picker input
+
+# Mascara options
 mascara:
 - no mascara
 - lengthening mascara
 - volumizing mascara
 - dramatic mascara
 - ruined mascara
+
+# Eyeshadow application
 eyeshadow:
 - no eyeshadow
 - natural eyeshadow
@@ -115,42 +87,24 @@ eyeshadow:
 - bold eyeshadow
 - smoky eyeshadow
 - glitter eyeshadow
-eyeshadow_color:
-- black eyeshadow
-- brown eyeshadow
-- red eyeshadow
-- pink eyeshadow
-- orange eyeshadow
-- yellow eyeshadow
-- green eyeshadow
-- blue eyeshadow
-- teal eyeshadow
-- cyan eyeshadow
-- magenta eyeshadow
-- lavender eyeshadow
-- purple eyeshadow
-- gold eyeshadow
-- silver eyeshadow
-- bronze eyeshadow
-- pastel eyeshadow
-- vibrant eyeshadow
-- metallic eyeshadow
-- glittery eyeshadow
-- colorful eyeshadow
-lipstick:
+
+eyeshadow_color: []   # Color picker input
+
+# Lipstick types (separated from color)
+lipstick_type:
 - no lipstick
-- lip gloss
-- coral lipstick
-- peach lipstick
-- red lipstick
-- dark red lipstick
-- pink lipstick
-- fuchsia lipstick
-- purple lipstick
-- plum lipstick
-- dark plum lipstick
-- burgundy lipstick
-- black lipstick
+- matte lipstick
+- gloss lipstick
+- metallic lipstick
+- high-gloss lipstick
+- satin lipstick
+- cream lipstick
+- liquid lipstick
+- tinted balm
+
+lipstick_color: []    # Color picker input
+
+# Eyebrow styling
 brows:
 - natural brows
 - arched brows
@@ -159,3 +113,5 @@ brows:
 - feathered brows
 - bleached brows
 - shaved brows
+
+brow_color: []        # Color picker input
