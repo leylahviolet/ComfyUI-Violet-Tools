@@ -1,8 +1,6 @@
 import yaml
 import os
 import random
-import colorsys
-import pathlib
 
 class GlamourGoddess:
     """
@@ -20,102 +18,42 @@ class GlamourGoddess:
     with open(colors_path, "r", encoding="utf-8") as f:
         COLOR_CONFIG = yaml.safe_load(f)
 
-    # Color picker fields that will use hex input instead of dropdowns
+    # Color picker fields that will use color dropdown instead of style dropdowns
     COLOR_FIELDS = {
         "hair_color", "highlight_color", "tips_color", "eye_color", 
-        "eyeliner_color", "blush_color", "eyeshadow_color", "lipstick_color", "brow_color"
+        "eyeliner_color", "blush_color", "eyeshadow_color", "lipstick_color", "brow_color",
+        "fingernail_color", "toenail_color"
     }
-
-    @classmethod
-    def rgb_to_name(cls, color_input) -> str:
-        """
-        Convert color input (hex string or integer) to natural color name using HSV quantization.
-        
-        Args:
-            color_input (str|int): Hex color string or integer color value
-            
-        Returns:
-            str: Natural color name with optional light/dark modifier
-        """
-        try:
-            # Handle different input types
-            if isinstance(color_input, int):
-                # Convert integer to hex string
-                hexrgb = f"{color_input:06X}"
-            elif isinstance(color_input, str):
-                # Clean hex string
-                hexrgb = color_input.lstrip("#")
-                if len(hexrgb) != 6:
-                    return "natural"
-            else:
-                return "natural"
-                
-            # Parse RGB values
-            r, g, b = [int(hexrgb[i:i+2], 16)/255.0 for i in (0, 2, 4)]
-            
-            # Convert to HSV for analysis
-            h, s, v = colorsys.rgb_to_hsv(r, g, b)
-            
-            # Handle grayscale/low saturation colors
-            if s <= cls.COLOR_CONFIG.get("gray_threshold", 0.15):
-                if v >= 0.95:
-                    return "white"
-                elif v <= 0.05:
-                    return "black"
-                elif v >= 0.8:
-                    return "silver"
-                elif v <= 0.3:
-                    return "charcoal"
-                else:
-                    return "gray"
-            
-            # Find closest base hue for saturated colors
-            h_deg = h * 360
-            base_hues = sorted(map(int, cls.COLOR_CONFIG["base_names"].keys()))
-            
-            # Handle wraparound (e.g., 350° is closer to 0° than 330°)
-            distances = []
-            for hue in base_hues:
-                diff = abs(h_deg - hue)
-                if diff > 180:
-                    diff = 360 - diff
-                distances.append(diff)
-            
-            closest_idx = distances.index(min(distances))
-            base_name = cls.COLOR_CONFIG["base_names"][base_hues[closest_idx]]
-            
-            # Apply lightness modifiers based on value
-            if v >= cls.COLOR_CONFIG["light_threshold"]:
-                return f"light {base_name}"
-            elif v <= cls.COLOR_CONFIG["dark_threshold"]:
-                return f"dark {base_name}"
-            else:
-                return base_name
-                
-        except (ValueError, KeyError, TypeError):
-            return "natural"
 
     @classmethod
     def INPUT_TYPES(cls):
         """
         Define the input parameters for the ComfyUI node interface.
-        Color fields use INT type with color display widget, others use dropdown selections.
+        Color fields use dropdown with 24 curated colors, others use their original dropdown selections.
         
         Returns:
-            dict: Node input configuration with mix of color pickers and dropdowns
+            dict: Node input configuration with color dropdowns and style dropdowns
         """
         types = {"required": {}}
         
+        # Generate color options from our color configuration
+        color_options = ["Unspecified", "Random"]
+        base_colors = list(cls.COLOR_CONFIG["base_names"].values())
+        
+        # Add base colors and light/dark variants
+        for color in base_colors:
+            color_options.extend([color, f"light {color}", f"dark {color}"])
+        
+        # Add special colors
+        color_options.extend(["white", "black", "gray", "silver", "charcoal"])
+        
         for key, options in cls.FEATURES.items():
             if key in cls.COLOR_FIELDS:
-                # Use INT type with color display widget for color picker
-                types["required"][key] = ("INT", {
-                    "default": 0x8B4513,  # Default brown color as integer
-                    "min": 0x000000,      # Black
-                    "max": 0xFFFFFF,      # White
-                    "step": 1,
-                    "display": "color"    # This triggers the color picker widget!
-                })
+                # Use dropdown with curated color options
+                types["required"][key] = (
+                    color_options,
+                    {"default": "Unspecified"}
+                )
             else:
                 # Standard dropdown for non-color fields
                 types["required"][key] = (
@@ -138,22 +76,26 @@ class GlamourGoddess:
 
     def pick(self, key, choice):
         """
-        Process field selection, converting color integer values to natural names.
+        Process field selection, handling both color and style dropdown selections.
         
         Args:
             key (str): Field name
-            choice (str|int): User selection (dropdown choice or color integer)
+            choice (str): User selection from dropdown
             
         Returns:
             str: Processed field value
         """
         if key in self.COLOR_FIELDS:
-            # Handle color picker input (integer value)
-            if choice is None or choice == 0 or choice == 0x000000:
-                return ""  # Skip black/empty colors
-            # Convert color integer to natural color name
-            color_name = self.rgb_to_name(choice)
-            return f"{color_name} {key.replace('_', ' ')}"
+            # Handle color dropdown selection
+            if choice == "Unspecified":
+                return ""
+            elif choice == "Random":
+                # Get all color options except Unspecified and Random
+                color_options = self.INPUT_TYPES()["required"][key][0][2:]  # Skip first 2 items
+                choice = random.choice(color_options)
+            
+            # Format color name with field type
+            return f"{choice} {key.replace('_', ' ')}"
         else:
             # Handle standard dropdown input
             if choice == "Unspecified":

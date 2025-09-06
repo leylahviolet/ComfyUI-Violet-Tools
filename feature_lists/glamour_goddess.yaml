@@ -34,11 +34,11 @@ hairstyle:
 - afro
 - dreadlocks
 
-# Color fields (handled by color picker)
-hair_color: []        # Color picker input
-highlight_color: []   # Color picker input
-tips_color: []        # Color picker input
-eye_color: []         # Color picker input
+# Color fields (handled by dropdown selection from violet_colors.yaml)
+hair_color: []        # Populated from violet_colors.yaml
+highlight_color: []   # Populated from violet_colors.yaml  
+tips_color: []        # Populated from violet_colors.yaml
+eye_color: []         # Populated from violet_colors.yaml
 
 # Makeup application weight/intensity
 makeup_weight:
@@ -59,7 +59,7 @@ eyeliner_style:
 - underlined eyeliner
 - smudged eyeliner
 
-eyeliner_color: []    # Color picker input
+eyeliner_color: []    # Populated from violet_colors.yaml
 
 # Blush application (separated from color)
 blush_weight:
@@ -68,7 +68,7 @@ blush_weight:
 - medium blush
 - heavy blush
 
-blush_color: []       # Color picker input
+blush_color: []       # Populated from violet_colors.yaml
 
 # Mascara options
 mascara:
@@ -88,7 +88,7 @@ eyeshadow:
 - smoky eyeshadow
 - glitter eyeshadow
 
-eyeshadow_color: []   # Color picker input
+eyeshadow_color: []   # Populated from violet_colors.yaml
 
 # Lipstick types (separated from color)
 lipstick_type:
@@ -102,7 +102,7 @@ lipstick_type:
 - liquid lipstick
 - tinted balm
 
-lipstick_color: []    # Color picker input
+lipstick_color: []    # Populated from violet_colors.yaml
 
 # Eyebrow styling
 brows:
@@ -114,4 +114,19 @@ brows:
 - bleached brows
 - shaved brows
 
-brow_color: []        # Color picker input
+brow_color: []        # Populated from violet_colors.yaml
+
+# Nail styling options
+fingernail_shape:
+- Unspecified
+- Random
+- trimmed fingernails
+- short fingernails
+- square fingernails
+- oval fingernails
+- almond-fingernails
+- coffin-fingernails
+- stilleto-fingernails
+
+fingernail_color: []  # Populated from violet_colors.yaml
+toenail_color: []     # Populated from violet_colors.yaml
