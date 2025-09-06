@@ -38,7 +38,13 @@ Style blending system that combines multiple aesthetic approaches:
 
 ### 🤩 Pose Priestess
 
-Pose and positioning control node for character positioning and body language.
+Pose and positioning control node with separate categories for different content types:
+
+- **General Poses**: Wide variety of artistic and portrait poses
+- **Spicy Poses**: Adult/erotic poses for mature content creation
+- Arm gesture combinations for enhanced expressiveness
+- Weighted blending with strength controls
+- Random selection from each category
 
 ### 🚫 Negativity Nullifier
 
@@ -65,10 +71,12 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
 1. Clone this repository into your ComfyUI custom nodes directory:
 
-```bash
-cd ComfyUI/custom_nodes
-git clone https://github.com/leylahkrell/ComfyUI-Violet-Tools.git
-```
+1. Clone the repository into your ComfyUI custom_nodes directory:
+
+   ```bash
+   cd ComfyUI/custom_nodes
+   git clone https://github.com/leylahkrell/ComfyUI-Violet-Tools.git
+   ```
 
 2. Restart ComfyUI to load the new nodes.
 
