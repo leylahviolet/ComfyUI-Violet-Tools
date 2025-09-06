@@ -34,11 +34,313 @@ hairstyle:
 - afro
 - dreadlocks
 
-# Color fields (handled by dropdown selection from violet_colors.yaml)
-hair_color: []        # Populated from violet_colors.yaml
-highlight_color: []   # Populated from violet_colors.yaml  
-tips_color: []        # Populated from violet_colors.yaml
-eye_color: []         # Populated from violet_colors.yaml
+# Hair color options
+hair_color:
+- white hair
+- silver hair
+- gray hair
+- black hair
+- charcoal hair
+- red hair
+- light red hair
+- dark red hair
+- red-orange hair
+- light red-orange hair
+- dark red-orange hair
+- orange hair
+- light orange hair
+- dark orange hair
+- yellow-orange hair
+- light yellow-orange hair
+- dark yellow-orange hair
+- yellow hair
+- light yellow hair
+- dark yellow hair
+- yellow-green hair
+- light yellow-green hair
+- dark yellow-green hair
+- lime-green hair
+- light lime-green hair
+- dark lime-green hair
+- green hair
+- light green hair
+- dark green hair
+- teal-green hair
+- light teal-green hair
+- dark teal-green hair
+- teal hair
+- light teal hair
+- dark teal hair
+- cyan-teal hair
+- light cyan-teal hair
+- dark cyan-teal hair
+- cyan hair
+- light cyan hair
+- dark cyan hair
+- sky-blue hair
+- light sky-blue hair
+- dark sky-blue hair
+- blue hair
+- light blue hair
+- dark blue hair
+- blue-indigo hair
+- light blue-indigo hair
+- dark blue-indigo hair
+- indigo hair
+- light indigo hair
+- dark indigo hair
+- blue-violet hair
+- light blue-violet hair
+- dark blue-violet hair
+- violet hair
+- light violet hair
+- dark violet hair
+- purple hair
+- light purple hair
+- dark purple hair
+- magenta hair
+- light magenta hair
+- dark magenta hair
+- pink-magenta hair
+- light pink-magenta hair
+- dark pink-magenta hair
+- pink hair
+- light pink hair
+- dark pink hair
+- rose-red hair
+- light rose-red hair
+- dark rose-red hair
+
+highlight_color:
+- white highlights
+- silver highlights
+- gray highlights
+- black highlights
+- charcoal highlights
+- red highlights
+- light red highlights
+- dark red highlights
+- red-orange highlights
+- light red-orange highlights
+- dark red-orange highlights
+- orange highlights
+- light orange highlights
+- dark orange highlights
+- yellow-orange highlights
+- light yellow-orange highlights
+- dark yellow-orange highlights
+- yellow highlights
+- light yellow highlights
+- dark yellow highlights
+- yellow-green highlights
+- light yellow-green highlights
+- dark yellow-green highlights
+- lime-green highlights
+- light lime-green highlights
+- dark lime-green highlights
+- green highlights
+- light green highlights
+- dark green highlights
+- teal-green highlights
+- light teal-green highlights
+- dark teal-green highlights
+- teal highlights
+- light teal highlights
+- dark teal highlights
+- cyan-teal highlights
+- light cyan-teal highlights
+- dark cyan-teal highlights
+- cyan highlights
+- light cyan highlights
+- dark cyan highlights
+- sky-blue highlights
+- light sky-blue highlights
+- dark sky-blue highlights
+- blue highlights
+- light blue highlights
+- dark blue highlights
+- blue-indigo highlights
+- light blue-indigo highlights
+- dark blue-indigo highlights
+- indigo highlights
+- light indigo highlights
+- dark indigo highlights
+- blue-violet highlights
+- light blue-violet highlights
+- dark blue-violet highlights
+- violet highlights
+- light violet highlights
+- dark violet highlights
+- purple highlights
+- light purple highlights
+- dark purple highlights
+- magenta highlights
+- light magenta highlights
+- dark magenta highlights
+- pink-magenta highlights
+- light pink-magenta highlights
+- dark pink-magenta highlights
+- pink highlights
+- light pink highlights
+- dark pink highlights
+- rose-red highlights
+- light rose-red highlights
+- dark rose-red highlights
+
+tips_color:
+- white tips
+- silver tips
+- gray tips
+- black tips
+- charcoal tips
+- red tips
+- light red tips
+- dark red tips
+- red-orange tips
+- light red-orange tips
+- dark red-orange tips
+- orange tips
+- light orange tips
+- dark orange tips
+- yellow-orange tips
+- light yellow-orange tips
+- dark yellow-orange tips
+- yellow tips
+- light yellow tips
+- dark yellow tips
+- yellow-green tips
+- light yellow-green tips
+- dark yellow-green tips
+- lime-green tips
+- light lime-green tips
+- dark lime-green tips
+- green tips
+- light green tips
+- dark green tips
+- teal-green tips
+- light teal-green tips
+- dark teal-green tips
+- teal tips
+- light teal tips
+- dark teal tips
+- cyan-teal tips
+- light cyan-teal tips
+- dark cyan-teal tips
+- cyan tips
+- light cyan tips
+- dark cyan tips
+- sky-blue tips
+- light sky-blue tips
+- dark sky-blue tips
+- blue tips
+- light blue tips
+- dark blue tips
+- blue-indigo tips
+- light blue-indigo tips
+- dark blue-indigo tips
+- indigo tips
+- light indigo tips
+- dark indigo tips
+- blue-violet tips
+- light blue-violet tips
+- dark blue-violet tips
+- violet tips
+- light violet tips
+- dark violet tips
+- purple tips
+- light purple tips
+- dark purple tips
+- magenta tips
+- light magenta tips
+- dark magenta tips
+- pink-magenta tips
+- light pink-magenta tips
+- dark pink-magenta tips
+- pink tips
+- light pink tips
+- dark pink tips
+- rose-red tips
+- light rose-red tips
+- dark rose-red tips
+
+eye_color:
+- white eyes
+- silver eyes
+- gray eyes
+- black eyes
+- charcoal eyes
+- hazel eyes
+- brown eyes
+- amber eyes
+- red eyes
+- light red eyes
+- dark red eyes
+- red-orange eyes
+- light red-orange eyes
+- dark red-orange eyes
+- orange eyes
+- light orange eyes
+- dark orange eyes
+- yellow-orange eyes
+- light yellow-orange eyes
+- dark yellow-orange eyes
+- yellow eyes
+- light yellow eyes
+- dark yellow eyes
+- yellow-green eyes
+- light yellow-green eyes
+- dark yellow-green eyes
+- lime-green eyes
+- light lime-green eyes
+- dark lime-green eyes
+- green eyes
+- light green eyes
+- dark green eyes
+- teal-green eyes
+- light teal-green eyes
+- dark teal-green eyes
+- teal eyes
+- light teal eyes
+- dark teal eyes
+- cyan-teal eyes
+- light cyan-teal eyes
+- dark cyan-teal eyes
+- cyan eyes
+- light cyan eyes
+- dark cyan eyes
+- sky-blue eyes
+- light sky-blue eyes
+- dark sky-blue eyes
+- blue eyes
+- light blue eyes
+- dark blue eyes
+- blue-indigo eyes
+- light blue-indigo eyes
+- dark blue-indigo eyes
+- indigo eyes
+- light indigo eyes
+- dark indigo eyes
+- blue-violet eyes
+- light blue-violet eyes
+- dark blue-violet eyes
+- violet eyes
+- light violet eyes
+- dark violet eyes
+- purple eyes
+- light purple eyes
+- dark purple eyes
+- magenta eyes
+- light magenta eyes
+- dark magenta eyes
+- pink-magenta eyes
+- light pink-magenta eyes
+- dark pink-magenta eyes
+- pink eyes
+- light pink eyes
+- dark pink eyes
+- rose-red eyes
+- light rose-red eyes
+- dark rose-red eyes
 
 # Makeup application weight/intensity
 makeup_weight:
@@ -53,13 +355,87 @@ makeup_weight:
 # Eyeliner styles (separated from color)
 eyeliner_style:
 - no eyeliner
-- winged eyeliner
+- winged-eyeliner
 - cat-eye eyeliner
-- graphic eyeliner
+- graphic-eyeliner
 - underlined eyeliner
 - smudged eyeliner
 
-eyeliner_color: []    # Populated from violet_colors.yaml
+eyeliner_color:
+- white eyeliner
+- silver eyeliner
+- gray eyeliner
+- black eyeliner
+- charcoal eyeliner
+- red eyeliner
+- light red eyeliner
+- dark red eyeliner
+- red-orange eyeliner
+- light red-orange eyeliner
+- dark red-orange eyeliner
+- orange eyeliner
+- light orange eyeliner
+- dark orange eyeliner
+- yellow-orange eyeliner
+- light yellow-orange eyeliner
+- dark yellow-orange eyeliner
+- yellow eyeliner
+- light yellow eyeliner
+- dark yellow eyeliner
+- yellow-green eyeliner
+- light yellow-green eyeliner
+- dark yellow-green eyeliner
+- lime-green eyeliner
+- light lime-green eyeliner
+- dark lime-green eyeliner
+- green eyeliner
+- light green eyeliner
+- dark green eyeliner
+- teal-green eyeliner
+- light teal-green eyeliner
+- dark teal-green eyeliner
+- teal eyeliner
+- light teal eyeliner
+- dark teal eyeliner
+- cyan-teal eyeliner
+- light cyan-teal eyeliner
+- dark cyan-teal eyeliner
+- cyan eyeliner
+- light cyan eyeliner
+- dark cyan eyeliner
+- sky-blue eyeliner
+- light sky-blue eyeliner
+- dark sky-blue eyeliner
+- blue eyeliner
+- light blue eyeliner
+- dark blue eyeliner
+- blue-indigo eyeliner
+- light blue-indigo eyeliner
+- dark blue-indigo eyeliner
+- indigo eyeliner
+- light indigo eyeliner
+- dark indigo eyeliner
+- blue-violet eyeliner
+- light blue-violet eyeliner
+- dark blue-violet eyeliner
+- violet eyeliner
+- light violet eyeliner
+- dark violet eyeliner
+- purple eyeliner
+- light purple eyeliner
+- dark purple eyeliner
+- magenta eyeliner
+- light magenta eyeliner
+- dark magenta eyeliner
+- pink-magenta eyeliner
+- light pink-magenta eyeliner
+- dark pink-magenta eyeliner
+- pink eyeliner
+- light pink eyeliner
+- dark pink eyeliner
+- rose-red eyeliner
+- light rose-red eyeliner
+- dark rose-red eyeliner
 
 # Blush application (separated from color)
 blush_weight:
@@ -68,7 +444,81 @@ blush_weight:
 - medium blush
 - heavy blush
 
-blush_color: []       # Populated from violet_colors.yaml
+blush_color:
+- white blush
+- silver blush
+- gray blush
+- black blush
+- charcoal blush
+- red blush
+- light red blush
+- dark red blush
+- red-orange blush
+- light red-orange blush
+- dark red-orange blush
+- orange blush
+- light orange blush
+- dark orange blush
+- yellow-orange blush
+- light yellow-orange blush
+- dark yellow-orange blush
+- yellow blush
+- light yellow blush
+- dark yellow blush
+- yellow-green blush
+- light yellow-green blush
+- dark yellow-green blush
+- lime-green blush
+- light lime-green blush
+- dark lime-green blush
+- green blush
+- light green blush
+- dark green blush
+- teal-green blush
+- light teal-green blush
+- dark teal-green blush
+- teal blush
+- light teal blush
+- dark teal blush
+- cyan-teal blush
+- light cyan-teal blush
+- dark cyan-teal blush
+- cyan blush
+- light cyan blush
+- dark cyan blush
+- sky-blue blush
+- light sky-blue blush
+- dark sky-blue blush
+- blue blush
+- light blue blush
+- dark blue blush
+- blue-indigo blush
+- light blue-indigo blush
+- dark blue-indigo blush
+- indigo blush
+- light indigo blush
+- dark indigo blush
+- blue-violet blush
+- light blue-violet blush
+- dark blue-violet blush
+- violet blush
+- light violet blush
+- dark violet blush
+- purple blush
+- light purple blush
+- dark purple blush
+- magenta blush
+- light magenta blush
+- dark magenta blush
+- pink-magenta blush
+- light pink-magenta blush
+- dark pink-magenta blush
+- pink blush
+- light pink blush
+- dark pink blush
+- rose-red blush
+- light rose-red blush
+- dark rose-red blush
 
 # Mascara options
 mascara:
@@ -88,7 +538,81 @@ eyeshadow:
 - smoky eyeshadow
 - glitter eyeshadow
 
-eyeshadow_color: []   # Populated from violet_colors.yaml
+eyeshadow_color:
+- white eyeshadow
+- silver eyeshadow
+- gray eyeshadow
+- black eyeshadow
+- charcoal eyeshadow
+- red eyeshadow
+- light red eyeshadow
+- dark red eyeshadow
+- red-orange eyeshadow
+- light red-orange eyeshadow
+- dark red-orange eyeshadow
+- orange eyeshadow
+- light orange eyeshadow
+- dark orange eyeshadow
+- yellow-orange eyeshadow
+- light yellow-orange eyeshadow
+- dark yellow-orange eyeshadow
+- yellow eyeshadow
+- light yellow eyeshadow
+- dark yellow eyeshadow
+- yellow-green eyeshadow
+- light yellow-green eyeshadow
+- dark yellow-green eyeshadow
+- lime-green eyeshadow
+- light lime-green eyeshadow
+- dark lime-green eyeshadow
+- green eyeshadow
+- light green eyeshadow
+- dark green eyeshadow
+- teal-green eyeshadow
+- light teal-green eyeshadow
+- dark teal-green eyeshadow
+- teal eyeshadow
+- light teal eyeshadow
+- dark teal eyeshadow
+- cyan-teal eyeshadow
+- light cyan-teal eyeshadow
+- dark cyan-teal eyeshadow
+- cyan eyeshadow
+- light cyan eyeshadow
+- dark cyan eyeshadow
+- sky-blue eyeshadow
+- light sky-blue eyeshadow
+- dark sky-blue eyeshadow
+- blue eyeshadow
+- light blue eyeshadow
+- dark blue eyeshadow
+- blue-indigo eyeshadow
+- light blue-indigo eyeshadow
+- dark blue-indigo eyeshadow
+- indigo eyeshadow
+- light indigo eyeshadow
+- dark indigo eyeshadow
+- blue-violet eyeshadow
+- light blue-violet eyeshadow
+- dark blue-violet eyeshadow
+- violet eyeshadow
+- light violet eyeshadow
+- dark violet eyeshadow
+- purple eyeshadow
+- light purple eyeshadow
+- dark purple eyeshadow
+- magenta eyeshadow
+- light magenta eyeshadow
+- dark magenta eyeshadow
+- pink-magenta eyeshadow
+- light pink-magenta eyeshadow
+- dark pink-magenta eyeshadow
+- pink eyeshadow
+- light pink eyeshadow
+- dark pink eyeshadow
+- rose-red eyeshadow
+- light rose-red eyeshadow
+- dark rose-red eyeshadow
 
 # Lipstick types (separated from color)
 lipstick_type:
@@ -102,7 +626,81 @@ lipstick_type:
 - liquid lipstick
 - tinted balm
 
-lipstick_color: []    # Populated from violet_colors.yaml
+lipstick_color:
+- white lipstick
+- silver lipstick
+- gray lipstick
+- black lipstick
+- charcoal lipstick
+- red lipstick
+- light red lipstick
+- dark red lipstick
+- red-orange lipstick
+- light red-orange lipstick
+- dark red-orange lipstick
+- orange lipstick
+- light orange lipstick
+- dark orange lipstick
+- yellow-orange lipstick
+- light yellow-orange lipstick
+- dark yellow-orange lipstick
+- yellow lipstick
+- light yellow lipstick
+- dark yellow lipstick
+- yellow-green lipstick
+- light yellow-green lipstick
+- dark yellow-green lipstick
+- lime-green lipstick
+- light lime-green lipstick
+- dark lime-green lipstick
+- green lipstick
+- light green lipstick
+- dark green lipstick
+- teal-green lipstick
+- light teal-green lipstick
+- dark teal-green lipstick
+- teal lipstick
+- light teal lipstick
+- dark teal lipstick
+- cyan-teal lipstick
+- light cyan-teal lipstick
+- dark cyan-teal lipstick
+- cyan lipstick
+- light cyan lipstick
+- dark cyan lipstick
+- sky-blue lipstick
+- light sky-blue lipstick
+- dark sky-blue lipstick
+- blue lipstick
+- light blue lipstick
+- dark blue lipstick
+- blue-indigo lipstick
+- light blue-indigo lipstick
+- dark blue-indigo lipstick
+- indigo lipstick
+- light indigo lipstick
+- dark indigo lipstick
+- blue-violet lipstick
+- light blue-violet lipstick
+- dark blue-violet lipstick
+- violet lipstick
+- light violet lipstick
+- dark violet lipstick
+- purple lipstick
+- light purple lipstick
+- dark purple lipstick
+- magenta lipstick
+- light magenta lipstick
+- dark magenta lipstick
+- pink-magenta lipstick
+- light pink-magenta lipstick
+- dark pink-magenta lipstick
+- pink lipstick
+- light pink lipstick
+- dark pink lipstick
+- rose-red lipstick
+- light rose-red lipstick
+- dark rose-red lipstick
 
 # Eyebrow styling
 brows:
@@ -114,7 +712,81 @@ brows:
 - bleached brows
 - shaved brows
 
-brow_color: []        # Populated from violet_colors.yaml
+brow_color:
+- white eyebrows
+- silver eyebrows
+- gray eyebrows
+- black eyebrows
+- charcoal eyebrows
+- red eyebrows
+- light red eyebrows
+- dark red eyebrows
+- red-orange eyebrows
+- light red-orange eyebrows
+- dark red-orange eyebrows
+- orange eyebrows
+- light orange eyebrows
+- dark orange eyebrows
+- yellow-orange eyebrows
+- light yellow-orange eyebrows
+- dark yellow-orange eyebrows
+- yellow eyebrows
+- light yellow eyebrows
+- dark yellow eyebrows
+- yellow-green eyebrows
+- light yellow-green eyebrows
+- dark yellow-green eyebrows
+- lime-green eyebrows
+- light lime-green eyebrows
+- dark lime-green eyebrows
+- green eyebrows
+- light green eyebrows
+- dark green eyebrows
+- teal-green eyebrows
+- light teal-green eyebrows
+- dark teal-green eyebrows
+- teal eyebrows
+- light teal eyebrows
+- dark teal eyebrows
+- cyan-teal eyebrows
+- light cyan-teal eyebrows
+- dark cyan-teal eyebrows
+- cyan eyebrows
+- light cyan eyebrows
+- dark cyan eyebrows
+- sky-blue eyebrows
+- light sky-blue eyebrows
+- dark sky-blue eyebrows
+- blue eyebrows
+- light blue eyebrows
+- dark blue eyebrows
+- blue-indigo eyebrows
+- light blue-indigo eyebrows
+- dark blue-indigo eyebrows
+- indigo eyebrows
+- light indigo eyebrows
+- dark indigo eyebrows
+- blue-violet eyebrows
+- light blue-violet eyebrows
+- dark blue-violet eyebrows
+- violet eyebrows
+- light violet eyebrows
+- dark violet eyebrows
+- purple eyebrows
+- light purple eyebrows
+- dark purple eyebrows
+- magenta eyebrows
+- light magenta eyebrows
+- dark magenta eyebrows
+- pink-magenta eyebrows
+- light pink-magenta eyebrows
+- dark pink-magenta eyebrows
+- pink eyebrows
+- light pink eyebrows
+- dark pink eyebrows
+- rose-red eyebrows
+- light rose-red eyebrows
+- dark rose-red eyebrows
 
 # Nail styling options
 fingernail_shape:
@@ -128,5 +800,154 @@ fingernail_shape:
 - coffin-fingernails
 - stilleto-fingernails
 
-fingernail_color: []  # Populated from violet_colors.yaml
-toenail_color: []     # Populated from violet_colors.yaml
+fingernail_color:
+- white fingernails
+- silver fingernails
+- gray fingernails
+- black fingernails
+- charcoal fingernails
+- red fingernails
+- light red fingernails
+- dark red fingernails
+- red-orange fingernails
+- light red-orange fingernails
+- dark red-orange fingernails
+- orange fingernails
+- light orange fingernails
+- dark orange fingernails
+- yellow-orange fingernails
+- light yellow-orange fingernails
+- dark yellow-orange fingernails
+- yellow fingernails
+- light yellow fingernails
+- dark yellow fingernails
+- yellow-green fingernails
+- light yellow-green fingernails
+- dark yellow-green fingernails
+- lime-green fingernails
+- light lime-green fingernails
+- dark lime-green fingernails
+- green fingernails
+- light green fingernails
+- dark green fingernails
+- teal-green fingernails
+- light teal-green fingernails
+- dark teal-green fingernails
+- teal fingernails
+- light teal fingernails
+- dark teal fingernails
+- cyan-teal fingernails
+- light cyan-teal fingernails
+- dark cyan-teal fingernails
+- cyan fingernails
+- light cyan fingernails
+- dark cyan fingernails
+- sky-blue fingernails
+- light sky-blue fingernails
+- dark sky-blue fingernails
+- blue fingernails
+- light blue fingernails
+- dark blue fingernails
+- blue-indigo fingernails
+- light blue-indigo fingernails
+- dark blue-indigo fingernails
+- indigo fingernails
+- light indigo fingernails
+- dark indigo fingernails
+- blue-violet fingernails
+- light blue-violet fingernails
+- dark blue-violet fingernails
+- violet fingernails
+- light violet fingernails
+- dark violet fingernails
+- purple fingernails
+- light purple fingernails
+- dark purple fingernails
+- magenta fingernails
+- light magenta fingernails
+- dark magenta fingernails
+- pink-magenta fingernails
+- light pink-magenta fingernails
+- dark pink-magenta fingernails
+- pink fingernails
+- light pink fingernails
+- dark pink fingernails
+- rose-red fingernails
+- light rose-red fingernails
+- dark rose-red fingernails
+
+toenail_color:
+- white toenails
+- silver toenails
+- gray toenails
+- black toenails
+- charcoal toenails
+- red toenails
+- light red toenails
+- dark red toenails
+- red-orange toenails
+- light red-orange toenails
+- dark red-orange toenails
+- orange toenails
+- light orange toenails
+- dark orange toenails
+- yellow-orange toenails
+- light yellow-orange toenails
+- dark yellow-orange toenails
+- yellow toenails
+- light yellow toenails
+- dark yellow toenails
+- yellow-green toenails
+- light yellow-green toenails
+- dark yellow-green toenails
+- lime-green toenails
+- light lime-green toenails
+- dark lime-green toenails
+- green toenails
+- light green toenails
+- dark green toenails
+- teal-green toenails
+- light teal-green toenails
+- dark teal-green toenails
+- teal toenails
+- light teal toenails
+- dark teal toenails
+- cyan-teal toenails
+- light cyan-teal toenails
+- dark cyan-teal toenails
+- cyan toenails
+- light cyan toenails
+- dark cyan toenails
+- sky-blue toenails
+- light sky-blue toenails
+- dark sky-blue toenails
+- blue toenails
+- light blue toenails
+- dark blue toenails
+- blue-indigo toenails
+- light blue-indigo toenails
+- dark blue-indigo toenails
+- indigo toenails
+- light indigo toenails
+- dark indigo toenails
+- blue-violet toenails
+- light blue-violet toenails
+- dark blue-violet toenails
+- violet toenails
+- light violet toenails
+- dark violet toenails
+- purple toenails
+- light purple toenails
+- dark purple toenails
+- magenta toenails
+- light magenta toenails
+- dark magenta toenails
+- pink-magenta toenails
+- light pink-magenta toenails
+- dark pink-magenta toenails
+- pink toenails
+- light pink toenails
+- dark pink toenails
+- rose-red toenails
+- light rose-red toenails
+- dark rose-red toenails
