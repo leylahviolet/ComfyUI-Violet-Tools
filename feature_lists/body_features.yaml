@@ -76,14 +76,47 @@ eyes:
 - narrow eyes
 - almond-shaped eyes
 - doe eyes
-skin:
+skin_tone:
+- bone-white skin
+- alabaster skin
+- porcelain skin
+- ivory skin
+- fair skin
+- light skin
+- rosy skin
+- peachy skin
+- olive skin
+- golden skin
+- caramel skin
+- amber skin
+- copper skin
+- umber skin
+- bronze skin
+- brown skin
+- dark brown skin
+- mahogany skin
+- cocoa skin
+- ebony skin
+- dark ebony skin
+
+skin_texture:
+- soft skin
 - smooth skin
-- freckled skin
-- oily skin
 - glossy skin
+- oily skin
+- dry skin
+- rough skin
+- leathery skin
+
+skin_state:
 - flushed skin
-- realistic skin
-- extremely detailed skin
+- freckled skin
+- sun-kissed skin
+- sunburned skin
+- glowing skin
+- luminous skin
+- sweaty skin
+- wet skin
 nipples:
 - small nipples
 - small erect nipples
