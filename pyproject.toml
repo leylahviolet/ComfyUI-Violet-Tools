@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comfyui-violet-tools"
+description = "Aesthetic-focused custom nodes for ComfyUI with sophisticated style and prompt management"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "leylahkrell", email = ""},
+]
+keywords = ["comfyui", "ai", "image-generation", "aesthetic", "style", "prompts"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Artistic Software",
+    "Topic :: Multimedia :: Graphics",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "PyYAML>=6.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/leylahkrell/ComfyUI-Violet-Tools"
+Repository = "https://github.com/leylahkrell/ComfyUI-Violet-Tools"
+Issues = "https://github.com/leylahkrell/ComfyUI-Violet-Tools/issues"
+Changelog = "https://github.com/leylahkrell/ComfyUI-Violet-Tools/blob/main/CHANGELOG.md"
+
+[tool.setuptools]
+packages = ["violet_tools"]
+
+[tool.setuptools_scm]
+write_to = "violet_tools/_version.py"
