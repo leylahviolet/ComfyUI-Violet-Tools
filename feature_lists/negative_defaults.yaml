@@ -1,0 +1,38 @@
+boilerplate:
+- (worst quality:2)
+- (low quality:2)
+- (normal quality:2)
+- (monochrome)
+- (grayscale)
+- blurry
+- distorted
+- multiple heads
+- extra heads
+- bad anatomy
+- bad proportions
+- extra limbs
+- mutated hands
+- fused fingers
+- missing arms
+- missing legs
+- (extra fingers:1.5)
+- (extra arms:1.5)
+- (extra legs:1.5)
+- mutated hands
+- too many fingers
+- long body
+- extra arms
+- bad hands
+- long neck
+- duplicate
+- poorly drawn face
+- poorly drawn hands
+- poorly drawn feet
+- poorly drawn eyes
+- poorly drawn mouth
+- ugly
+- signature
+- watermark
+- username
+- text
+- jpeg artifacts

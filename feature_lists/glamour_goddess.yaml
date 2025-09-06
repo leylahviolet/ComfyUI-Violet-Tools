@@ -1,0 +1,161 @@
+hair_length:
+- short hair
+- chin-length hair
+- shoulder-length hair
+- long hair
+- very long hair
+hair_texture:
+- straight hair
+- wavy hair
+- curly hair
+- coily hair
+- frizzy hair
+hairstyle:
+- loose hairstyle
+- sleek hairstyle
+- messy hairstyle
+- undercut hairstyle
+- bob cut hairstyle
+- pixie cut hairstyle
+- hair bun
+- messy bun
+- braided hair
+- ponytail
+- pigtails
+- twintails
+- half-up hair
+- topknot
+- side-swept hair
+- mohawk
+- bangs
+- afro
+- dreadlocks
+hair_color:
+- black hair
+- brown hair
+- blonde hair
+- red hair
+- platinum hair
+- auburn hair
+- pink hair
+- blue hair
+- purple hair
+- green hair
+- white hair
+- silver hair
+- multicolored hair
+highlight_color:
+- black highlights
+- brown highlights
+- blonde highlights
+- red highlights
+- platinum highlights
+- auburn highlights
+- pink highlights
+- blue highlights
+- purple highlights
+- green highlights
+- white highlights
+tips_color:
+- black tips
+- brown tips
+- blonde tips
+- red tips
+- platinum tips
+- auburn tips
+- pink tips
+- blue tips
+- purple tips
+- green tips
+- white tips
+eye_color:
+- brown eyes
+- blue eyes
+- green eyes
+- hazel eyes
+- gray eyes
+- amber eyes
+- violet eyes
+- golden eyes
+- red eyes
+- black eyes
+- white eyes
+- multicolored eyes
+makeup_weight:
+- natural makeup
+- light makeup
+- medium makeup
+- full makeup
+- bold makeup
+- glam makeup
+- ruined makeup
+eyeliner:
+- no eyeliner
+- winged-eyeliner
+- cat-eye-eyeliner
+- graphic-eyeliner
+- underlined-eyeliner
+- smudged eyeliner
+blush:
+- no blush
+- light blush
+- medium blush
+- heavy blush
+mascara:
+- no mascara
+- lengthening mascara
+- volumizing mascara
+- dramatic mascara
+- ruined mascara
+eyeshadow:
+- no eyeshadow
+- natural eyeshadow
+- light eyeshadow
+- medium eyeshadow
+- bold eyeshadow
+- smoky eyeshadow
+- glitter eyeshadow
+eyeshadow_color:
+- black eyeshadow
+- brown eyeshadow
+- red eyeshadow
+- pink eyeshadow
+- orange eyeshadow
+- yellow eyeshadow
+- green eyeshadow
+- blue eyeshadow
+- teal eyeshadow
+- cyan eyeshadow
+- magenta eyeshadow
+- lavender eyeshadow
+- purple eyeshadow
+- gold eyeshadow
+- silver eyeshadow
+- bronze eyeshadow
+- pastel eyeshadow
+- vibrant eyeshadow
+- metallic eyeshadow
+- glittery eyeshadow
+- colorful eyeshadow
+lipstick:
+- no lipstick
+- lip gloss
+- coral lipstick
+- peach lipstick
+- red lipstick
+- dark red lipstick
+- pink lipstick
+- fuchsia lipstick
+- purple lipstick
+- plum lipstick
+- dark plum lipstick
+- burgundy lipstick
+- black lipstick
+brows:
+- natural brows
+- arched brows
+- bold brows
+- thin brows
+- feathered brows
+- bleached brows
+- shaved brows

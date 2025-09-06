@@ -1,0 +1,16 @@
+boilerplate:
+  - "masterpiece"
+  - "best quality" 
+  - "amazing quality"
+  - "very aesthetic"
+  - "detailed eyes"
+  - "perfect eyes"
+  - "8K"
+
+styles:
+  Anime: "anime style, clean lines, cel shading, stylized, vibrant colors, dramatic lighting"
+  Cinematic: "cinematic lighting, film grain, dramatic shadows, detailed skin, depth of field, bokeh"
+  Hyperreal Fantasy: "hyperrealism, fantasy detail, surreal beauty, extremely detailed skin, enchanted lighting"
+  Illustration: "digital illustration, bold outlines, stylized shading, vibrant colors, dynamic composition"
+  Painterly: "painterly, brush strokes, traditional media feel, soft texture, rich colors, artistic lighting"
+  Photorealistic: "photorealistic, ultra-detailed, lighting realism, subsurface scattering skin, detailed skin, depth of field, moody atmosphere, backlit, cinematic background, bokeh, rule of thirds"
