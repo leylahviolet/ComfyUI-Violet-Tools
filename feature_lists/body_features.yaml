@@ -1,3 +1,35 @@
+# Basic Demographics
+age:
+- baby
+- child
+- teen
+- young
+- twenty-year-old
+- twenty-five-year-old
+- thirty-year-old
+- forty-year-old
+- forty-five-year-old
+- fifty-year-old
+- mature
+- elderly
+- old
+
+gender:
+- boy
+- girl
+- man
+- woman
+- nonbinary
+- genderfluid
+- androgynous
+- transmasc
+- transfem
+- transfemme
+- transgender man
+- transgender woman
+- intersex
+
+# Body Shape & Build
 physique:
 - slim figure
 - athletic build
@@ -13,24 +45,40 @@ physique:
 - overweight body
 - obese body
 - pregnant body
+
 height:
 - short height
 - petite height
 - average height
 - tall height
-breast_size:
+
+# Chest Features
+chest_size:
 - very flat chest
+- small chest
+- medium chest
+- large chest
+- very flat breasts
 - tiny breasts
 - small breasts
 - medium breasts
 - large breasts
 - huge breasts
-breast_shape:
+
+chest_shape:
+- wide pecs
+- chiseled pecs
+- strong pecs
+- rounded pecs
+- large pecs
+- huge pecs
+- top-surgery scars
 - perky breasts
 - round breasts
-- perfect breasts
 - natural-shaped breasts
 - sagging breasts
+
+# Body Proportions
 ass_size:
 - flat ass
 - toned ass
@@ -38,12 +86,14 @@ ass_size:
 - bubble butt
 - large ass
 - huge ass
+
 ass_shape:
 - firm ass
 - perky ass
 - soft ass
 - fat ass
 - sagging ass
+
 hips:
 - slim hips
 - narrow hips
@@ -51,6 +101,7 @@ hips:
 - wide hips
 - very wide hips
 - child-bearing hips
+
 waist:
 - slim waist
 - narrow waist
@@ -60,6 +111,7 @@ waist:
 - soft tummy
 - pregnant belly
 - sagging belly
+
 thighs:
 - slender thighs
 - athletic thighs
@@ -67,15 +119,20 @@ thighs:
 - very thick thighs
 - muscular thighs
 - chubby thighs
+
+# Facial Features
 lips:
 - thin lips
 - full lips
 - plump lips
+
 eyes:
 - large eyes
 - narrow eyes
 - almond-shaped eyes
 - doe eyes
+
+# Skin Characteristics
 skin_tone:
 - bone-white skin
 - alabaster skin
@@ -117,6 +174,8 @@ skin_state:
 - luminous skin
 - sweaty skin
 - wet skin
+
+# Intimate Features
 nipples:
 - small nipples
 - small erect nipples
@@ -124,18 +183,52 @@ nipples:
 - large erect nipples
 - huge nipples
 - huge erect nipples
+
 areolas:
 - small areolas
 - medium areolas
 - large areolas
 - huge areolas
-areola shade:
+
+areola_shade:
 - light pink areolas
 - light brown areolas
 - pink areolas
 - brown areolas
 - dark pink areolas
 - dark brown areolas
+
+genitals:
+- micropenis
+- tiny uncircumcised penis
+- small uncircumcised penis
+- average uncircumcised penis
+- large uncircumcised penis
+- huge uncircumcised penis
+- tiny circumcised penis
+- small circumcised penis
+- average circumcised penis
+- large circumcised penis
+- huge circumcised penis
+- small innie pussy
+- average innie pussy
+- large innie pussy
+- huge innie pussy
+- small pussy
+- average pussy
+- large pussy
+- huge pussy
+
+genital_state:
+- flaccid penis
+- soft penis
+- hard penis
+- erect penis
+- engorged pussy
+- swollen pussy
+- wet pussy
+
+# Body Hair
 pubic_hair:
 - shaved pubic hair
 - trimmed pubic hair
@@ -143,16 +236,19 @@ pubic_hair:
 - extreme pubic hair
 - landing strip pubic hair
 - heart-shaped pubic hair
+
 pubic_hair_color:
 - blonde pubic hair
 - brown pubic hair
 - black pubic hair
 - dyed pubic hair
+
 armpit_hair:
 - no armpit hair
 - armpit stubble
 - soft armpit hair
 - natural armpit hair
+
 armpit_hair_color:
 - blonde armpit hair
 - brown armpit hair
