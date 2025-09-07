@@ -6,8 +6,8 @@ class EncodingEnchantress:
     Four operation modes:
     - "closeup": Encodes glamour separately, adds closeup/portrait keywords for facial focus
     - "portrait": Combines glamour + body, puts pose + aesthetic + quality together with portrait keyword
-    - "compete combine": Creates separate conditionings for each element to compete/oscillate (default)
-    - "smooth blend": Combines all prompts into a single conditioning for smooth blending
+    - "smooth blend": Combines all prompts into a single conditioning for smooth blending (default)
+    - "compete combine": Creates separate conditionings for each element to compete/oscillate
     """
 
     @classmethod
@@ -15,7 +15,7 @@ class EncodingEnchantress:
         return {
             "required": {
                 "clip": ("CLIP",),
-                "mode": (["closeup", "portrait", "compete combine", "smooth blend"], {"default": "compete combine"}),
+                "mode": (["closeup", "portrait", "compete combine", "smooth blend"], {"default": "smooth blend"}),
                 "body_strength": ("FLOAT", {
                     "default": 1.0, 
                     "min": 0.0, 
@@ -156,17 +156,17 @@ class EncodingEnchantress:
         - Combines quality + pose + aesthetic with portrait keyword, encoded with vibe_strength
         - Uses _combine_conditioning to merge the two conditionings
         
-        "compete combine" mode (default):
+        "smooth blend" mode (default):
+        - Combines all prompts (quality, body, glamour, aesthetic, pose) into single conditioning
+        - Encodes everything together with neutral strength (1.0) for smooth blending
+        
+        "compete combine" mode:
         - Creates separate conditionings for each element to compete/oscillate
         - Combines body + glamour with full body keyword, encoded with body_strength
         - Encodes pose separately with body_strength
         - Encodes aesthetic separately with vibe_strength
         - Encodes quality with vibe_strength
         - Uses _combine_conditioning to merge all separate conditionings
-        
-        "smooth blend" mode:
-        - Combines all prompts (quality, body, glamour, aesthetic, pose) into single conditioning
-        - Encodes everything together with neutral strength (1.0) for smooth blending
         
         Args:
             clip: CLIP model instance
