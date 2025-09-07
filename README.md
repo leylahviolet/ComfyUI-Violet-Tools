@@ -174,9 +174,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - **[GZees](https://civitai.com/user/GZees)** - Special thanks for creating the exceptional [iLustMix v5.5](https://civitai.com/models/1110783?modelVersionId=1670263) model I used to generate the sample images. GZees' outstanding model produces beautiful, consistent results that perfectly demonstrate the capabilities of Violet Tools. I highly recommend checking out their incredible work and giving their models a try!
+- **[klaabu](https://civitai.com/user/klaabu)** - Gratitude for the excellent [Illustrious Realism Slider](https://civitai.com/models/1486904?modelVersionId=1681903) LoRA used in the sample generation. This fantastic tool adds beautiful realism control and enhances the quality of the demonstrations. Their LoRA work is top-notch and worth exploring!
 - Built for the ComfyUI community
-- Inspired by the need for better aesthetic control in AI image generation
-- Designed with modular, extensible architecture for easy customization
 
 ---
 
