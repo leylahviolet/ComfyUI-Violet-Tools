@@ -84,6 +84,25 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
 ## Usage
 
+## 🎨 Example Workflow
+
+### Quick Start
+
+1. **Download the workflow**: [Violet Tools Basic Workflow](examples/workflows/violet-tools-basic-workflow.png)
+2. **Drag and drop** the PNG file directly into ComfyUI to load the complete workflow
+3. **Alternative**: Import the [JSON file](examples/workflows/violet-tools-basic-workflow.json) manually
+
+### Encoding Enchantress Mode Comparison
+
+| Mode | Best For | Sample Output |
+|------|----------|---------------|
+| **Smooth Blend** *(Default)* | Cohesive artistic styles, beginner-friendly | ![Smooth Blend](examples/sample-outputs/smooth-blend-mode-sample.png) |
+| **Closeup** | Face-focused portraits, beauty shots | ![Closeup](examples/sample-outputs/closeup-mode-sample.png) |
+| **Portrait** | Dynamic portraits, upper body shots | ![Portrait](examples/sample-outputs/portrait-mode-sample.png) |
+| **Compete Combine** | Full body art, experimental results | ![Compete Combine](examples/sample-outputs/compete-combine-mode-sample.png) |
+
+*All samples generated with identical prompts, only mode changed*
+
 ### Basic Workflow
 
 1. Add any or all Violet Tools nodes to your ComfyUI workflow
