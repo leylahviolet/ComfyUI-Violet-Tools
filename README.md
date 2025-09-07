@@ -173,6 +173,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
+- **[GZees](https://civitai.com/user/GZees)** - Special thanks for creating the exceptional [iLustMix v5.5](https://civitai.com/models/1110783?modelVersionId=1670263) model I used to generate the sample images. GZees' outstanding model produces beautiful, consistent results that perfectly demonstrate the capabilities of Violet Tools. I highly recommend checking out their incredible work and giving their models a try!
 - Built for the ComfyUI community
 - Inspired by the need for better aesthetic control in AI image generation
 - Designed with modular, extensible architecture for easy customization
