@@ -1,0 +1,1050 @@
+{
+  "id": "688fc8ff-7466-478b-97de-501a5468d27c",
+  "revision": 0,
+  "last_node_id": 17,
+  "last_link_id": 17,
+  "nodes": [
+    {
+      "id": 6,
+      "type": "PosePriestess",
+      "pos": [
+        1830,
+        770
+      ],
+      "size": [
+        300,
+        232
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "pose",
+          "type": "POSE_STRING",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "PosePriestess",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "general_pose": true,
+            "general_pose_strength": true,
+            "spicy_pose": true,
+            "spicy_pose_strength": true,
+            "gesture": true,
+            "include_gesture": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Random",
+        1,
+        "None",
+        1,
+        "Random",
+        true,
+        ""
+      ]
+    },
+    {
+      "id": 3,
+      "type": "GlamourGoddess",
+      "pos": [
+        1170,
+        340
+      ],
+      "size": [
+        300,
+        616
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "glamour",
+          "type": "GLAMOUR_STRING",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "GlamourGoddess",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "hair_length": true,
+            "hair_texture": true,
+            "hairstyle": true,
+            "hair_color": true,
+            "highlight_color": true,
+            "dip_dye_color": true,
+            "eye_color": true,
+            "makeup_weight": true,
+            "eyeliner_style": true,
+            "eyeliner_color": true,
+            "blush_weight": true,
+            "blush_color": true,
+            "mascara": true,
+            "eyeshadow": true,
+            "eyeshadow_color": true,
+            "lipstick_type": true,
+            "lipstick_color": true,
+            "brows": true,
+            "brow_color": true,
+            "fingernail_shape": true,
+            "fingernail_color": true,
+            "toenail_color": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "chin-length hair",
+        "wavy hair",
+        "bob cut hairstyle",
+        "black hair",
+        "teal highlights",
+        "Unspecified",
+        "hazel eyes",
+        "light makeup",
+        "winged-eyeliner",
+        "black eyeliner",
+        "light blush",
+        "light rose-red blush",
+        "lengthening mascara",
+        "light eyeshadow",
+        "teal eyeshadow",
+        "gloss lipstick",
+        "dark rose-red lipstick",
+        "Unspecified",
+        "Unspecified",
+        "trimmed fingernails",
+        "dark teal fingernails",
+        "dark teal toenails",
+        ""
+      ]
+    },
+    {
+      "id": 4,
+      "type": "BodyBard",
+      "pos": [
+        1500,
+        340
+      ],
+      "size": [
+        300,
+        688
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "body",
+          "type": "BODY_STRING",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "BodyBard",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "age": true,
+            "gender": true,
+            "physique": true,
+            "height": true,
+            "chest_size": true,
+            "chest_shape": true,
+            "ass_size": true,
+            "ass_shape": true,
+            "hips": true,
+            "waist": true,
+            "thighs": true,
+            "lips": true,
+            "eyes": true,
+            "skin_tone": true,
+            "skin_texture": true,
+            "skin_state": true,
+            "nipples": true,
+            "areolas": true,
+            "areola_shade": true,
+            "genitals": true,
+            "genital_state": true,
+            "pubic_hair": true,
+            "pubic_hair_color": true,
+            "armpit_hair": true,
+            "armpit_hair_color": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "twenty-year-old",
+        "girl",
+        "pear-shaped body",
+        "short height",
+        "large breasts",
+        "natural-shaped breasts",
+        "huge ass",
+        "soft ass",
+        "very wide hips",
+        "hourglass waist",
+        "very thick thighs",
+        "plump lips",
+        "large eyes",
+        "porcelain skin",
+        "soft skin",
+        "flushed skin",
+        "huge erect nipples",
+        "huge areolas",
+        "light pink areolas",
+        "Unspecified",
+        "Unspecified",
+        "full natural pubic hair",
+        "brown pubic hair",
+        "Unspecified",
+        "Unspecified",
+        ""
+      ]
+    },
+    {
+      "id": 5,
+      "type": "AestheticAlchemist",
+      "pos": [
+        1830,
+        530
+      ],
+      "size": [
+        300,
+        184
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "aesthetic",
+          "type": "AESTHETIC_STRING",
+          "links": [
+            4
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "AestheticAlchemist",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "aesthetic_1": true,
+            "aesthetic_1_strength": true,
+            "aesthetic_2": true,
+            "aesthetic_2_strength": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Innocent",
+        1,
+        "Cottagecore",
+        0.8000000000000002,
+        ""
+      ]
+    },
+    {
+      "id": 11,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        1340,
+        10
+      ],
+      "size": [
+        400,
+        98
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            10
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            9
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            16
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "ckpt_name": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "ilustmix_v55.safetensors"
+      ]
+    },
+    {
+      "id": 12,
+      "type": "EmptyLatentImage",
+      "pos": [
+        2200,
+        10
+      ],
+      "size": [
+        300,
+        106
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "EmptyLatentImage",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "width": true,
+            "height": true,
+            "batch_size": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        1024,
+        1536,
+        1
+      ]
+    },
+    {
+      "id": 14,
+      "type": "VAEDecode",
+      "pos": [
+        3140,
+        0
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 15
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 16
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "VAEDecode",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 13,
+      "type": "KSampler",
+      "pos": [
+        2810,
+        0
+      ],
+      "size": [
+        300,
+        474
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 14
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 12
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 13
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 11
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            15
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "KSampler",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "seed": true,
+            "steps": true,
+            "cfg": true,
+            "sampler_name": true,
+            "scheduler": true,
+            "denoise": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        824532022787573,
+        "fixed",
+        50,
+        8,
+        "euler_ancestral",
+        "normal",
+        1
+      ]
+    },
+    {
+      "id": 15,
+      "type": "SaveImage",
+      "pos": [
+        3310,
+        0
+      ],
+      "size": [
+        830,
+        1250
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 17
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "SaveImage",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "filename_prefix": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "Power Lora Loader (rgthree)",
+      "pos": [
+        1770,
+        10
+      ],
+      "size": [
+        400,
+        142
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "dir": 3,
+          "name": "model",
+          "type": "MODEL",
+          "link": 10
+        },
+        {
+          "dir": 3,
+          "name": "clip",
+          "type": "CLIP",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "dir": 4,
+          "name": "MODEL",
+          "shape": 3,
+          "type": "MODEL",
+          "links": [
+            14
+          ]
+        },
+        {
+          "dir": 4,
+          "name": "CLIP",
+          "shape": 3,
+          "type": "CLIP",
+          "links": [
+            8
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "rgthree-comfy",
+        "ver": "dbc5fa5e89b6a8b6a1a1dda787505b690f18026c",
+        "Show Strengths": "Single Strength",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        {},
+        {
+          "type": "PowerLoraLoaderHeaderWidget"
+        },
+        {
+          "on": true,
+          "lora": "9 Utility\\ILL Realism Slider.safetensors",
+          "strength": 3.3,
+          "strengthTwo": null
+        },
+        {},
+        ""
+      ]
+    },
+    {
+      "id": 1,
+      "type": "EncodingEnchantress",
+      "pos": [
+        2200,
+        340
+      ],
+      "size": [
+        300,
+        250
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 8
+        },
+        {
+          "name": "quality",
+          "shape": 7,
+          "type": "QUALITY_STRING",
+          "link": 1
+        },
+        {
+          "name": "glamour",
+          "shape": 7,
+          "type": "GLAMOUR_STRING",
+          "link": 2
+        },
+        {
+          "name": "body",
+          "shape": 7,
+          "type": "BODY_STRING",
+          "link": 3
+        },
+        {
+          "name": "aesthetic",
+          "shape": 7,
+          "type": "AESTHETIC_STRING",
+          "link": 4
+        },
+        {
+          "name": "pose",
+          "shape": 7,
+          "type": "POSE_STRING",
+          "link": 5
+        },
+        {
+          "name": "nullifier",
+          "shape": 7,
+          "type": "NULLIFIER_STRING",
+          "link": 6
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            12
+          ]
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            13
+          ]
+        },
+        {
+          "name": "pos_text",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "name": "neg_text",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "EncodingEnchantress",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "mode": true,
+            "body_strength": true,
+            "vibe_strength": true,
+            "negative_strength": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "smooth blend",
+        1.0000000000000002,
+        1.0000000000000002,
+        1
+      ]
+    },
+    {
+      "id": 2,
+      "type": "QualityQueen",
+      "pos": [
+        1830,
+        340
+      ],
+      "size": [
+        300,
+        136
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "quality",
+          "type": "QUALITY_STRING",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "QualityQueen",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "include_boilerplate": true,
+            "style": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        true,
+        "Photorealistic",
+        "SFW"
+      ]
+    },
+    {
+      "id": 16,
+      "type": "MarkdownNote",
+      "pos": [
+        1170,
+        1090
+      ],
+      "size": [
+        470,
+        160
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 7,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "### 📝 What is \"Boilerplate\"?\n\nBoilerplate refers to standard, reusable prompt text that improves image quality and consistency. Think of it as the \"foundation\" prompts that experienced artists include in almost every generation.\n\nExamples of boilerplate include:\n\n- Quality enhancers: \"high quality, detailed, masterpiece\"\n- Technical specs: \"8k resolution, professional photography\"\n- Style foundations: \"cinematic lighting, sharp focus\"\n- Negative boilerplate: \"blurry, low quality, distorted\""
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    },
+    {
+      "id": 7,
+      "type": "NegativityNullifier",
+      "pos": [
+        1830,
+        1060
+      ],
+      "size": [
+        300,
+        190
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "nullifier",
+          "type": "NULLIFIER_STRING",
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
+        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "Node name for S&R": "NegativityNullifier",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "include_boilerplate": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        true,
+        "shiny skin, plastic skin, cartoon, 3D, illustration, belly hair, ugly faces, ugly, bad teeth, mole, moles, birthmark, tattoo"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "MarkdownNote",
+      "pos": [
+        2200,
+        640
+      ],
+      "size": [
+        530,
+        610
+      ],
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "# 🧬 Encoding Enchantress - Four Operation Modes\n\n## 🔍 \"closeup\" Mode\n\nBest for: Face-focused portraits, beauty shots, headshots\n\n- Encodes glamour (hair/makeup) separately for strong character emphasis\n- Combines body + pose with \"portrait, closeup, face focus\" keywords\n- Combines quality + aesthetic with closeup keywords\n- Each element gets individual strength control for precise facial detail balance\n- Tip: Set features below the face to Unspecified for speed and peak precision\n\n## 👤 \"portrait\" Mode\n\nBest for: Dynamic portraits, upper body shots, character studies\n\n- Combines glamour + body into one conditioning for cohesive character\n- Groups quality + pose + aesthetic with \"head and shoulders portrait\" keywords\n- Adds \"body turned to the side, face turned to viewer\" for dynamic angles\n- Great balance between character features and artistic style\n- Tip: Set features below the chest to Unspecified for speed and peak precision\n\n## ⚔️ \"compete combine\" Mode (note: longer sampling)\n\nBest for: Emergent complexity, strong \"remixed\" composition\n\n- Creates separate conditionings for each element to compete/oscillate\n- Body + glamour combined with \"full body\" keyword\n- Pose, aesthetic, and quality each get their own conditioning\n- Elements can compete for attention, creating dynamic, divergent results\n- NOT for consistent characters\n\n## 🌊 \"smooth blend\" Mode (Default)\n\nBest for: Cohesive artistic styles, consistent characters, and when you want everything harmonized\n\n- Combines ALL prompts into a single conditioning at neutral strength\n- Everything blends smoothly together with equal weight\n- No competing elements - perfect harmony between all aspects\n- Ideal when you want style consistency over dramatic variety\n\n### Strength Controls:\n\n- body_strength: Controls body/glamour/pose emphasis (not used in smooth blend)\n- vibe_strength: Controls quality/aesthetic emphasis (not used in smooth blend)\n- negative_strength: Controls negative prompt strength across all modes"
+      ],
+      "color": "#233",
+      "bgcolor": "#355"
+    }
+  ],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      1,
+      1,
+      "QUALITY_STRING"
+    ],
+    [
+      2,
+      3,
+      0,
+      1,
+      2,
+      "GLAMOUR_STRING"
+    ],
+    [
+      3,
+      4,
+      0,
+      1,
+      3,
+      "BODY_STRING"
+    ],
+    [
+      4,
+      5,
+      0,
+      1,
+      4,
+      "AESTHETIC_STRING"
+    ],
+    [
+      5,
+      6,
+      0,
+      1,
+      5,
+      "POSE_STRING"
+    ],
+    [
+      6,
+      7,
+      0,
+      1,
+      6,
+      "NULLIFIER_STRING"
+    ],
+    [
+      8,
+      9,
+      1,
+      1,
+      0,
+      "CLIP"
+    ],
+    [
+      9,
+      11,
+      1,
+      9,
+      1,
+      "CLIP"
+    ],
+    [
+      10,
+      11,
+      0,
+      9,
+      0,
+      "MODEL"
+    ],
+    [
+      11,
+      12,
+      0,
+      13,
+      3,
+      "LATENT"
+    ],
+    [
+      12,
+      1,
+      0,
+      13,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      13,
+      1,
+      1,
+      13,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      14,
+      9,
+      0,
+      13,
+      0,
+      "MODEL"
+    ],
+    [
+      15,
+      13,
+      0,
+      14,
+      0,
+      "LATENT"
+    ],
+    [
+      16,
+      11,
+      2,
+      14,
+      1,
+      "VAE"
+    ],
+    [
+      17,
+      14,
+      0,
+      15,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Violet Tools 💅",
+      "bounding": [
+        1160,
+        270,
+        1580,
+        993.5999755859375
+      ],
+      "color": "#a1309b",
+      "font_size": 24,
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 2,
+      "title": "Loading Dock",
+      "bounding": [
+        1330,
+        -63.599998474121094,
+        1180,
+        225.60000610351562
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 3,
+      "title": "Render Farm",
+      "bounding": [
+        2800,
+        -70,
+        1350,
+        1333.5999755859375
+      ],
+      "color": "#8AA",
+      "font_size": 24,
+      "flags": {
+        "pinned": true
+      }
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ue_links": [],
+    "ds": {
+      "scale": 0.6300941473673333,
+      "offset": [
+        -1070,
+        100
+      ]
+    },
+    "links_added_by_ue": [],
+    "frontendVersion": "1.23.4",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}
