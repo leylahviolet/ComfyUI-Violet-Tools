@@ -46,7 +46,7 @@ class PosePriestess:
     CATEGORY = "Violet Tools 💅"
 
     @staticmethod
-    def IS_CHANGED():
+    def IS_CHANGED(**kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         

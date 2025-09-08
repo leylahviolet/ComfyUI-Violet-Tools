@@ -40,7 +40,7 @@ class GlamourGoddess:
     CATEGORY = "Violet Tools 💅"
 
     @staticmethod
-    def IS_CHANGED():
+    def IS_CHANGED(**kwargs):
         import time
         return time.time()
 

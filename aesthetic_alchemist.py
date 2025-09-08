@@ -37,10 +37,13 @@ class AestheticAlchemist:
     CATEGORY = "Violet Tools 💅"
     
     @staticmethod
-    def IS_CHANGED():
+    def IS_CHANGED(**kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         
+        Args:
+            **kwargs: Node input parameters (ignored)
+            
         Returns:
             float: Current timestamp to trigger node updates
         """
