@@ -7,6 +7,7 @@ age:
 - twenty-year-old
 - twenty-five-year-old
 - thirty-year-old
+- thirty-five-year-old
 - forty-year-old
 - forty-five-year-old
 - fifty-year-old
@@ -15,8 +16,10 @@ age:
 - old
 
 gender:
+- child
 - boy
 - girl
+- adult
 - man
 - woman
 - nonbinary
@@ -25,7 +28,9 @@ gender:
 - transmasc
 - transfem
 - transfemme
+- transgender boy
 - transgender man
+- transgender girl
 - transgender woman
 - intersex
 
@@ -125,6 +130,7 @@ lips:
 - thin lips
 - full lips
 - plump lips
+- kissable lips
 
 eyes:
 - large eyes
@@ -137,7 +143,7 @@ skin_tone:
 - bone-white skin
 - alabaster skin
 - porcelain skin
-- ivory skin
+- pale skin
 - fair skin
 - light skin
 - rosy skin
@@ -164,6 +170,7 @@ skin_texture:
 - dry skin
 - rough skin
 - leathery skin
+- extremely detailed skin
 
 skin_state:
 - flushed skin

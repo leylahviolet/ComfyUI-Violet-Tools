@@ -346,7 +346,7 @@ eye_color:
 makeup_weight:
 - natural makeup
 - light makeup
-- medium makeup
+- makeup
 - full makeup
 - bold makeup
 - glam makeup
@@ -441,7 +441,7 @@ eyeliner_color:
 blush_weight:
 - no blush
 - light blush
-- medium blush
+- blush
 - heavy blush
 
 blush_color:
@@ -523,6 +523,7 @@ blush_color:
 # Mascara options
 mascara:
 - no mascara
+- mascara
 - lengthening mascara
 - volumizing mascara
 - dramatic mascara
@@ -533,7 +534,7 @@ eyeshadow:
 - no eyeshadow
 - natural eyeshadow
 - light eyeshadow
-- medium eyeshadow
+- eyeshadow
 - bold eyeshadow
 - smoky eyeshadow
 - glitter eyeshadow
@@ -617,6 +618,7 @@ eyeshadow_color:
 # Lipstick types (separated from color)
 lipstick_type:
 - no lipstick
+- lipstick
 - matte lipstick
 - gloss lipstick
 - metallic lipstick
