@@ -1,955 +1,924 @@
-# Hair styling options
 hair_length:
-- short hair
-- chin-length hair
-- shoulder-length hair
-- long hair
-- very long hair
-
+  short: short hair
+  chin-length: chin-length hair
+  shoulder-length: shoulder-length hair
+  long: long hair
+  very long: very long hair
 hair_texture:
-- straight hair
-- wavy hair
-- curly hair
-- coily hair
-- frizzy hair
-
+  straight: straight hair
+  wavy: wavy hair
+  curly: curly hair
+  coily: coily hair
+  frizzy: frizzy hair
 hairstyle:
-- loose hairstyle
-- sleek hairstyle
-- messy hairstyle
-- undercut hairstyle
-- bob cut hairstyle
-- pixie cut hairstyle
-- hair bun
-- messy bun
-- braided hair
-- ponytail
-- pigtails
-- twintails
-- half-up hair
-- topknot
-- side-swept hair
-- mohawk
-- bangs
-- afro
-- dreadlocks
-
-# Hair color options
+  loose: loose hairstyle
+  sleek: sleek hairstyle
+  messy: messy hairstyle
+  undercut: undercut hairstyle
+  bob cut: bob cut hairstyle
+  pixie cut: pixie cut hairstyle
+  hair bun: hair bun
+  messy bun: messy bun
+  braided: braided hair
+  ponytail: ponytail
+  pigtails: pigtails
+  twintails: twintails
+  half-up: half-up hair
+  topknot: topknot
+  side-swept: side-swept hair
+  mohawk: mohawk
+  bangs: bangs
+  afro: afro
+  dreadlocks: dreadlocks
 hair_color:
-- white hair
-- silver hair
-- gray hair
-- black hair
-- charcoal hair
-- red hair
-- light red hair
-- dark red hair
-- red-orange hair
-- light red-orange hair
-- dark red-orange hair
-- orange hair
-- light orange hair
-- dark orange hair
-- yellow-orange hair
-- light yellow-orange hair
-- dark yellow-orange hair
-- yellow hair
-- light yellow hair
-- dark yellow hair
-- yellow-green hair
-- light yellow-green hair
-- dark yellow-green hair
-- lime-green hair
-- light lime-green hair
-- dark lime-green hair
-- green hair
-- light green hair
-- dark green hair
-- teal-green hair
-- light teal-green hair
-- dark teal-green hair
-- teal hair
-- light teal hair
-- dark teal hair
-- cyan-teal hair
-- light cyan-teal hair
-- dark cyan-teal hair
-- cyan hair
-- light cyan hair
-- dark cyan hair
-- sky-blue hair
-- light sky-blue hair
-- dark sky-blue hair
-- blue hair
-- light blue hair
-- dark blue hair
-- blue-indigo hair
-- light blue-indigo hair
-- dark blue-indigo hair
-- indigo hair
-- light indigo hair
-- dark indigo hair
-- blue-violet hair
-- light blue-violet hair
-- dark blue-violet hair
-- violet hair
-- light violet hair
-- dark violet hair
-- purple hair
-- light purple hair
-- dark purple hair
-- magenta hair
-- light magenta hair
-- dark magenta hair
-- pink-magenta hair
-- light pink-magenta hair
-- dark pink-magenta hair
-- pink hair
-- light pink hair
-- dark pink hair
-- rose-red hair
-- light rose-red hair
-- dark rose-red hair
-
+  white: white hair
+  silver: silver hair
+  gray: gray hair
+  black: black hair
+  charcoal: charcoal hair
+  red: red hair
+  light red: light red hair
+  dark red: dark red hair
+  red-orange: red-orange hair
+  light red-orange: light red-orange hair
+  dark red-orange: dark red-orange hair
+  orange: orange hair
+  light orange: light orange hair
+  dark orange: dark orange hair
+  yellow-orange: yellow-orange hair
+  light yellow-orange: light yellow-orange hair
+  dark yellow-orange: dark yellow-orange hair
+  yellow: yellow hair
+  light yellow: light yellow hair
+  dark yellow: dark yellow hair
+  yellow-green: yellow-green hair
+  light yellow-green: light yellow-green hair
+  dark yellow-green: dark yellow-green hair
+  lime-green: lime-green hair
+  light lime-green: light lime-green hair
+  dark lime-green: dark lime-green hair
+  green: green hair
+  light green: light green hair
+  dark green: dark green hair
+  teal-green: teal-green hair
+  light teal-green: light teal-green hair
+  dark teal-green: dark teal-green hair
+  teal: teal hair
+  light teal: light teal hair
+  dark teal: dark teal hair
+  cyan-teal: cyan-teal hair
+  light cyan-teal: light cyan-teal hair
+  dark cyan-teal: dark cyan-teal hair
+  cyan: cyan hair
+  light cyan: light cyan hair
+  dark cyan: dark cyan hair
+  sky-blue: sky-blue hair
+  light sky-blue: light sky-blue hair
+  dark sky-blue: dark sky-blue hair
+  blue: blue hair
+  light blue: light blue hair
+  dark blue: dark blue hair
+  blue-indigo: blue-indigo hair
+  light blue-indigo: light blue-indigo hair
+  dark blue-indigo: dark blue-indigo hair
+  indigo: indigo hair
+  light indigo: light indigo hair
+  dark indigo: dark indigo hair
+  blue-violet: blue-violet hair
+  light blue-violet: light blue-violet hair
+  dark blue-violet: dark blue-violet hair
+  violet: violet hair
+  light violet: light violet hair
+  dark violet: dark violet hair
+  purple: purple hair
+  light purple: light purple hair
+  dark purple: dark purple hair
+  magenta: magenta hair
+  light magenta: light magenta hair
+  dark magenta: dark magenta hair
+  pink-magenta: pink-magenta hair
+  light pink-magenta: light pink-magenta hair
+  dark pink-magenta: dark pink-magenta hair
+  pink: pink hair
+  light pink: light pink hair
+  dark pink: dark pink hair
+  rose-red: rose-red hair
+  light rose-red: light rose-red hair
+  dark rose-red: dark rose-red hair
 highlight_color:
-- white highlights
-- silver highlights
-- gray highlights
-- black highlights
-- charcoal highlights
-- red highlights
-- light red highlights
-- dark red highlights
-- red-orange highlights
-- light red-orange highlights
-- dark red-orange highlights
-- orange highlights
-- light orange highlights
-- dark orange highlights
-- yellow-orange highlights
-- light yellow-orange highlights
-- dark yellow-orange highlights
-- yellow highlights
-- light yellow highlights
-- dark yellow highlights
-- yellow-green highlights
-- light yellow-green highlights
-- dark yellow-green highlights
-- lime-green highlights
-- light lime-green highlights
-- dark lime-green highlights
-- green highlights
-- light green highlights
-- dark green highlights
-- teal-green highlights
-- light teal-green highlights
-- dark teal-green highlights
-- teal highlights
-- light teal highlights
-- dark teal highlights
-- cyan-teal highlights
-- light cyan-teal highlights
-- dark cyan-teal highlights
-- cyan highlights
-- light cyan highlights
-- dark cyan highlights
-- sky-blue highlights
-- light sky-blue highlights
-- dark sky-blue highlights
-- blue highlights
-- light blue highlights
-- dark blue highlights
-- blue-indigo highlights
-- light blue-indigo highlights
-- dark blue-indigo highlights
-- indigo highlights
-- light indigo highlights
-- dark indigo highlights
-- blue-violet highlights
-- light blue-violet highlights
-- dark blue-violet highlights
-- violet highlights
-- light violet highlights
-- dark violet highlights
-- purple highlights
-- light purple highlights
-- dark purple highlights
-- magenta highlights
-- light magenta highlights
-- dark magenta highlights
-- pink-magenta highlights
-- light pink-magenta highlights
-- dark pink-magenta highlights
-- pink highlights
-- light pink highlights
-- dark pink highlights
-- rose-red highlights
-- light rose-red highlights
-- dark rose-red highlights
-
+  white: white highlights
+  silver: silver highlights
+  gray: gray highlights
+  black: black highlights
+  charcoal: charcoal highlights
+  red: red highlights
+  light red: light red highlights
+  dark red: dark red highlights
+  red-orange: red-orange highlights
+  light red-orange: light red-orange highlights
+  dark red-orange: dark red-orange highlights
+  orange: orange highlights
+  light orange: light orange highlights
+  dark orange: dark orange highlights
+  yellow-orange: yellow-orange highlights
+  light yellow-orange: light yellow-orange highlights
+  dark yellow-orange: dark yellow-orange highlights
+  yellow: yellow highlights
+  light yellow: light yellow highlights
+  dark yellow: dark yellow highlights
+  yellow-green: yellow-green highlights
+  light yellow-green: light yellow-green highlights
+  dark yellow-green: dark yellow-green highlights
+  lime-green: lime-green highlights
+  light lime-green: light lime-green highlights
+  dark lime-green: dark lime-green highlights
+  green: green highlights
+  light green: light green highlights
+  dark green: dark green highlights
+  teal-green: teal-green highlights
+  light teal-green: light teal-green highlights
+  dark teal-green: dark teal-green highlights
+  teal: teal highlights
+  light teal: light teal highlights
+  dark teal: dark teal highlights
+  cyan-teal: cyan-teal highlights
+  light cyan-teal: light cyan-teal highlights
+  dark cyan-teal: dark cyan-teal highlights
+  cyan: cyan highlights
+  light cyan: light cyan highlights
+  dark cyan: dark cyan highlights
+  sky-blue: sky-blue highlights
+  light sky-blue: light sky-blue highlights
+  dark sky-blue: dark sky-blue highlights
+  blue: blue highlights
+  light blue: light blue highlights
+  dark blue: dark blue highlights
+  blue-indigo: blue-indigo highlights
+  light blue-indigo: light blue-indigo highlights
+  dark blue-indigo: dark blue-indigo highlights
+  indigo: indigo highlights
+  light indigo: light indigo highlights
+  dark indigo: dark indigo highlights
+  blue-violet: blue-violet highlights
+  light blue-violet: light blue-violet highlights
+  dark blue-violet: dark blue-violet highlights
+  violet: violet highlights
+  light violet: light violet highlights
+  dark violet: dark violet highlights
+  purple: purple highlights
+  light purple: light purple highlights
+  dark purple: dark purple highlights
+  magenta: magenta highlights
+  light magenta: light magenta highlights
+  dark magenta: dark magenta highlights
+  pink-magenta: pink-magenta highlights
+  light pink-magenta: light pink-magenta highlights
+  dark pink-magenta: dark pink-magenta highlights
+  pink: pink highlights
+  light pink: light pink highlights
+  dark pink: dark pink highlights
+  rose-red: rose-red highlights
+  light rose-red: light rose-red highlights
+  dark rose-red: dark rose-red highlights
 dip_dye_color:
-- white dip-dyed hair
-- silver dip-dyed hair
-- gray dip-dyed hair
-- black dip-dyed hair
-- charcoal dip-dyed hair
-- red dip-dyed hair
-- light red dip-dyed hair
-- dark red dip-dyed hair
-- red-orange dip-dyed hair
-- light red-orange dip-dyed hair
-- dark red-orange dip-dyed hair
-- orange dip-dyed hair
-- light orange dip-dyed hair
-- dark orange dip-dyed hair
-- yellow-orange dip-dyed hair
-- light yellow-orange dip-dyed hair
-- dark yellow-orange dip-dyed hair
-- yellow dip-dyed hair
-- light yellow dip-dyed hair
-- dark yellow dip-dyed hair
-- yellow-green dip-dyed hair
-- light yellow-green dip-dyed hair
-- dark yellow-green dip-dyed hair
-- lime-green dip-dyed hair
-- light lime-green dip-dyed hair
-- dark lime-green dip-dyed hair
-- green dip-dyed hair
-- light green dip-dyed hair
-- dark green dip-dyed hair
-- teal-green dip-dyed hair
-- light teal-green dip-dyed hair
-- dark teal-green dip-dyed hair
-- teal dip-dyed hair
-- light teal dip-dyed hair
-- dark teal dip-dyed hair
-- cyan-teal dip-dyed hair
-- light cyan-teal dip-dyed hair
-- dark cyan-teal dip-dyed hair
-- cyan dip-dyed hair
-- light cyan dip-dyed hair
-- dark cyan dip-dyed hair
-- sky-blue dip-dyed hair
-- light sky-blue dip-dyed hair
-- dark sky-blue dip-dyed hair
-- blue dip-dyed hair
-- light blue dip-dyed hair
-- dark blue dip-dyed hair
-- blue-indigo dip-dyed hair
-- light blue-indigo dip-dyed hair
-- dark blue-indigo dip-dyed hair
-- indigo dip-dyed hair
-- light indigo dip-dyed hair
-- dark indigo dip-dyed hair
-- blue-violet dip-dyed hair
-- light blue-violet dip-dyed hair
-- dark blue-violet dip-dyed hair
-- violet dip-dyed hair
-- light violet dip-dyed hair
-- dark violet dip-dyed hair
-- purple dip-dyed hair
-- light purple dip-dyed hair
-- dark purple dip-dyed hair
-- magenta dip-dyed hair
-- light magenta dip-dyed hair
-- dark magenta dip-dyed hair
-- pink-magenta dip-dyed hair
-- light pink-magenta dip-dyed hair
-- dark pink-magenta dip-dyed hair
-- pink dip-dyed hair
-- light pink dip-dyed hair
-- dark pink dip-dyed hair
-- rose-red dip-dyed hair
-- light rose-red dip-dyed hair
-- dark rose-red dip-dyed hair
-
+  white: white dip-dyed hair
+  silver: silver dip-dyed hair
+  gray: gray dip-dyed hair
+  black: black dip-dyed hair
+  charcoal: charcoal dip-dyed hair
+  red: red dip-dyed hair
+  light red: light red dip-dyed hair
+  dark red: dark red dip-dyed hair
+  red-orange: red-orange dip-dyed hair
+  light red-orange: light red-orange dip-dyed hair
+  dark red-orange: dark red-orange dip-dyed hair
+  orange: orange dip-dyed hair
+  light orange: light orange dip-dyed hair
+  dark orange: dark orange dip-dyed hair
+  yellow-orange: yellow-orange dip-dyed hair
+  light yellow-orange: light yellow-orange dip-dyed hair
+  dark yellow-orange: dark yellow-orange dip-dyed hair
+  yellow: yellow dip-dyed hair
+  light yellow: light yellow dip-dyed hair
+  dark yellow: dark yellow dip-dyed hair
+  yellow-green: yellow-green dip-dyed hair
+  light yellow-green: light yellow-green dip-dyed hair
+  dark yellow-green: dark yellow-green dip-dyed hair
+  lime-green: lime-green dip-dyed hair
+  light lime-green: light lime-green dip-dyed hair
+  dark lime-green: dark lime-green dip-dyed hair
+  green: green dip-dyed hair
+  light green: light green dip-dyed hair
+  dark green: dark green dip-dyed hair
+  teal-green: teal-green dip-dyed hair
+  light teal-green: light teal-green dip-dyed hair
+  dark teal-green: dark teal-green dip-dyed hair
+  teal: teal dip-dyed hair
+  light teal: light teal dip-dyed hair
+  dark teal: dark teal dip-dyed hair
+  cyan-teal: cyan-teal dip-dyed hair
+  light cyan-teal: light cyan-teal dip-dyed hair
+  dark cyan-teal: dark cyan-teal dip-dyed hair
+  cyan: cyan dip-dyed hair
+  light cyan: light cyan dip-dyed hair
+  dark cyan: dark cyan dip-dyed hair
+  sky-blue: sky-blue dip-dyed hair
+  light sky-blue: light sky-blue dip-dyed hair
+  dark sky-blue: dark sky-blue dip-dyed hair
+  blue: blue dip-dyed hair
+  light blue: light blue dip-dyed hair
+  dark blue: dark blue dip-dyed hair
+  blue-indigo: blue-indigo dip-dyed hair
+  light blue-indigo: light blue-indigo dip-dyed hair
+  dark blue-indigo: dark blue-indigo dip-dyed hair
+  indigo: indigo dip-dyed hair
+  light indigo: light indigo dip-dyed hair
+  dark indigo: dark indigo dip-dyed hair
+  blue-violet: blue-violet dip-dyed hair
+  light blue-violet: light blue-violet dip-dyed hair
+  dark blue-violet: dark blue-violet dip-dyed hair
+  violet: violet dip-dyed hair
+  light violet: light violet dip-dyed hair
+  dark violet: dark violet dip-dyed hair
+  purple: purple dip-dyed hair
+  light purple: light purple dip-dyed hair
+  dark purple: dark purple dip-dyed hair
+  magenta: magenta dip-dyed hair
+  light magenta: light magenta dip-dyed hair
+  dark magenta: dark magenta dip-dyed hair
+  pink-magenta: pink-magenta dip-dyed hair
+  light pink-magenta: light pink-magenta dip-dyed hair
+  dark pink-magenta: dark pink-magenta dip-dyed hair
+  pink: pink dip-dyed hair
+  light pink: light pink dip-dyed hair
+  dark pink: dark pink dip-dyed hair
+  rose-red: rose-red dip-dyed hair
+  light rose-red: light rose-red dip-dyed hair
+  dark rose-red: dark rose-red dip-dyed hair
 eye_color:
-- white eyes
-- silver eyes
-- gray eyes
-- black eyes
-- charcoal eyes
-- hazel eyes
-- brown eyes
-- amber eyes
-- red eyes
-- light red eyes
-- dark red eyes
-- red-orange eyes
-- light red-orange eyes
-- dark red-orange eyes
-- orange eyes
-- light orange eyes
-- dark orange eyes
-- yellow-orange eyes
-- light yellow-orange eyes
-- dark yellow-orange eyes
-- yellow eyes
-- light yellow eyes
-- dark yellow eyes
-- yellow-green eyes
-- light yellow-green eyes
-- dark yellow-green eyes
-- lime-green eyes
-- light lime-green eyes
-- dark lime-green eyes
-- green eyes
-- light green eyes
-- dark green eyes
-- teal-green eyes
-- light teal-green eyes
-- dark teal-green eyes
-- teal eyes
-- light teal eyes
-- dark teal eyes
-- cyan-teal eyes
-- light cyan-teal eyes
-- dark cyan-teal eyes
-- cyan eyes
-- light cyan eyes
-- dark cyan eyes
-- sky-blue eyes
-- light sky-blue eyes
-- dark sky-blue eyes
-- blue eyes
-- light blue eyes
-- dark blue eyes
-- blue-indigo eyes
-- light blue-indigo eyes
-- dark blue-indigo eyes
-- indigo eyes
-- light indigo eyes
-- dark indigo eyes
-- blue-violet eyes
-- light blue-violet eyes
-- dark blue-violet eyes
-- violet eyes
-- light violet eyes
-- dark violet eyes
-- purple eyes
-- light purple eyes
-- dark purple eyes
-- magenta eyes
-- light magenta eyes
-- dark magenta eyes
-- pink-magenta eyes
-- light pink-magenta eyes
-- dark pink-magenta eyes
-- pink eyes
-- light pink eyes
-- dark pink eyes
-- rose-red eyes
-- light rose-red eyes
-- dark rose-red eyes
-
-# Makeup application weight/intensity
+  white: white eyes
+  silver: silver eyes
+  gray: gray eyes
+  black: black eyes
+  charcoal: charcoal eyes
+  hazel: hazel eyes
+  brown: brown eyes
+  amber: amber eyes
+  red: red eyes
+  light red: light red eyes
+  dark red: dark red eyes
+  red-orange: red-orange eyes
+  light red-orange: light red-orange eyes
+  dark red-orange: dark red-orange eyes
+  orange: orange eyes
+  light orange: light orange eyes
+  dark orange: dark orange eyes
+  yellow-orange: yellow-orange eyes
+  light yellow-orange: light yellow-orange eyes
+  dark yellow-orange: dark yellow-orange eyes
+  yellow: yellow eyes
+  light yellow: light yellow eyes
+  dark yellow: dark yellow eyes
+  yellow-green: yellow-green eyes
+  light yellow-green: light yellow-green eyes
+  dark yellow-green: dark yellow-green eyes
+  lime-green: lime-green eyes
+  light lime-green: light lime-green eyes
+  dark lime-green: dark lime-green eyes
+  green: green eyes
+  light green: light green eyes
+  dark green: dark green eyes
+  teal-green: teal-green eyes
+  light teal-green: light teal-green eyes
+  dark teal-green: dark teal-green eyes
+  teal: teal eyes
+  light teal: light teal eyes
+  dark teal: dark teal eyes
+  cyan-teal: cyan-teal eyes
+  light cyan-teal: light cyan-teal eyes
+  dark cyan-teal: dark cyan-teal eyes
+  cyan: cyan eyes
+  light cyan: light cyan eyes
+  dark cyan: dark cyan eyes
+  sky-blue: sky-blue eyes
+  light sky-blue: light sky-blue eyes
+  dark sky-blue: dark sky-blue eyes
+  blue: blue eyes
+  light blue: light blue eyes
+  dark blue: dark blue eyes
+  blue-indigo: blue-indigo eyes
+  light blue-indigo: light blue-indigo eyes
+  dark blue-indigo: dark blue-indigo eyes
+  indigo: indigo eyes
+  light indigo: light indigo eyes
+  dark indigo: dark indigo eyes
+  blue-violet: blue-violet eyes
+  light blue-violet: light blue-violet eyes
+  dark blue-violet: dark blue-violet eyes
+  violet: violet eyes
+  light violet: light violet eyes
+  dark violet: dark violet eyes
+  purple: purple eyes
+  light purple: light purple eyes
+  dark purple: dark purple eyes
+  magenta: magenta eyes
+  light magenta: light magenta eyes
+  dark magenta: dark magenta eyes
+  pink-magenta: pink-magenta eyes
+  light pink-magenta: light pink-magenta eyes
+  dark pink-magenta: dark pink-magenta eyes
+  pink: pink eyes
+  light pink: light pink eyes
+  dark pink: dark pink eyes
+  rose-red: rose-red eyes
+  light rose-red: light rose-red eyes
+  dark rose-red: dark rose-red eyes
 makeup_weight:
-- natural makeup
-- light makeup
-- makeup
-- full makeup
-- bold makeup
-- glam makeup
-- ruined makeup
-
-# Eyeliner styles (separated from color)
+  natural: natural makeup
+  light: light makeup
+  makeup: makeup
+  full: full makeup
+  bold: bold makeup
+  glam: glam makeup
+  ruined: ruined makeup
 eyeliner_style:
-- no eyeliner
-- winged-eyeliner
-- cat-eye eyeliner
-- graphic-eyeliner
-- underlined eyeliner
-- smudged eyeliner
-
+  'no': no eyeliner
+  winged-: winged-eyeliner
+  cat-eye: cat-eye eyeliner
+  graphic-: graphic-eyeliner
+  underlined: underlined eyeliner
+  smudged: smudged eyeliner
 eyeliner_color:
-- white eyeliner
-- silver eyeliner
-- gray eyeliner
-- black eyeliner
-- charcoal eyeliner
-- red eyeliner
-- light red eyeliner
-- dark red eyeliner
-- red-orange eyeliner
-- light red-orange eyeliner
-- dark red-orange eyeliner
-- orange eyeliner
-- light orange eyeliner
-- dark orange eyeliner
-- yellow-orange eyeliner
-- light yellow-orange eyeliner
-- dark yellow-orange eyeliner
-- yellow eyeliner
-- light yellow eyeliner
-- dark yellow eyeliner
-- yellow-green eyeliner
-- light yellow-green eyeliner
-- dark yellow-green eyeliner
-- lime-green eyeliner
-- light lime-green eyeliner
-- dark lime-green eyeliner
-- green eyeliner
-- light green eyeliner
-- dark green eyeliner
-- teal-green eyeliner
-- light teal-green eyeliner
-- dark teal-green eyeliner
-- teal eyeliner
-- light teal eyeliner
-- dark teal eyeliner
-- cyan-teal eyeliner
-- light cyan-teal eyeliner
-- dark cyan-teal eyeliner
-- cyan eyeliner
-- light cyan eyeliner
-- dark cyan eyeliner
-- sky-blue eyeliner
-- light sky-blue eyeliner
-- dark sky-blue eyeliner
-- blue eyeliner
-- light blue eyeliner
-- dark blue eyeliner
-- blue-indigo eyeliner
-- light blue-indigo eyeliner
-- dark blue-indigo eyeliner
-- indigo eyeliner
-- light indigo eyeliner
-- dark indigo eyeliner
-- blue-violet eyeliner
-- light blue-violet eyeliner
-- dark blue-violet eyeliner
-- violet eyeliner
-- light violet eyeliner
-- dark violet eyeliner
-- purple eyeliner
-- light purple eyeliner
-- dark purple eyeliner
-- magenta eyeliner
-- light magenta eyeliner
-- dark magenta eyeliner
-- pink-magenta eyeliner
-- light pink-magenta eyeliner
-- dark pink-magenta eyeliner
-- pink eyeliner
-- light pink eyeliner
-- dark pink eyeliner
-- rose-red eyeliner
-- light rose-red eyeliner
-- dark rose-red eyeliner
-
-# Blush application (separated from color)
+  white: white eyeliner
+  silver: silver eyeliner
+  gray: gray eyeliner
+  black: black eyeliner
+  charcoal: charcoal eyeliner
+  red: red eyeliner
+  light red: light red eyeliner
+  dark red: dark red eyeliner
+  red-orange: red-orange eyeliner
+  light red-orange: light red-orange eyeliner
+  dark red-orange: dark red-orange eyeliner
+  orange: orange eyeliner
+  light orange: light orange eyeliner
+  dark orange: dark orange eyeliner
+  yellow-orange: yellow-orange eyeliner
+  light yellow-orange: light yellow-orange eyeliner
+  dark yellow-orange: dark yellow-orange eyeliner
+  yellow: yellow eyeliner
+  light yellow: light yellow eyeliner
+  dark yellow: dark yellow eyeliner
+  yellow-green: yellow-green eyeliner
+  light yellow-green: light yellow-green eyeliner
+  dark yellow-green: dark yellow-green eyeliner
+  lime-green: lime-green eyeliner
+  light lime-green: light lime-green eyeliner
+  dark lime-green: dark lime-green eyeliner
+  green: green eyeliner
+  light green: light green eyeliner
+  dark green: dark green eyeliner
+  teal-green: teal-green eyeliner
+  light teal-green: light teal-green eyeliner
+  dark teal-green: dark teal-green eyeliner
+  teal: teal eyeliner
+  light teal: light teal eyeliner
+  dark teal: dark teal eyeliner
+  cyan-teal: cyan-teal eyeliner
+  light cyan-teal: light cyan-teal eyeliner
+  dark cyan-teal: dark cyan-teal eyeliner
+  cyan: cyan eyeliner
+  light cyan: light cyan eyeliner
+  dark cyan: dark cyan eyeliner
+  sky-blue: sky-blue eyeliner
+  light sky-blue: light sky-blue eyeliner
+  dark sky-blue: dark sky-blue eyeliner
+  blue: blue eyeliner
+  light blue: light blue eyeliner
+  dark blue: dark blue eyeliner
+  blue-indigo: blue-indigo eyeliner
+  light blue-indigo: light blue-indigo eyeliner
+  dark blue-indigo: dark blue-indigo eyeliner
+  indigo: indigo eyeliner
+  light indigo: light indigo eyeliner
+  dark indigo: dark indigo eyeliner
+  blue-violet: blue-violet eyeliner
+  light blue-violet: light blue-violet eyeliner
+  dark blue-violet: dark blue-violet eyeliner
+  violet: violet eyeliner
+  light violet: light violet eyeliner
+  dark violet: dark violet eyeliner
+  purple: purple eyeliner
+  light purple: light purple eyeliner
+  dark purple: dark purple eyeliner
+  magenta: magenta eyeliner
+  light magenta: light magenta eyeliner
+  dark magenta: dark magenta eyeliner
+  pink-magenta: pink-magenta eyeliner
+  light pink-magenta: light pink-magenta eyeliner
+  dark pink-magenta: dark pink-magenta eyeliner
+  pink: pink eyeliner
+  light pink: light pink eyeliner
+  dark pink: dark pink eyeliner
+  rose-red: rose-red eyeliner
+  light rose-red: light rose-red eyeliner
+  dark rose-red: dark rose-red eyeliner
 blush_weight:
-- no blush
-- light blush
-- blush
-- heavy blush
-
+  'no': no blush
+  light: light blush
+  blush: blush
+  heavy: heavy blush
 blush_color:
-- white blush
-- silver blush
-- gray blush
-- black blush
-- charcoal blush
-- red blush
-- light red blush
-- dark red blush
-- red-orange blush
-- light red-orange blush
-- dark red-orange blush
-- orange blush
-- light orange blush
-- dark orange blush
-- yellow-orange blush
-- light yellow-orange blush
-- dark yellow-orange blush
-- yellow blush
-- light yellow blush
-- dark yellow blush
-- yellow-green blush
-- light yellow-green blush
-- dark yellow-green blush
-- lime-green blush
-- light lime-green blush
-- dark lime-green blush
-- green blush
-- light green blush
-- dark green blush
-- teal-green blush
-- light teal-green blush
-- dark teal-green blush
-- teal blush
-- light teal blush
-- dark teal blush
-- cyan-teal blush
-- light cyan-teal blush
-- dark cyan-teal blush
-- cyan blush
-- light cyan blush
-- dark cyan blush
-- sky-blue blush
-- light sky-blue blush
-- dark sky-blue blush
-- blue blush
-- light blue blush
-- dark blue blush
-- blue-indigo blush
-- light blue-indigo blush
-- dark blue-indigo blush
-- indigo blush
-- light indigo blush
-- dark indigo blush
-- blue-violet blush
-- light blue-violet blush
-- dark blue-violet blush
-- violet blush
-- light violet blush
-- dark violet blush
-- purple blush
-- light purple blush
-- dark purple blush
-- magenta blush
-- light magenta blush
-- dark magenta blush
-- pink-magenta blush
-- light pink-magenta blush
-- dark pink-magenta blush
-- pink blush
-- light pink blush
-- dark pink blush
-- rose-red blush
-- light rose-red blush
-- dark rose-red blush
-
-# Mascara options
+  white: white blush
+  silver: silver blush
+  gray: gray blush
+  black: black blush
+  charcoal: charcoal blush
+  red: red blush
+  light red: light red blush
+  dark red: dark red blush
+  red-orange: red-orange blush
+  light red-orange: light red-orange blush
+  dark red-orange: dark red-orange blush
+  orange: orange blush
+  light orange: light orange blush
+  dark orange: dark orange blush
+  yellow-orange: yellow-orange blush
+  light yellow-orange: light yellow-orange blush
+  dark yellow-orange: dark yellow-orange blush
+  yellow: yellow blush
+  light yellow: light yellow blush
+  dark yellow: dark yellow blush
+  yellow-green: yellow-green blush
+  light yellow-green: light yellow-green blush
+  dark yellow-green: dark yellow-green blush
+  lime-green: lime-green blush
+  light lime-green: light lime-green blush
+  dark lime-green: dark lime-green blush
+  green: green blush
+  light green: light green blush
+  dark green: dark green blush
+  teal-green: teal-green blush
+  light teal-green: light teal-green blush
+  dark teal-green: dark teal-green blush
+  teal: teal blush
+  light teal: light teal blush
+  dark teal: dark teal blush
+  cyan-teal: cyan-teal blush
+  light cyan-teal: light cyan-teal blush
+  dark cyan-teal: dark cyan-teal blush
+  cyan: cyan blush
+  light cyan: light cyan blush
+  dark cyan: dark cyan blush
+  sky-blue: sky-blue blush
+  light sky-blue: light sky-blue blush
+  dark sky-blue: dark sky-blue blush
+  blue: blue blush
+  light blue: light blue blush
+  dark blue: dark blue blush
+  blue-indigo: blue-indigo blush
+  light blue-indigo: light blue-indigo blush
+  dark blue-indigo: dark blue-indigo blush
+  indigo: indigo blush
+  light indigo: light indigo blush
+  dark indigo: dark indigo blush
+  blue-violet: blue-violet blush
+  light blue-violet: light blue-violet blush
+  dark blue-violet: dark blue-violet blush
+  violet: violet blush
+  light violet: light violet blush
+  dark violet: dark violet blush
+  purple: purple blush
+  light purple: light purple blush
+  dark purple: dark purple blush
+  magenta: magenta blush
+  light magenta: light magenta blush
+  dark magenta: dark magenta blush
+  pink-magenta: pink-magenta blush
+  light pink-magenta: light pink-magenta blush
+  dark pink-magenta: dark pink-magenta blush
+  pink: pink blush
+  light pink: light pink blush
+  dark pink: dark pink blush
+  rose-red: rose-red blush
+  light rose-red: light rose-red blush
+  dark rose-red: dark rose-red blush
 mascara:
-- no mascara
-- mascara
-- lengthening mascara
-- volumizing mascara
-- dramatic mascara
-- ruined mascara
-
-# Eyeshadow application
+  'no': no mascara
+  mascara: mascara
+  lengthening: lengthening mascara
+  volumizing: volumizing mascara
+  dramatic: dramatic mascara
+  ruined: ruined mascara
 eyeshadow:
-- no eyeshadow
-- natural eyeshadow
-- light eyeshadow
-- eyeshadow
-- bold eyeshadow
-- smoky eyeshadow
-- glitter eyeshadow
-
+  'no': no eyeshadow
+  natural: natural eyeshadow
+  light: light eyeshadow
+  eyeshadow: eyeshadow
+  bold: bold eyeshadow
+  smoky: smoky eyeshadow
+  glitter: glitter eyeshadow
 eyeshadow_color:
-- white eyeshadow
-- silver eyeshadow
-- gray eyeshadow
-- black eyeshadow
-- charcoal eyeshadow
-- red eyeshadow
-- light red eyeshadow
-- dark red eyeshadow
-- red-orange eyeshadow
-- light red-orange eyeshadow
-- dark red-orange eyeshadow
-- orange eyeshadow
-- light orange eyeshadow
-- dark orange eyeshadow
-- yellow-orange eyeshadow
-- light yellow-orange eyeshadow
-- dark yellow-orange eyeshadow
-- yellow eyeshadow
-- light yellow eyeshadow
-- dark yellow eyeshadow
-- yellow-green eyeshadow
-- light yellow-green eyeshadow
-- dark yellow-green eyeshadow
-- lime-green eyeshadow
-- light lime-green eyeshadow
-- dark lime-green eyeshadow
-- green eyeshadow
-- light green eyeshadow
-- dark green eyeshadow
-- teal-green eyeshadow
-- light teal-green eyeshadow
-- dark teal-green eyeshadow
-- teal eyeshadow
-- light teal eyeshadow
-- dark teal eyeshadow
-- cyan-teal eyeshadow
-- light cyan-teal eyeshadow
-- dark cyan-teal eyeshadow
-- cyan eyeshadow
-- light cyan eyeshadow
-- dark cyan eyeshadow
-- sky-blue eyeshadow
-- light sky-blue eyeshadow
-- dark sky-blue eyeshadow
-- blue eyeshadow
-- light blue eyeshadow
-- dark blue eyeshadow
-- blue-indigo eyeshadow
-- light blue-indigo eyeshadow
-- dark blue-indigo eyeshadow
-- indigo eyeshadow
-- light indigo eyeshadow
-- dark indigo eyeshadow
-- blue-violet eyeshadow
-- light blue-violet eyeshadow
-- dark blue-violet eyeshadow
-- violet eyeshadow
-- light violet eyeshadow
-- dark violet eyeshadow
-- purple eyeshadow
-- light purple eyeshadow
-- dark purple eyeshadow
-- magenta eyeshadow
-- light magenta eyeshadow
-- dark magenta eyeshadow
-- pink-magenta eyeshadow
-- light pink-magenta eyeshadow
-- dark pink-magenta eyeshadow
-- pink eyeshadow
-- light pink eyeshadow
-- dark pink eyeshadow
-- rose-red eyeshadow
-- light rose-red eyeshadow
-- dark rose-red eyeshadow
-
-# Lipstick types (separated from color)
+  white: white eyeshadow
+  silver: silver eyeshadow
+  gray: gray eyeshadow
+  black: black eyeshadow
+  charcoal: charcoal eyeshadow
+  red: red eyeshadow
+  light red: light red eyeshadow
+  dark red: dark red eyeshadow
+  red-orange: red-orange eyeshadow
+  light red-orange: light red-orange eyeshadow
+  dark red-orange: dark red-orange eyeshadow
+  orange: orange eyeshadow
+  light orange: light orange eyeshadow
+  dark orange: dark orange eyeshadow
+  yellow-orange: yellow-orange eyeshadow
+  light yellow-orange: light yellow-orange eyeshadow
+  dark yellow-orange: dark yellow-orange eyeshadow
+  yellow: yellow eyeshadow
+  light yellow: light yellow eyeshadow
+  dark yellow: dark yellow eyeshadow
+  yellow-green: yellow-green eyeshadow
+  light yellow-green: light yellow-green eyeshadow
+  dark yellow-green: dark yellow-green eyeshadow
+  lime-green: lime-green eyeshadow
+  light lime-green: light lime-green eyeshadow
+  dark lime-green: dark lime-green eyeshadow
+  green: green eyeshadow
+  light green: light green eyeshadow
+  dark green: dark green eyeshadow
+  teal-green: teal-green eyeshadow
+  light teal-green: light teal-green eyeshadow
+  dark teal-green: dark teal-green eyeshadow
+  teal: teal eyeshadow
+  light teal: light teal eyeshadow
+  dark teal: dark teal eyeshadow
+  cyan-teal: cyan-teal eyeshadow
+  light cyan-teal: light cyan-teal eyeshadow
+  dark cyan-teal: dark cyan-teal eyeshadow
+  cyan: cyan eyeshadow
+  light cyan: light cyan eyeshadow
+  dark cyan: dark cyan eyeshadow
+  sky-blue: sky-blue eyeshadow
+  light sky-blue: light sky-blue eyeshadow
+  dark sky-blue: dark sky-blue eyeshadow
+  blue: blue eyeshadow
+  light blue: light blue eyeshadow
+  dark blue: dark blue eyeshadow
+  blue-indigo: blue-indigo eyeshadow
+  light blue-indigo: light blue-indigo eyeshadow
+  dark blue-indigo: dark blue-indigo eyeshadow
+  indigo: indigo eyeshadow
+  light indigo: light indigo eyeshadow
+  dark indigo: dark indigo eyeshadow
+  blue-violet: blue-violet eyeshadow
+  light blue-violet: light blue-violet eyeshadow
+  dark blue-violet: dark blue-violet eyeshadow
+  violet: violet eyeshadow
+  light violet: light violet eyeshadow
+  dark violet: dark violet eyeshadow
+  purple: purple eyeshadow
+  light purple: light purple eyeshadow
+  dark purple: dark purple eyeshadow
+  magenta: magenta eyeshadow
+  light magenta: light magenta eyeshadow
+  dark magenta: dark magenta eyeshadow
+  pink-magenta: pink-magenta eyeshadow
+  light pink-magenta: light pink-magenta eyeshadow
+  dark pink-magenta: dark pink-magenta eyeshadow
+  pink: pink eyeshadow
+  light pink: light pink eyeshadow
+  dark pink: dark pink eyeshadow
+  rose-red: rose-red eyeshadow
+  light rose-red: light rose-red eyeshadow
+  dark rose-red: dark rose-red eyeshadow
 lipstick_type:
-- no lipstick
-- lipstick
-- matte lipstick
-- gloss lipstick
-- metallic lipstick
-- high-gloss lipstick
-- satin lipstick
-- cream lipstick
-- liquid lipstick
-- tinted balm
-
+  'no': no lipstick
+  lipstick: lipstick
+  matte: matte lipstick
+  gloss: gloss lipstick
+  metallic: metallic lipstick
+  high-gloss: high-gloss lipstick
+  satin: satin lipstick
+  cream: cream lipstick
+  liquid: liquid lipstick
+  tinted balm: tinted balm
 lipstick_color:
-- white lipstick
-- silver lipstick
-- gray lipstick
-- black lipstick
-- charcoal lipstick
-- red lipstick
-- light red lipstick
-- dark red lipstick
-- red-orange lipstick
-- light red-orange lipstick
-- dark red-orange lipstick
-- orange lipstick
-- light orange lipstick
-- dark orange lipstick
-- yellow-orange lipstick
-- light yellow-orange lipstick
-- dark yellow-orange lipstick
-- yellow lipstick
-- light yellow lipstick
-- dark yellow lipstick
-- yellow-green lipstick
-- light yellow-green lipstick
-- dark yellow-green lipstick
-- lime-green lipstick
-- light lime-green lipstick
-- dark lime-green lipstick
-- green lipstick
-- light green lipstick
-- dark green lipstick
-- teal-green lipstick
-- light teal-green lipstick
-- dark teal-green lipstick
-- teal lipstick
-- light teal lipstick
-- dark teal lipstick
-- cyan-teal lipstick
-- light cyan-teal lipstick
-- dark cyan-teal lipstick
-- cyan lipstick
-- light cyan lipstick
-- dark cyan lipstick
-- sky-blue lipstick
-- light sky-blue lipstick
-- dark sky-blue lipstick
-- blue lipstick
-- light blue lipstick
-- dark blue lipstick
-- blue-indigo lipstick
-- light blue-indigo lipstick
-- dark blue-indigo lipstick
-- indigo lipstick
-- light indigo lipstick
-- dark indigo lipstick
-- blue-violet lipstick
-- light blue-violet lipstick
-- dark blue-violet lipstick
-- violet lipstick
-- light violet lipstick
-- dark violet lipstick
-- purple lipstick
-- light purple lipstick
-- dark purple lipstick
-- magenta lipstick
-- light magenta lipstick
-- dark magenta lipstick
-- pink-magenta lipstick
-- light pink-magenta lipstick
-- dark pink-magenta lipstick
-- pink lipstick
-- light pink lipstick
-- dark pink lipstick
-- rose-red lipstick
-- light rose-red lipstick
-- dark rose-red lipstick
-
-# Eyebrow styling
+  white: white lipstick
+  silver: silver lipstick
+  gray: gray lipstick
+  black: black lipstick
+  charcoal: charcoal lipstick
+  red: red lipstick
+  light red: light red lipstick
+  dark red: dark red lipstick
+  red-orange: red-orange lipstick
+  light red-orange: light red-orange lipstick
+  dark red-orange: dark red-orange lipstick
+  orange: orange lipstick
+  light orange: light orange lipstick
+  dark orange: dark orange lipstick
+  yellow-orange: yellow-orange lipstick
+  light yellow-orange: light yellow-orange lipstick
+  dark yellow-orange: dark yellow-orange lipstick
+  yellow: yellow lipstick
+  light yellow: light yellow lipstick
+  dark yellow: dark yellow lipstick
+  yellow-green: yellow-green lipstick
+  light yellow-green: light yellow-green lipstick
+  dark yellow-green: dark yellow-green lipstick
+  lime-green: lime-green lipstick
+  light lime-green: light lime-green lipstick
+  dark lime-green: dark lime-green lipstick
+  green: green lipstick
+  light green: light green lipstick
+  dark green: dark green lipstick
+  teal-green: teal-green lipstick
+  light teal-green: light teal-green lipstick
+  dark teal-green: dark teal-green lipstick
+  teal: teal lipstick
+  light teal: light teal lipstick
+  dark teal: dark teal lipstick
+  cyan-teal: cyan-teal lipstick
+  light cyan-teal: light cyan-teal lipstick
+  dark cyan-teal: dark cyan-teal lipstick
+  cyan: cyan lipstick
+  light cyan: light cyan lipstick
+  dark cyan: dark cyan lipstick
+  sky-blue: sky-blue lipstick
+  light sky-blue: light sky-blue lipstick
+  dark sky-blue: dark sky-blue lipstick
+  blue: blue lipstick
+  light blue: light blue lipstick
+  dark blue: dark blue lipstick
+  blue-indigo: blue-indigo lipstick
+  light blue-indigo: light blue-indigo lipstick
+  dark blue-indigo: dark blue-indigo lipstick
+  indigo: indigo lipstick
+  light indigo: light indigo lipstick
+  dark indigo: dark indigo lipstick
+  blue-violet: blue-violet lipstick
+  light blue-violet: light blue-violet lipstick
+  dark blue-violet: dark blue-violet lipstick
+  violet: violet lipstick
+  light violet: light violet lipstick
+  dark violet: dark violet lipstick
+  purple: purple lipstick
+  light purple: light purple lipstick
+  dark purple: dark purple lipstick
+  magenta: magenta lipstick
+  light magenta: light magenta lipstick
+  dark magenta: dark magenta lipstick
+  pink-magenta: pink-magenta lipstick
+  light pink-magenta: light pink-magenta lipstick
+  dark pink-magenta: dark pink-magenta lipstick
+  pink: pink lipstick
+  light pink: light pink lipstick
+  dark pink: dark pink lipstick
+  rose-red: rose-red lipstick
+  light rose-red: light rose-red lipstick
+  dark rose-red: dark rose-red lipstick
 brows:
-- natural brows
-- arched brows
-- bold brows
-- thin brows
-- feathered brows
-- bleached brows
-- shaved brows
-
+  natural: natural brows
+  arched: arched brows
+  bold: bold brows
+  thin: thin brows
+  feathered: feathered brows
+  bleached: bleached brows
+  shaved: shaved brows
 brow_color:
-- white eyebrows
-- silver eyebrows
-- gray eyebrows
-- black eyebrows
-- charcoal eyebrows
-- red eyebrows
-- light red eyebrows
-- dark red eyebrows
-- red-orange eyebrows
-- light red-orange eyebrows
-- dark red-orange eyebrows
-- orange eyebrows
-- light orange eyebrows
-- dark orange eyebrows
-- yellow-orange eyebrows
-- light yellow-orange eyebrows
-- dark yellow-orange eyebrows
-- yellow eyebrows
-- light yellow eyebrows
-- dark yellow eyebrows
-- yellow-green eyebrows
-- light yellow-green eyebrows
-- dark yellow-green eyebrows
-- lime-green eyebrows
-- light lime-green eyebrows
-- dark lime-green eyebrows
-- green eyebrows
-- light green eyebrows
-- dark green eyebrows
-- teal-green eyebrows
-- light teal-green eyebrows
-- dark teal-green eyebrows
-- teal eyebrows
-- light teal eyebrows
-- dark teal eyebrows
-- cyan-teal eyebrows
-- light cyan-teal eyebrows
-- dark cyan-teal eyebrows
-- cyan eyebrows
-- light cyan eyebrows
-- dark cyan eyebrows
-- sky-blue eyebrows
-- light sky-blue eyebrows
-- dark sky-blue eyebrows
-- blue eyebrows
-- light blue eyebrows
-- dark blue eyebrows
-- blue-indigo eyebrows
-- light blue-indigo eyebrows
-- dark blue-indigo eyebrows
-- indigo eyebrows
-- light indigo eyebrows
-- dark indigo eyebrows
-- blue-violet eyebrows
-- light blue-violet eyebrows
-- dark blue-violet eyebrows
-- violet eyebrows
-- light violet eyebrows
-- dark violet eyebrows
-- purple eyebrows
-- light purple eyebrows
-- dark purple eyebrows
-- magenta eyebrows
-- light magenta eyebrows
-- dark magenta eyebrows
-- pink-magenta eyebrows
-- light pink-magenta eyebrows
-- dark pink-magenta eyebrows
-- pink eyebrows
-- light pink eyebrows
-- dark pink eyebrows
-- rose-red eyebrows
-- light rose-red eyebrows
-- dark rose-red eyebrows
-
-# Nail styling options
+  white: white eyebrows
+  silver: silver eyebrows
+  gray: gray eyebrows
+  black: black eyebrows
+  charcoal: charcoal eyebrows
+  red: red eyebrows
+  light red: light red eyebrows
+  dark red: dark red eyebrows
+  red-orange: red-orange eyebrows
+  light red-orange: light red-orange eyebrows
+  dark red-orange: dark red-orange eyebrows
+  orange: orange eyebrows
+  light orange: light orange eyebrows
+  dark orange: dark orange eyebrows
+  yellow-orange: yellow-orange eyebrows
+  light yellow-orange: light yellow-orange eyebrows
+  dark yellow-orange: dark yellow-orange eyebrows
+  yellow: yellow eyebrows
+  light yellow: light yellow eyebrows
+  dark yellow: dark yellow eyebrows
+  yellow-green: yellow-green eyebrows
+  light yellow-green: light yellow-green eyebrows
+  dark yellow-green: dark yellow-green eyebrows
+  lime-green: lime-green eyebrows
+  light lime-green: light lime-green eyebrows
+  dark lime-green: dark lime-green eyebrows
+  green: green eyebrows
+  light green: light green eyebrows
+  dark green: dark green eyebrows
+  teal-green: teal-green eyebrows
+  light teal-green: light teal-green eyebrows
+  dark teal-green: dark teal-green eyebrows
+  teal: teal eyebrows
+  light teal: light teal eyebrows
+  dark teal: dark teal eyebrows
+  cyan-teal: cyan-teal eyebrows
+  light cyan-teal: light cyan-teal eyebrows
+  dark cyan-teal: dark cyan-teal eyebrows
+  cyan: cyan eyebrows
+  light cyan: light cyan eyebrows
+  dark cyan: dark cyan eyebrows
+  sky-blue: sky-blue eyebrows
+  light sky-blue: light sky-blue eyebrows
+  dark sky-blue: dark sky-blue eyebrows
+  blue: blue eyebrows
+  light blue: light blue eyebrows
+  dark blue: dark blue eyebrows
+  blue-indigo: blue-indigo eyebrows
+  light blue-indigo: light blue-indigo eyebrows
+  dark blue-indigo: dark blue-indigo eyebrows
+  indigo: indigo eyebrows
+  light indigo: light indigo eyebrows
+  dark indigo: dark indigo eyebrows
+  blue-violet: blue-violet eyebrows
+  light blue-violet: light blue-violet eyebrows
+  dark blue-violet: dark blue-violet eyebrows
+  violet: violet eyebrows
+  light violet: light violet eyebrows
+  dark violet: dark violet eyebrows
+  purple: purple eyebrows
+  light purple: light purple eyebrows
+  dark purple: dark purple eyebrows
+  magenta: magenta eyebrows
+  light magenta: light magenta eyebrows
+  dark magenta: dark magenta eyebrows
+  pink-magenta: pink-magenta eyebrows
+  light pink-magenta: light pink-magenta eyebrows
+  dark pink-magenta: dark pink-magenta eyebrows
+  pink: pink eyebrows
+  light pink: light pink eyebrows
+  dark pink: dark pink eyebrows
+  rose-red: rose-red eyebrows
+  light rose-red: light rose-red eyebrows
+  dark rose-red: dark rose-red eyebrows
 fingernail_shape:
-- Unspecified
-- Random
-- trimmed fingernails
-- short fingernails
-- square fingernails
-- oval fingernails
-- almond-fingernails
-- coffin-fingernails
-- stilleto-fingernails
-
+  Unspecified: Unspecified
+  Random: Random
+  trimmed: trimmed fingernails
+  short: short fingernails
+  square: square fingernails
+  oval: oval fingernails
+  almond-: almond-fingernails
+  coffin-: coffin-fingernails
+  stilleto-: stilleto-fingernails
 fingernail_color:
-- white fingernails
-- silver fingernails
-- gray fingernails
-- black fingernails
-- charcoal fingernails
-- red fingernails
-- light red fingernails
-- dark red fingernails
-- red-orange fingernails
-- light red-orange fingernails
-- dark red-orange fingernails
-- orange fingernails
-- light orange fingernails
-- dark orange fingernails
-- yellow-orange fingernails
-- light yellow-orange fingernails
-- dark yellow-orange fingernails
-- yellow fingernails
-- light yellow fingernails
-- dark yellow fingernails
-- yellow-green fingernails
-- light yellow-green fingernails
-- dark yellow-green fingernails
-- lime-green fingernails
-- light lime-green fingernails
-- dark lime-green fingernails
-- green fingernails
-- light green fingernails
-- dark green fingernails
-- teal-green fingernails
-- light teal-green fingernails
-- dark teal-green fingernails
-- teal fingernails
-- light teal fingernails
-- dark teal fingernails
-- cyan-teal fingernails
-- light cyan-teal fingernails
-- dark cyan-teal fingernails
-- cyan fingernails
-- light cyan fingernails
-- dark cyan fingernails
-- sky-blue fingernails
-- light sky-blue fingernails
-- dark sky-blue fingernails
-- blue fingernails
-- light blue fingernails
-- dark blue fingernails
-- blue-indigo fingernails
-- light blue-indigo fingernails
-- dark blue-indigo fingernails
-- indigo fingernails
-- light indigo fingernails
-- dark indigo fingernails
-- blue-violet fingernails
-- light blue-violet fingernails
-- dark blue-violet fingernails
-- violet fingernails
-- light violet fingernails
-- dark violet fingernails
-- purple fingernails
-- light purple fingernails
-- dark purple fingernails
-- magenta fingernails
-- light magenta fingernails
-- dark magenta fingernails
-- pink-magenta fingernails
-- light pink-magenta fingernails
-- dark pink-magenta fingernails
-- pink fingernails
-- light pink fingernails
-- dark pink fingernails
-- rose-red fingernails
-- light rose-red fingernails
-- dark rose-red fingernails
-
+  white: white fingernails
+  silver: silver fingernails
+  gray: gray fingernails
+  black: black fingernails
+  charcoal: charcoal fingernails
+  red: red fingernails
+  light red: light red fingernails
+  dark red: dark red fingernails
+  red-orange: red-orange fingernails
+  light red-orange: light red-orange fingernails
+  dark red-orange: dark red-orange fingernails
+  orange: orange fingernails
+  light orange: light orange fingernails
+  dark orange: dark orange fingernails
+  yellow-orange: yellow-orange fingernails
+  light yellow-orange: light yellow-orange fingernails
+  dark yellow-orange: dark yellow-orange fingernails
+  yellow: yellow fingernails
+  light yellow: light yellow fingernails
+  dark yellow: dark yellow fingernails
+  yellow-green: yellow-green fingernails
+  light yellow-green: light yellow-green fingernails
+  dark yellow-green: dark yellow-green fingernails
+  lime-green: lime-green fingernails
+  light lime-green: light lime-green fingernails
+  dark lime-green: dark lime-green fingernails
+  green: green fingernails
+  light green: light green fingernails
+  dark green: dark green fingernails
+  teal-green: teal-green fingernails
+  light teal-green: light teal-green fingernails
+  dark teal-green: dark teal-green fingernails
+  teal: teal fingernails
+  light teal: light teal fingernails
+  dark teal: dark teal fingernails
+  cyan-teal: cyan-teal fingernails
+  light cyan-teal: light cyan-teal fingernails
+  dark cyan-teal: dark cyan-teal fingernails
+  cyan: cyan fingernails
+  light cyan: light cyan fingernails
+  dark cyan: dark cyan fingernails
+  sky-blue: sky-blue fingernails
+  light sky-blue: light sky-blue fingernails
+  dark sky-blue: dark sky-blue fingernails
+  blue: blue fingernails
+  light blue: light blue fingernails
+  dark blue: dark blue fingernails
+  blue-indigo: blue-indigo fingernails
+  light blue-indigo: light blue-indigo fingernails
+  dark blue-indigo: dark blue-indigo fingernails
+  indigo: indigo fingernails
+  light indigo: light indigo fingernails
+  dark indigo: dark indigo fingernails
+  blue-violet: blue-violet fingernails
+  light blue-violet: light blue-violet fingernails
+  dark blue-violet: dark blue-violet fingernails
+  violet: violet fingernails
+  light violet: light violet fingernails
+  dark violet: dark violet fingernails
+  purple: purple fingernails
+  light purple: light purple fingernails
+  dark purple: dark purple fingernails
+  magenta: magenta fingernails
+  light magenta: light magenta fingernails
+  dark magenta: dark magenta fingernails
+  pink-magenta: pink-magenta fingernails
+  light pink-magenta: light pink-magenta fingernails
+  dark pink-magenta: dark pink-magenta fingernails
+  pink: pink fingernails
+  light pink: light pink fingernails
+  dark pink: dark pink fingernails
+  rose-red: rose-red fingernails
+  light rose-red: light rose-red fingernails
+  dark rose-red: dark rose-red fingernails
 toenail_color:
-- white toenails
-- silver toenails
-- gray toenails
-- black toenails
-- charcoal toenails
-- red toenails
-- light red toenails
-- dark red toenails
-- red-orange toenails
-- light red-orange toenails
-- dark red-orange toenails
-- orange toenails
-- light orange toenails
-- dark orange toenails
-- yellow-orange toenails
-- light yellow-orange toenails
-- dark yellow-orange toenails
-- yellow toenails
-- light yellow toenails
-- dark yellow toenails
-- yellow-green toenails
-- light yellow-green toenails
-- dark yellow-green toenails
-- lime-green toenails
-- light lime-green toenails
-- dark lime-green toenails
-- green toenails
-- light green toenails
-- dark green toenails
-- teal-green toenails
-- light teal-green toenails
-- dark teal-green toenails
-- teal toenails
-- light teal toenails
-- dark teal toenails
-- cyan-teal toenails
-- light cyan-teal toenails
-- dark cyan-teal toenails
-- cyan toenails
-- light cyan toenails
-- dark cyan toenails
-- sky-blue toenails
-- light sky-blue toenails
-- dark sky-blue toenails
-- blue toenails
-- light blue toenails
-- dark blue toenails
-- blue-indigo toenails
-- light blue-indigo toenails
-- dark blue-indigo toenails
-- indigo toenails
-- light indigo toenails
-- dark indigo toenails
-- blue-violet toenails
-- light blue-violet toenails
-- dark blue-violet toenails
-- violet toenails
-- light violet toenails
-- dark violet toenails
-- purple toenails
-- light purple toenails
-- dark purple toenails
-- magenta toenails
-- light magenta toenails
-- dark magenta toenails
-- pink-magenta toenails
-- light pink-magenta toenails
-- dark pink-magenta toenails
-- pink toenails
-- light pink toenails
-- dark pink toenails
-- rose-red toenails
-- light rose-red toenails
-- dark rose-red toenails
+  white: white toenails
+  silver: silver toenails
+  gray: gray toenails
+  black: black toenails
+  charcoal: charcoal toenails
+  red: red toenails
+  light red: light red toenails
+  dark red: dark red toenails
+  red-orange: red-orange toenails
+  light red-orange: light red-orange toenails
+  dark red-orange: dark red-orange toenails
+  orange: orange toenails
+  light orange: light orange toenails
+  dark orange: dark orange toenails
+  yellow-orange: yellow-orange toenails
+  light yellow-orange: light yellow-orange toenails
+  dark yellow-orange: dark yellow-orange toenails
+  yellow: yellow toenails
+  light yellow: light yellow toenails
+  dark yellow: dark yellow toenails
+  yellow-green: yellow-green toenails
+  light yellow-green: light yellow-green toenails
+  dark yellow-green: dark yellow-green toenails
+  lime-green: lime-green toenails
+  light lime-green: light lime-green toenails
+  dark lime-green: dark lime-green toenails
+  green: green toenails
+  light green: light green toenails
+  dark green: dark green toenails
+  teal-green: teal-green toenails
+  light teal-green: light teal-green toenails
+  dark teal-green: dark teal-green toenails
+  teal: teal toenails
+  light teal: light teal toenails
+  dark teal: dark teal toenails
+  cyan-teal: cyan-teal toenails
+  light cyan-teal: light cyan-teal toenails
+  dark cyan-teal: dark cyan-teal toenails
+  cyan: cyan toenails
+  light cyan: light cyan toenails
+  dark cyan: dark cyan toenails
+  sky-blue: sky-blue toenails
+  light sky-blue: light sky-blue toenails
+  dark sky-blue: dark sky-blue toenails
+  blue: blue toenails
+  light blue: light blue toenails
+  dark blue: dark blue toenails
+  blue-indigo: blue-indigo toenails
+  light blue-indigo: light blue-indigo toenails
+  dark blue-indigo: dark blue-indigo toenails
+  indigo: indigo toenails
+  light indigo: light indigo toenails
+  dark indigo: dark indigo toenails
+  blue-violet: blue-violet toenails
+  light blue-violet: light blue-violet toenails
+  dark blue-violet: dark blue-violet toenails
+  violet: violet toenails
+  light violet: light violet toenails
+  dark violet: dark violet toenails
+  purple: purple toenails
+  light purple: light purple toenails
+  dark purple: dark purple toenails
+  magenta: magenta toenails
+  light magenta: light magenta toenails
+  dark magenta: dark magenta toenails
+  pink-magenta: pink-magenta toenails
+  light pink-magenta: light pink-magenta toenails
+  dark pink-magenta: dark pink-magenta toenails
+  pink: pink toenails
+  light pink: light pink toenails
+  dark pink: dark pink toenails
+  rose-red: rose-red toenails
+  light rose-red: light rose-red toenails
+  dark rose-red: dark rose-red toenails
