@@ -5,10 +5,10 @@ import random
 class QualityQueen:
     """
     A ComfyUI node that generates quality prompts with boilerplate tags and style options.
-    Loads quality definitions from feature_lists/qualities.yaml and creates quality prompts.
+    Loads quality definitions from feature_lists/quality_queen.yaml and creates quality prompts.
     """
 
-    quality_path = os.path.join(os.path.dirname(__file__), "feature_lists", "qualities.yaml")
+    quality_path = os.path.join(os.path.dirname(__file__), "feature_lists", "quality_queen.yaml")
     with open(quality_path, "r", encoding="utf-8") as f:
         quality_data = yaml.safe_load(f)
 

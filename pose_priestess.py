@@ -5,12 +5,12 @@ import random
 class PosePriestess:
     """
     A ComfyUI node that generates weighted pose prompts by combining general poses, specialized 
-    adult poses, and arm gestures. Loads pose descriptions from feature_lists/poses.yaml with 
+    adult poses, and arm gestures. Loads pose descriptions from feature_lists/pose_priestess.yaml with 
     separate categories for different content types, allowing targeted pose selection with 
     individual strength controls for each category.
     """
 
-    pose_path = os.path.join(os.path.dirname(__file__), "feature_lists", "poses.yaml")
+    pose_path = os.path.join(os.path.dirname(__file__), "feature_lists", "pose_priestess.yaml")
     with open(pose_path, "r", encoding="utf-8") as f:
         pose_prompts = yaml.safe_load(f)
 

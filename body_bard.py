@@ -8,7 +8,7 @@ class BodyBard:
     and detailed anatomy features. Outputs a composable body string for character conditioning.
     """
 
-    feature_path = os.path.join(os.path.dirname(__file__), "feature_lists", "body_features.yaml")
+    feature_path = os.path.join(os.path.dirname(__file__), "feature_lists", "body_bard.yaml")
     with open(feature_path, "r", encoding="utf-8") as f:
         FEATURES = yaml.safe_load(f)
 

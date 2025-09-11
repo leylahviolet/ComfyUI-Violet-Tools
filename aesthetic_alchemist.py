@@ -5,10 +5,10 @@ import random
 class AestheticAlchemist:
     """
     A ComfyUI node that generates aesthetic prompts by blending multiple style aesthetics.
-    Loads aesthetic definitions from feature_lists/aesthetics.yaml and creates weighted positive prompts.
+    Loads aesthetic definitions from feature_lists/aesthetic_alchemist.yaml and creates weighted positive prompts.
     """
     
-    style_path = os.path.join(os.path.dirname(__file__), "feature_lists", "aesthetics.yaml")
+    style_path = os.path.join(os.path.dirname(__file__), "feature_lists", "aesthetic_alchemist.yaml")
     with open(style_path, "r", encoding="utf-8") as f:
         style_prompts = yaml.safe_load(f)
 
