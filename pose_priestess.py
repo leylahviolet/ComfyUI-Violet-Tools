@@ -24,27 +24,11 @@ class PosePriestess:
         general_poses = ["None", "Random"] + list(cls.pose_prompts.get("general_poses", {}).keys())
         arm_gestures = ["None", "Random"] + list(cls.pose_prompts.get("arm_gestures", {}).keys())
         
-        # Create tooltip mappings
-        general_pose_tooltips = {k: v for k, v in cls.pose_prompts.get("general_poses", {}).items()}
-        arm_gesture_tooltips = {k: v for k, v in cls.pose_prompts.get("arm_gestures", {}).items()}
-        
         return {
             "required": {
-                "general_pose": (
-                    general_poses, 
-                    { 
-                        "default": general_poses[1],
-                        "tooltip": general_pose_tooltips
-                    }
-                ),
+                "general_pose": (general_poses, { "default": general_poses[1] }),
                 "general_pose_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
-                "arm_gesture": (
-                    arm_gestures, 
-                    { 
-                        "default": arm_gestures[0],
-                        "tooltip": arm_gesture_tooltips
-                    }
-                ),
+                "arm_gesture": (arm_gestures, { "default": arm_gestures[0] }),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             }

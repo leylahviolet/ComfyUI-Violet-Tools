@@ -25,17 +25,13 @@ class GlamourGoddess:
         types = {"required": {}}
         
         for key, options in cls.FEATURES.items():
-            # Extract keys and create tooltip mapping for key-value pairs
+            # Extract keys for key-value pairs, but disable tooltips for now
             if isinstance(options, dict):
                 option_keys = list(options.keys())
-                tooltips = {k: v for k, v in options.items()}
                 
                 types["required"][key] = (
                     ["Unspecified", "Random"] + option_keys,
-                    {
-                        "default": "Unspecified",
-                        "tooltip": tooltips
-                    }
+                    {"default": "Unspecified"}
                 )
             else:
                 # Handle any remaining list-style options (shouldn't be any after conversion)

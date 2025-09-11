@@ -18,17 +18,13 @@ class BodyBard:
             "required": {}
         }
         for key, options in cls.FEATURES.items():
-            # Handle key-value pairs with tooltip support
+            # Handle key-value pairs without tooltips for now
             if isinstance(options, dict):
                 option_keys = list(options.keys())
-                tooltips = {k: v for k, v in options.items()}
                 
                 types["required"][key] = (
                     ["Unspecified", "Random"] + option_keys,
-                    {
-                        "default": "Unspecified",
-                        "tooltip": tooltips
-                    }
+                    {"default": "Unspecified"}
                 )
             else:
                 # Handle any remaining list-style options
