@@ -23,12 +23,18 @@ class QualityQueen:
         Returns:
             dict: Node input configuration with boilerplate toggle, style selection, and extra text
         """
+        # Create tooltip mapping for styles
+        style_tooltips = {key: value for key, value in cls.styles.items()}
+        
         return {
             "required": {
                 "include_boilerplate": ("BOOLEAN", { "default": True }),
                 "style": (
                     ["None", "Random"] + list(cls.styles.keys()),
-                    { "default": "Random" }
+                    { 
+                        "default": "Random",
+                        "tooltip": style_tooltips
+                    }
                 ),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             }

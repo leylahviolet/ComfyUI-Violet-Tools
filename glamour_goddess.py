@@ -17,19 +17,32 @@ class GlamourGoddess:
     def INPUT_TYPES(cls):
         """
         Define the input parameters for the ComfyUI node interface.
-        All fields now use their complete lists from the YAML file.
+        All fields now use their complete lists from the YAML file with tooltip support.
         
         Returns:
-            dict: Node input configuration with dropdown selections
+            dict: Node input configuration with dropdown selections and tooltips
         """
         types = {"required": {}}
         
         for key, options in cls.FEATURES.items():
-            # All fields now have complete lists including colors
-            types["required"][key] = (
-                ["Unspecified", "Random"] + options,
-                {"default": "Unspecified"}
-            )
+            # Extract keys and create tooltip mapping for key-value pairs
+            if isinstance(options, dict):
+                option_keys = list(options.keys())
+                tooltips = {k: v for k, v in options.items()}
+                
+                types["required"][key] = (
+                    ["Unspecified", "Random"] + option_keys,
+                    {
+                        "default": "Unspecified",
+                        "tooltip": tooltips
+                    }
+                )
+            else:
+                # Handle any remaining list-style options (shouldn't be any after conversion)
+                types["required"][key] = (
+                    ["Unspecified", "Random"] + options,
+                    {"default": "Unspecified"}
+                )
         
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": ""})
         return types
@@ -46,7 +59,7 @@ class GlamourGoddess:
 
     def pick(self, key, choice):
         """
-        Process field selection with simplified handling since all options are now complete.
+        Process field selection with key-value structure support.
         
         Args:
             key (str): Field name
@@ -58,9 +71,21 @@ class GlamourGoddess:
         if choice == "Unspecified":
             return ""
         elif choice == "Random":
-            return random.choice(self.FEATURES[key])
+            options = self.FEATURES[key]
+            if isinstance(options, dict):
+                # For key-value pairs, return a random value
+                return random.choice(list(options.values()))
+            else:
+                # For list options (shouldn't be any after conversion)
+                return random.choice(options)
         else:
-            return choice
+            # For specific choices, look up the value if it's a key-value pair
+            options = self.FEATURES[key]
+            if isinstance(options, dict) and choice in options:
+                return options[choice]
+            else:
+                # Fallback to the choice itself
+                return choice
 
     def invoke(self, **kwargs):
         parts = []

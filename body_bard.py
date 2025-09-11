@@ -18,10 +18,25 @@ class BodyBard:
             "required": {}
         }
         for key, options in cls.FEATURES.items():
-            types["required"][key] = (
-                ["Unspecified", "Random"] + options,
-                {"default": "Unspecified"}
-            )
+            # Handle key-value pairs with tooltip support
+            if isinstance(options, dict):
+                option_keys = list(options.keys())
+                tooltips = {k: v for k, v in options.items()}
+                
+                types["required"][key] = (
+                    ["Unspecified", "Random"] + option_keys,
+                    {
+                        "default": "Unspecified",
+                        "tooltip": tooltips
+                    }
+                )
+            else:
+                # Handle any remaining list-style options
+                types["required"][key] = (
+                    ["Unspecified", "Random"] + options,
+                    {"default": "Unspecified"}
+                )
+        
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": ""})
         return types
 
@@ -39,8 +54,21 @@ class BodyBard:
         if choice == "Unspecified":
             return ""
         elif choice == "Random":
-            return random.choice(self.FEATURES[name])
-        return choice
+            options = self.FEATURES[name]
+            if isinstance(options, dict):
+                # For key-value pairs, return a random value
+                return random.choice(list(options.values()))
+            else:
+                # For list options (shouldn't be any after conversion)
+                return random.choice(options)
+        else:
+            # For specific choices, look up the value if it's a key-value pair
+            options = self.FEATURES[name]
+            if isinstance(options, dict) and choice in options:
+                return options[choice]
+            else:
+                # Fallback to the choice itself
+                return choice
 
     def compose(self, **kwargs):
         parts = []
