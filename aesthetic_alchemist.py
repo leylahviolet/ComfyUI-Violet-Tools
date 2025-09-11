@@ -109,6 +109,10 @@ class AestheticAlchemist:
             pos_parts.append(extra.strip())
 
         aesthetic = ", ".join(filter(None, pos_parts))
+        
+        # Add BREAK for prompt segmentation
+        if aesthetic:
+            aesthetic += ", BREAK"
 
         return (aesthetic,)
 
