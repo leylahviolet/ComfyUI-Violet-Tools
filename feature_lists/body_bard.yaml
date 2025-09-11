@@ -3,13 +3,13 @@ age:
   child: child
   teen: teen
   young: young
-  twenty-year-old: twenty-year-old
-  twenty-five-year-old: twenty-five-year-old
-  thirty-year-old: thirty-year-old
-  thirty-five-year-old: thirty-five-year-old
-  forty-year-old: forty-year-old
-  forty-five-year-old: forty-five-year-old
-  fifty-year-old: fifty-year-old
+  twenty year old: twenty-year-old
+  twenty five year old: twenty-five-year-old
+  thirty year old: thirty-year-old
+  thirty five year old: thirty-five-year-old
+  forty year old: forty-year-old
+  forty five year old: forty-five-year-old
+  fifty year old: fifty-year-old
   mature: mature
   elderly: elderly
   old: old
@@ -26,206 +26,273 @@ gender:
   transmasc: transmasc
   transfem: transfem
   transfemme: transfemme
-  transgender boy: transgender boy
-  transgender man: transgender man
-  transgender girl: transgender girl
-  transgender woman: transgender woman
+  trans boy: transgender boy
+  trans man: transgender man
+  trans girl: transgender girl
+  trans woman: transgender woman
   intersex: intersex
 physique:
-  slim figure: slim figure
-  athletic build: athletic build
-  muscular body: muscular body
-  beefy physique: beefy physique
-  curvy figure: curvy figure
-  pear-shaped body: pear-shaped body
-  hourglass figure: hourglass figure
-  voluptuous body: voluptuous body
-  thick body: thick body
-  chubby body: chubby body
-  plus-size body: plus-size body
-  overweight body: overweight body
-  obese body: obese body
-  pregnant body: pregnant body
+  slim: slim figure
+  skinny: skinny body
+  athletic: athletic build
+  muscular: muscular body
+  pregnant: pregnant body
+  voluptuous: voluptuous body
+  beefy: beefy physique
+  curvy: curvy figure
+  thick: thick body
+  plump: plump body
+  chubby: chubby body
+  plus-size: plus-size body
+  overweight: overweight body
+  obese: obese body
 height:
-  short height: short height
-  petite height: petite height
-  average height: average height
-  tall height: tall height
+  miniature: miniature height
+  short: short height
+  petite: petite height
+  average: average height
+  tall: tall height
+  giant: giant height
 chest_size:
+  extremely flat chest: extremely flat chest
   very flat chest: very flat chest
   small chest: small chest
-  medium chest: medium chest
+  average chest: average chest
   large chest: large chest
-  very flat breasts: very flat breasts
+  huge chest: huge chest
+  massive chest: massive chest
+  extremely tiny breasts: extremely tiny breasts
   tiny breasts: tiny breasts
   small breasts: small breasts
   medium breasts: medium breasts
   large breasts: large breasts
   huge breasts: huge breasts
+  extremely large breasts: extremely large breasts
 chest_shape:
-  wide pecs: wide pecs
+  broad pecs: broad pecs
+  defined pecs: defined pecs
   chiseled pecs: chiseled pecs
+  sculpted pecs: sculpted pecs
   strong pecs: strong pecs
+  chubby pecs: chubby pecs
+  beefy pecs: beefy pecs
   rounded pecs: rounded pecs
   large pecs: large pecs
   huge pecs: huge pecs
+  extremely large pecs: extremely large pecs
   top-surgery scars: top-surgery scars
   perky breasts: perky breasts
+  pointy breasts: pointy breasts
+  conical breasts: conical breasts
   round breasts: round breasts
   natural-shaped breasts: natural-shaped breasts
   sagging breasts: sagging breasts
 ass_size:
-  flat ass: flat ass
-  toned ass: toned ass
-  round ass: round ass
+  flat: flat ass
+  small: small ass
+  medium: medium ass
+  beefy: beefy ass
+  curvy: curvy ass
+  round: round ass
   bubble butt: bubble butt
-  large ass: large ass
-  huge ass: huge ass
+  large: large ass
+  huge: huge ass
+  extremely large: extremely large ass
 ass_shape:
-  firm ass: firm ass
-  perky ass: perky ass
-  soft ass: soft ass
-  fat ass: fat ass
-  sagging ass: sagging ass
+  firm: firm ass
+  toned: toned ass
+  perky: perky ass
+  chubby: chubby ass
+  fat: fat ass
+  soft: soft ass
+  squishy: squishy ass
+  cellulite: cellulite ass
+  saddlebags: saddlebags-ass
+  sagging: sagging ass
 hips:
-  slim hips: slim hips
-  narrow hips: narrow hips
-  average hips: average hips
-  wide hips: wide hips
-  very wide hips: very wide hips
-  child-bearing hips: child-bearing hips
+  skinny: skinny hips
+  slim: slim hips
+  narrow: narrow hips
+  wide: wide hips
+  thick: thick hips
+  very wide: very wide hips
+  child-bearing: child-bearing hips
+  extremely wide: extremely wide hips
 waist:
-  slim waist: slim waist
-  narrow waist: narrow waist
-  average waist: average waist
-  tapered waist: tapered waist
-  hourglass waist: hourglass waist
-  soft tummy: soft tummy
-  pregnant belly: pregnant belly
-  sagging belly: sagging belly
+  skinny: skinny waist
+  slim: slim waist
+  narrow: narrow waist
+  thick: thick waist
+  soft: soft tummy
+  tapered: tapered waist
+  pregnant: pregnant belly
+  sagging: sagging belly
 thighs:
-  slender thighs: slender thighs
-  athletic thighs: athletic thighs
-  thick thighs: thick thighs
-  very thick thighs: very thick thighs
-  muscular thighs: muscular thighs
-  chubby thighs: chubby thighs
+  skinny: skinny thighs
+  slender: slender thighs
+  athletic: athletic thighs
+  muscular: muscular thighs
+  chubby: chubby thighs
+  jiggly: jiggly thighs
+  thick: thick thighs
+  very thick: very thick thighs
+  extremely thick: extremely thick thighs
 lips:
   thin lips: thin lips
   full lips: full lips
+  thick lips: thick lips
+  pouty lips: pouty lips
   plump lips: plump lips
+  luscious lips: luscious lips
   kissable lips: kissable lips
 eyes:
-  large: large eyes
   narrow: narrow eyes
+  round: round eyes
+  large: large eyes
+  wide: wide eyes
+  hooded: hooded eyes
+  monolid: monolid eyes
+  upturned: upturned eyes
+  downturned: downturned eyes
   almond-shaped: almond-shaped eyes
-  doe: doe eyes
 skin_tone:
-  bone-white skin: bone-white skin
-  alabaster skin: alabaster skin
-  porcelain skin: porcelain skin
-  pale skin: pale skin
-  fair skin: fair skin
-  light skin: light skin
-  rosy skin: rosy skin
-  peachy skin: peachy skin
-  olive skin: olive skin
-  golden skin: golden skin
-  caramel skin: caramel skin
-  amber skin: amber skin
-  copper skin: copper skin
-  umber skin: umber skin
-  bronze skin: bronze skin
-  brown skin: brown skin
-  dark brown skin: dark brown skin
-  mahogany skin: mahogany skin
-  cocoa skin: cocoa skin
-  ebony skin: ebony skin
-  dark ebony skin: dark ebony skin
+  bone-white: bone-white skin
+  pale: pale skin
+  fair: fair skin
+  light: light skin
+  rosy: rosy skin
+  peachy: peachy skin
+  olive: olive skin
+  golden: golden skin
+  caramel: caramel skin
+  amber: amber skin
+  copper: copper skin
+  umber: umber skin
+  bronze: bronze skin
+  brown: brown skin
+  dark brown: dark brown skin
+  mahogany: mahogany skin
+  cocoa: cocoa skin
+  ebony: ebony skin
+  dark ebony: dark ebony skin
 skin_texture:
-  soft skin: soft skin
-  smooth skin: smooth skin
-  glossy skin: glossy skin
-  oily skin: oily skin
-  dry skin: dry skin
-  rough skin: rough skin
-  leathery skin: leathery skin
-  extremely detailed skin: extremely detailed skin
+  soft: soft skin
+  smooth: smooth skin
+  glossy: glossy skin
+  oily: oily skin
+  dry: dry skin
+  rough: rough skin
+  leathery: leathery skin
+  textured: textured skin
+  detailed: detailed skin
+  extremely detailed: extremely detailed skin
 skin_state:
-  flushed skin: flushed skin
-  freckled skin: freckled skin
-  sun-kissed skin: sun-kissed skin
-  sunburned skin: sunburned skin
-  glowing skin: glowing skin
-  luminous skin: luminous skin
-  sweaty skin: sweaty skin
-  wet skin: wet skin
+  flushed: flushed skin
+  blemished: blemished skin
+  acne-prone: acne-prone skin
+  freckled: freckled skin
+  sun-kissed: sun-kissed skin
+  tanned: tanned skin
+  sunburned: sunburned skin
+  glowing: glowing skin
+  luminous: luminous skin
+  sweaty: sweaty skin
+  wet: wet skin
 nipples:
-  small nipples: small nipples
-  small erect nipples: small erect nipples
-  large nipples: large nipples
-  large erect nipples: large erect nipples
-  huge nipples: huge nipples
-  huge erect nipples: huge erect nipples
+  tiny: tiny nipples
+  tiny erect: tiny erect nipples
+  tiny flat: tiny flat nipples
+  small: small nipples
+  small erect: small erect nipples
+  small flat: small flat nipples
+  medium: medium nipples
+  medium erect: medium erect nipples
+  medium flat: medium flat nipples
+  large: large nipples
+  large erect: large erect nipples
+  large flat: large flat nipples
+  huge: huge nipples
+  huge erect: huge erect nipples
+  huge flat: huge flat nipples
+  extremely large: extremely large nipples
+  extremely large erect: extremely large erect nipples
+  extremely large flat: extremely large flat nipples
 areolas:
+  tiny: tiny areolas
   small: small areolas
   medium: medium areolas
   large: large areolas
   huge: huge areolas
+  extremely large: extremely large areolas
 areola_shade:
-  light pink: light pink areolas
-  light brown: light brown areolas
+  pale: pale areolas
+  dark: dark areolas
   pink: pink areolas
-  brown: brown areolas
+  light pink: light pink areolas
   dark pink: dark pink areolas
+  rose: rose-colored areolas
+  light rose: light rose-colored areolas
+  dark rose: dark rose-colored areolas
+  peach: peach-colored areolas
+  light peach: light peach-colored areolas
+  dark peach: dark peach-colored areolas
+  brown: brown areolas
+  light brown: light brown areolas
   dark brown: dark brown areolas
+  ebony: ebony areolas
+  light ebony: light ebony areolas
+  dark ebony: dark ebony areolas
 genitals:
   micropenis: micropenis
-  tiny uncircumcised penis: tiny uncircumcised penis
-  small uncircumcised penis: small uncircumcised penis
-  uncircumcised penis: uncircumcised penis
-  large uncircumcised penis: large uncircumcised penis
-  huge uncircumcised penis: huge uncircumcised penis
+  penis: uncircumcised penis
+  tiny penis: tiny uncircumcised penis
+  small penis: small uncircumcised penis
+  large penis: large uncircumcised penis
+  huge penis: huge uncircumcised penis
+  circumcised penis: circumcised penis
   tiny circumcised penis: tiny circumcised penis
   small circumcised penis: small circumcised penis
-  circumcised penis: circumcised penis
   large circumcised penis: large circumcised penis
   huge circumcised penis: huge circumcised penis
-  small innie pussy: small innie pussy
-  innie pussy: innie pussy
-  large innie pussy: large innie pussy
-  huge innie pussy: huge innie pussy
-  small pussy: small pussy
   pussy: pussy
+  small pussy: small pussy
   large pussy: large pussy
   huge pussy: huge pussy
+  innie pussy: innie pussy
+  small innie pussy: small innie pussy
+  large innie pussy: large innie pussy
+  huge innie pussy: huge innie pussy
 genital_state:
   flaccid penis: flaccid penis
   soft penis: soft penis
   hard penis: hard penis
   erect penis: erect penis
-  engorged pussy: engorged pussy
-  swollen pussy: swollen pussy
+  engorged penis: engorged penis
   wet pussy: wet pussy
+  swollen pussy: swollen pussy
+  engorged pussy: engorged pussy
 pubic_hair:
-  shaved pubic: shaved pubic hair
-  trimmed pubic: trimmed pubic hair
-  full natural pubic: full natural pubic hair
-  extreme pubic: extreme pubic hair
-  landing strip pubic: landing strip pubic hair
-  heart-shaped pubic: heart-shaped pubic hair
+  shaved: shaved pubic hair
+  trimmed: trimmed pubic hair
+  natural: natural pubic hair
+  extreme: extreme pubic hair
+  landing strip: landing strip pubic hair
+  heart-shaped: heart-shaped pubic hair
 pubic_hair_color:
-  blonde pubic: blonde pubic hair
-  brown pubic: brown pubic hair
-  black pubic: black pubic hair
-  dyed pubic: dyed pubic hair
+  blonde: blonde pubic hair
+  red: red pubic hair
+  brown: brown pubic hair
+  silver: silver pubic hair
+  black: black pubic hair
+  dyed: dyed pubic hair
 armpit_hair:
-  no armpit: no armpit hair
-  armpit stubble: armpit stubble
-  soft armpit: soft armpit hair
-  natural armpit: natural armpit hair
+  stubble: armpit hair stubble
+  trimmed: soft armpit hair
+  natural: natural armpit hair
 armpit_hair_color:
-  blonde armpit: blonde armpit hair
-  brown armpit: brown armpit hair
-  black armpit: black armpit hair
-  dyed armpit: dyed armpit hair
+  blonde: blonde armpit hair
+  red: red armpit hair
+  brown: brown armpit hair
+  silver: silver armpit hair
+  black: black armpit hair
+  dyed: dyed armpit hair

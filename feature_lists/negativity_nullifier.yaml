@@ -1,9 +1,9 @@
 boilerplate:
-- (worst quality:2)
-- (low quality:2)
-- (normal quality:2)
-- (monochrome)
-- (grayscale)
+- worst quality
+- low quality
+- normal quality
+- monochrome
+- grayscale
 - blurry
 - distorted
 - multiple heads
@@ -15,9 +15,8 @@ boilerplate:
 - fused fingers
 - missing arms
 - missing legs
-- (extra fingers:1.5)
-- (extra arms:1.5)
-- (extra legs:1.5)
+- extra fingers
+- extra limbs
 - mutated hands
 - too many fingers
 - long body
@@ -25,11 +24,7 @@ boilerplate:
 - bad hands
 - long neck
 - duplicate
-- poorly drawn face
-- poorly drawn hands
-- poorly drawn feet
-- poorly drawn eyes
-- poorly drawn mouth
+- poorly drawn
 - ugly
 - signature
 - watermark

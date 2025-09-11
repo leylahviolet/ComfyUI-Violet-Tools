@@ -4,10 +4,9 @@ import random
 
 class PosePriestess:
     """
-    A ComfyUI node that generates weighted pose prompts by combining general poses, specialized 
-    adult poses, and arm gestures. Loads pose descriptions from feature_lists/pose_priestess.yaml with 
-    separate categories for different content types, allowing targeted pose selection with 
-    individual strength controls for each category.
+    A ComfyUI node that generates weighted pose prompts by combining general poses and arm gestures. 
+    Loads pose descriptions from feature_lists/pose_priestess.yaml with individual strength controls 
+    for each category. Users can add their own custom content via the extra text field.
     """
 
     pose_path = os.path.join(os.path.dirname(__file__), "feature_lists", "pose_priestess.yaml")
@@ -23,18 +22,29 @@ class PosePriestess:
             dict: Node input config with pose selections, strength sliders, and gesture options
         """
         general_poses = ["None", "Random"] + list(cls.pose_prompts.get("general_poses", {}).keys())
-        spicy_pussy_poses = ["None", "Random"] + list(cls.pose_prompts.get("spicy_pussy_poses", {}).keys())
-        spicy_penis_poses = ["None", "Random"] + list(cls.pose_prompts.get("spicy_penis_poses", {}).keys())
         arm_gestures = ["None", "Random"] + list(cls.pose_prompts.get("arm_gestures", {}).keys())
+        
+        # Create tooltip mappings
+        general_pose_tooltips = {k: v for k, v in cls.pose_prompts.get("general_poses", {}).items()}
+        arm_gesture_tooltips = {k: v for k, v in cls.pose_prompts.get("arm_gestures", {}).items()}
+        
         return {
             "required": {
-                "general_pose": (general_poses, { "default": general_poses[1] }),
+                "general_pose": (
+                    general_poses, 
+                    { 
+                        "default": general_poses[1],
+                        "tooltip": general_pose_tooltips
+                    }
+                ),
                 "general_pose_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
-                "spicy_pussy_pose": (spicy_pussy_poses, { "default": spicy_pussy_poses[0] }),
-                "spicy_pussy_pose_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
-                "spicy_penis_pose": (spicy_penis_poses, { "default": spicy_penis_poses[0] }),
-                "spicy_penis_pose_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
-                "arm_gesture": (arm_gestures, { "default": arm_gestures[0] }),
+                "arm_gesture": (
+                    arm_gestures, 
+                    { 
+                        "default": arm_gestures[0],
+                        "tooltip": arm_gesture_tooltips
+                    }
+                ),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             }
@@ -56,21 +66,16 @@ class PosePriestess:
         import time
         return time.time()
 
-    def generate(self, general_pose, general_pose_strength, spicy_pussy_pose, spicy_pussy_pose_strength, 
-                 spicy_penis_pose, spicy_penis_pose_strength, arm_gesture, arm_gesture_strength, extra):
+    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra):
         """
-        Generate combined pose prompts with weighted blending from multiple pose categories.
+        Generate combined pose prompts with weighted blending from general poses and arm gestures.
         
-        Handles random pose selection from general, spicy pussy, spicy penis, and arm gesture 
-        categories, applies strength weighting to descriptions, and combines with comma separation.
+        Handles random pose selection, applies strength weighting to descriptions, and combines 
+        with comma separation. Users can add custom content via the extra field.
         
         Args:
             general_pose (str): General pose selection or "Random"/"None"
             general_pose_strength (float): Strength multiplier for general pose (0.0-2.0)
-            spicy_pussy_pose (str): Spicy pussy pose selection or "Random"/"None" 
-            spicy_pussy_pose_strength (float): Strength multiplier for spicy pussy pose (0.0-2.0)
-            spicy_penis_pose (str): Spicy penis pose selection or "Random"/"None"
-            spicy_penis_pose_strength (float): Strength multiplier for spicy penis pose (0.0-2.0)
             arm_gesture (str): Arm gesture selection or "Random"/"None"
             arm_gesture_strength (float): Strength multiplier for arm gesture (0.0-2.0)
             extra (str): Additional pose instructions from user
@@ -79,16 +84,10 @@ class PosePriestess:
             str: Pose prompt string
         """
         general_poses = list(self.pose_prompts.get("general_poses", {}).keys())
-        spicy_pussy_poses = list(self.pose_prompts.get("spicy_pussy_poses", {}).keys())
-        spicy_penis_poses = list(self.pose_prompts.get("spicy_penis_poses", {}).keys())
         arm_gestures = list(self.pose_prompts.get("arm_gestures", {}).keys())
 
         if general_pose == "Random":
             general_pose = random.choice(general_poses) if general_poses else "None"
-        if spicy_pussy_pose == "Random":
-            spicy_pussy_pose = random.choice(spicy_pussy_poses) if spicy_pussy_poses else "None"
-        if spicy_penis_pose == "Random":
-            spicy_penis_pose = random.choice(spicy_penis_poses) if spicy_penis_poses else "None"
         if arm_gesture == "Random":
             arm_gesture = random.choice(arm_gestures) if arm_gestures else "None"
 
@@ -110,10 +109,6 @@ class PosePriestess:
         poses = []
         if general_pose != "None" and general_pose_strength > 0:
             poses.append((general_pose, general_pose_strength, "general_poses"))
-        if spicy_pussy_pose != "None" and spicy_pussy_pose_strength > 0:
-            poses.append((spicy_pussy_pose, spicy_pussy_pose_strength, "spicy_pussy_poses"))
-        if spicy_penis_pose != "None" and spicy_penis_pose_strength > 0:
-            poses.append((spicy_penis_pose, spicy_penis_pose_strength, "spicy_penis_poses"))
         if arm_gesture != "None" and arm_gesture_strength > 0:
             poses.append((arm_gesture, arm_gesture_strength, "arm_gestures"))
 

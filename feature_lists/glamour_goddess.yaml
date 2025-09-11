@@ -1,12 +1,19 @@
 hair_length:
+  buzzcut: buzzcut hair
   short: short hair
+  medium: medium-length hair
   chin-length: chin-length hair
   shoulder-length: shoulder-length hair
+  mid-length: mid-length hair
   long: long hair
   very long: very long hair
+  extra-long: extra-long hair
 hair_texture:
   straight: straight hair
+  shiny: shiny hair
   wavy: wavy hair
+  voluminous: voluminous hair
+  textured: textured hair
   curly: curly hair
   coily: coily hair
   frizzy: frizzy hair
@@ -14,22 +21,35 @@ hairstyle:
   loose: loose hairstyle
   sleek: sleek hairstyle
   messy: messy hairstyle
+  layered: layered hairstyle
   undercut: undercut hairstyle
   bob cut: bob cut hairstyle
+  blunt cut: blunt cut hairstyle
   pixie cut: pixie cut hairstyle
-  hair bun: hair bun
-  messy bun: messy bun
-  braided: braided hair
-  ponytail: ponytail
-  pigtails: pigtails
-  twintails: twintails
-  half-up: half-up hair
-  topknot: topknot
-  side-swept: side-swept hair
-  mohawk: mohawk
-  bangs: bangs
-  afro: afro
-  dreadlocks: dreadlocks
+  bun: bun hairstyle
+  twin buns: twin buns hairstyle
+  messy bun: messy bun hairstyle
+  half-up: half-up hairstyle
+  braid: braid hairstyle
+  fishtail: fishtail hairstyle
+  crown braid: crown braid hairstyle
+  ponytail: ponytail hairstyle
+  high ponytail: high ponytail hairstyle
+  pigtails: pigtails hairstyle
+  twintails: twintails hairstyle
+  side ponytail: side ponytail hairstyle
+  half-up: half-up hairstyle
+  topknot: topknot hairstyle
+  side-swept: side-swept hairstyle
+  mohawk: mohawk hairstyle
+  fauxhawk: fauxhawk hairstyle
+  side shave: side shave hairstyle
+  bangs: bangs hairstyle
+  side bangs: side bangs hairstyle
+  curtain bangs: curtain bangs hairstyle
+  afro: afro hairstyle
+  dreadlocks: dreadlocks hairstyle
+  cornrows: cornrows hairstyle
 hair_color:
   white: white hair
   silver: silver hair
@@ -335,18 +355,19 @@ eye_color:
   dark rose-red: dark rose-red eyes
 makeup_weight:
   natural: natural makeup
-  light: light makeup
   makeup: makeup
+  light: light makeup
   full: full makeup
   bold: bold makeup
   glam: glam makeup
   ruined: ruined makeup
 eyeliner_style:
-  'no': no eyeliner
-  winged-: winged-eyeliner
+  winged: winged-eyeliner
   cat-eye: cat-eye eyeliner
-  graphic-: graphic-eyeliner
+  graphic: graphic-eyeliner
+  dramatic: dramatic eyeliner
   underlined: underlined eyeliner
+  double: double eyeliner
   smudged: smudged eyeliner
 eyeliner_color:
   white: white eyeliner
@@ -424,9 +445,8 @@ eyeliner_color:
   light rose-red: light rose-red eyeliner
   dark rose-red: dark rose-red eyeliner
 blush_weight:
-  'no': no blush
-  light: light blush
   blush: blush
+  light: light blush
   heavy: heavy blush
 blush_color:
   white: white blush
@@ -504,20 +524,23 @@ blush_color:
   light rose-red: light rose-red blush
   dark rose-red: dark rose-red blush
 mascara:
-  'no': no mascara
   mascara: mascara
   lengthening: lengthening mascara
   volumizing: volumizing mascara
   dramatic: dramatic mascara
   ruined: ruined mascara
+  clumpy: clumpy mascara
 eyeshadow:
-  'no': no eyeshadow
   natural: natural eyeshadow
-  light: light eyeshadow
   eyeshadow: eyeshadow
+  light: light eyeshadow
+  full: full eyeshadow
   bold: bold eyeshadow
+  glam: glam eyeshadow
   smoky: smoky eyeshadow
   glitter: glitter eyeshadow
+  metallic: metallic eyeshadow
+  colorful: colorful eyeshadow
 eyeshadow_color:
   white: white eyeshadow
   silver: silver eyeshadow
@@ -594,16 +617,15 @@ eyeshadow_color:
   light rose-red: light rose-red eyeshadow
   dark rose-red: dark rose-red eyeshadow
 lipstick_type:
-  'no': no lipstick
+  nude: nude lipstick
   lipstick: lipstick
   matte: matte lipstick
   gloss: gloss lipstick
   metallic: metallic lipstick
   high-gloss: high-gloss lipstick
   satin: satin lipstick
-  cream: cream lipstick
   liquid: liquid lipstick
-  tinted balm: tinted balm
+  tinted balm: tinted lip balm
 lipstick_color:
   white: white lipstick
   silver: silver lipstick
@@ -679,11 +701,15 @@ lipstick_color:
   rose-red: rose-red lipstick
   light rose-red: light rose-red lipstick
   dark rose-red: dark rose-red lipstick
+  plum: plum lipstick
+  light plum: light plum lipstick
+  dark plum: dark plum lipstick
 brows:
   natural: natural brows
   arched: arched brows
-  bold: bold brows
   thin: thin brows
+  full: full brows
+  bold: bold brows
   feathered: feathered brows
   bleached: bleached brows
   shaved: shaved brows
@@ -763,15 +789,13 @@ brow_color:
   light rose-red: light rose-red eyebrows
   dark rose-red: dark rose-red eyebrows
 fingernail_shape:
-  Unspecified: Unspecified
-  Random: Random
   trimmed: trimmed fingernails
   short: short fingernails
-  square: square fingernails
-  oval: oval fingernails
-  almond-: almond-fingernails
-  coffin-: coffin-fingernails
-  stilleto-: stilleto-fingernails
+  square: square-shaped fingernails
+  oval: oval-shaped fingernails
+  almond: almond-shaped fingernails
+  coffin: coffin-shaped fingernails
+  stilleto: stilleto-shaped fingernails
 fingernail_color:
   white: white fingernails
   silver: silver fingernails
