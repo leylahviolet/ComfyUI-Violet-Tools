@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .quality_queen import QualityQueen
 from .scene_seductress import SceneSeductress
 from .body_bard import BodyBard
@@ -6,6 +7,8 @@ from .aesthetic_alchemist import AestheticAlchemist
 from .pose_priestess import PosePriestess
 from .encoding_enchantress import EncodingEnchantress
 from .negativity_nullifier import NegativityNullifier
+from .persona_preserver import PersonaPreserver
+from .persona_patcher import PersonaPatcher
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,
@@ -15,7 +18,9 @@ NODE_CLASS_MAPPINGS = {
     "GlamourGoddess": GlamourGoddess,
     "AestheticAlchemist": AestheticAlchemist,
     "PosePriestess": PosePriestess,
-    "NegativityNullifier": NegativityNullifier
+    "NegativityNullifier": NegativityNullifier,
+    "PersonaPreserver": PersonaPreserver,
+    "PersonaPatcher": PersonaPatcher
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -26,5 +31,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "GlamourGoddess": "✨ Glamour Goddess",
     "AestheticAlchemist": "💋 Aesthetic Alchemist",
     "PosePriestess": "🤩 Pose Priestess",
-    "NegativityNullifier": "🚫 Negativity Nullifier"
+    "NegativityNullifier": "🚫 Negativity Nullifier",
+    "PersonaPreserver": "💖 Persona Preserver",
+    "PersonaPatcher": "🗝️ Persona Patcher"
 }
