@@ -38,7 +38,7 @@ class AestheticAlchemist:
     RETURN_TYPES = ("AESTHETIC_STRING",)
     RETURN_NAMES = ("aesthetic",)
     FUNCTION = "infuse"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
     
     @staticmethod
     def IS_CHANGED(**kwargs):

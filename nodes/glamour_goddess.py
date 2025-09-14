@@ -50,7 +50,7 @@ class GlamourGoddess:
     RETURN_TYPES = ("GLAMOUR_STRING",)
     RETURN_NAMES = ("glamour",)
     FUNCTION = "invoke"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
     def IS_CHANGED(**kwargs):

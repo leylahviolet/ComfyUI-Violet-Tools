@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.3.1-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.2-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -52,18 +52,18 @@ Pose and positioning control node with separate categories for different content
 
 Negative prompt management system with smart defaults and customizable exclusions.
 
-### 🪪 Persona System (NEW in 1.3.x)
+### 🪪 Character System (NEW in 1.3.x)
 
-Save, re-load, patch, and apply consistent character/persona traits across workflows:
+Save, re-load, and apply consistent character traits across workflows:
 
-- Persona Preserver saves structured character YAML (auto-migrated if schema evolves)
-- Persona Patcher loads, randomly selects, or refreshes available personas
-- Silent schema migration + write-back keeps old persona files up to date
-- All major Violet nodes accept `character_data` to override style/body/pose/aesthetic fields
-- Encoding Enchantress can passthrough merged persona-driven prompt segments
-- Deterministic when selecting specific persona; optional randomness when exploring
+- 💖 Character Creator saves structured character data (auto-versioned JSON)
+- 🗃️ Character Cache loads, randomly selects characters with auto-refresh
+- Silent schema migration keeps old character files up to date
+- All major Violet nodes accept `character` to override style/body/pose/aesthetic fields
+- Encoding Enchantress can passthrough merged character-driven prompt segments
+- Deterministic when selecting specific characters; optional randomness when exploring
 
-See Quick Start below for a minimal persona workflow.
+See Quick Start below for a minimal character workflow.
 
 ## Supported Aesthetic Styles
 
@@ -98,17 +98,17 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
 ## Usage
 
-## ⚡ Persona Workflow Quick Start (1.3.x)
+## ⚡ Character Workflow Quick Start (1.3.x)
 
-1. Add `Persona Preserver` downstream of your configured Violet nodes (e.g. Aesthetic Alchemist, Body Bard, Glamour Goddess, Pose Priestess, Quality Queen). Feed each node's prompt fragments into it along with a character name. Run once to save.
-2. A YAML persona file is created (auto-versioned with `violet_tools_version`).
-3. Add `Persona Patcher` to a new or existing workflow. Select a saved persona from the dropdown (or enable random / refresh to explore).
-4. Connect `Persona Patcher`'s `CHARACTER_DATA` output into any Violet nodes that support persona overrides (all major style/pose/body/quality/aesthetic nodes, plus Encoding Enchantress).
+1. Add `💖 Character Creator` downstream of your configured Violet nodes (e.g. Aesthetic Alchemist, Body Bard, Glamour Goddess, Pose Priestess, Quality Queen). Connect Encoding Enchantress's character output and provide a character name. Run once to save.
+2. A JSON character file is created (auto-versioned with `violet_tools_version`).
+3. Add `🗃️ Character Cache` to a new or existing workflow. Select a saved character from the dropdown (auto-refreshes) or use "random" to explore.
+4. Connect `Character Cache`'s `CHARACTER_DATA` output into any Violet nodes that support character overrides (all major style/pose/body/quality/aesthetic nodes, plus Encoding Enchantress).
 5. Set each node's `character_apply` (or equivalent toggle) to enable override merging.
-6. Generate: persona traits merge with your current parameters. Update persona fields manually or regenerate partial nodes; rerun Preserver to update.
-7. Old personas load seamlessly—silent migration normalizes them and writes back updated schema automatically.
+6. Generate: character traits merge with your current parameters. Update character fields manually or regenerate partial nodes; rerun Character Creator to update.
+7. Old character files load seamlessly—silent migration normalizes them automatically.
 
-Tip: Use multiple Persona Preserver runs (different character names) to build a reusable cast. Use random persona selection in Persona Patcher for varied inspiration.
+Tip: Use multiple Character Creator runs (different character names) to build a reusable cast. Use random character selection in Character Cache for varied inspiration.
 
 ## 🎨 Example Workflow
 
@@ -158,22 +158,27 @@ Quality Queen provides consistent quality improvements:
 ```text
 ComfyUI-Violet-Tools/
 ├── __init__.py                # Node registration and mappings
-├── aesthetic_alchemist.py     # Style blending and aesthetic control
-├── body_bard.py               # Body features and anatomical descriptions
-├── encoding_enchantress.py    # Advanced text encoding
-├── glamour_goddess.py         # Hair and makeup styling
-├── negativity_nullifier.py    # Negative prompt management
-├── pose_priestess.py          # Pose and positioning control
-├── quality_queen.py           # Quality enhancement and boilerplate
+├── nodes/                     # All node implementations
+│   ├── aesthetic_alchemist.py # Style blending and aesthetic control
+│   ├── body_bard.py           # Body features and anatomical descriptions
+│   ├── character_cache.py     # Character loading and management
+│   ├── character_creator.py   # Character saving and preservation
+│   ├── encoding_enchantress.py# Advanced text encoding
+│   ├── glamour_goddess.py     # Hair and makeup styling
+│   ├── negativity_nullifier.py# Negative prompt management
+│   ├── pose_priestess.py      # Pose and positioning control
+│   ├── quality_queen.py       # Quality enhancement and boilerplate
+│   └── scene_seductress.py    # Scene and environment control
 └── feature_lists/             # YAML configuration files
     ├── aesthetics.yaml        # Aesthetic style definitions
     ├── body_features.yaml     # Body feature options
     ├── glamour_goddess.yaml   # Hair and makeup options
     ├── negative_defaults.yaml # Default negative prompts
     ├── poses.yaml             # Pose and position options
-    └── qualities.yaml         # Quality tags and styles
+    ├── qualities.yaml         # Quality tags and styles
+    └── scene_seductress.yaml  # Scene and environment options
 
-Persona files you create are stored alongside your ComfyUI workflow execution directory (or the configured persona storage path if overridden). They are plain YAML—feel free to version-control curated personas.
+Character files you create are stored alongside your ComfyUI output directory. They are plain JSON—feel free to version-control curated characters.
 ```
 
 ## Configuration

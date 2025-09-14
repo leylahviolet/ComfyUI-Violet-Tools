@@ -41,7 +41,7 @@ class QualityQueen:
     RETURN_TYPES = ("QUALITY_STRING",)
     RETURN_NAMES = ("quality",)
     FUNCTION = "generate"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
     def IS_CHANGED(**kwargs):

@@ -5,6 +5,32 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-09-14
+
+### 🏗️ Organizational
+
+- **Node Structure**: Moved all nodes to `nodes/` directory for better organization
+- **Category Organization**: Split nodes into logical UI categories:
+  - `Violet Tools 💅/Prompt`: Quality Queen, Scene Seductress, Glamour Goddess, Body Bard, Aesthetic Alchemist, Pose Priestess, Negativity Nullifier
+  - `Violet Tools 💅/Character`: Character Creator, Character Cache, Encoding Enchantress
+- **File Naming**: Renamed persona files to match class names:
+  - `persona_preserver.py` → `character_creator.py`
+  - `persona_patcher.py` → `character_cache.py`
+
+### 🎯 Improved
+
+- **Node Names**: Refined naming for better semantic clarity:
+  - "Persona Preserver" → "💖 Character Creator"
+  - "Persona Patcher" → "🗃️ Character Cache"
+- **Auto-Refresh**: Character Cache now automatically refreshes without manual toggle
+- **Parameter Consistency**: Standardized all nodes to use `character` parameter name
+
+### 📝 Documentation
+
+- Updated README.md with new file structure and terminology
+- Revised Quick Start guide to reflect Character Creator/Cache workflow
+- Updated file structure documentation
+
 ## [1.3.1] - 2025-09-14
 
 ### 🎯 Improved

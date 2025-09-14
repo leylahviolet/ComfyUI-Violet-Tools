@@ -41,7 +41,7 @@ class PosePriestess:
     RETURN_TYPES = ("POSE_STRING",)
     RETURN_NAMES = ("pose",)
     FUNCTION = "generate"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
     def IS_CHANGED(**kwargs):

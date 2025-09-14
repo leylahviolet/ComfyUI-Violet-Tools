@@ -54,7 +54,7 @@ class SceneSeductress:
     RETURN_TYPES = ("SCENE_STRING",)
     RETURN_NAMES = ("scene",)
     FUNCTION = "generate"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
         
     @staticmethod
     def IS_CHANGED(**kwargs):

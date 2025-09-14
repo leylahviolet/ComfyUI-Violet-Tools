@@ -48,7 +48,7 @@ class CharacterCache:
     RETURN_TYPES = ("CHARACTER_DATA", "STRING", "STRING")
     RETURN_NAMES = ("character", "name", "status")
     FUNCTION = "load_character"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Character"
 
     @staticmethod
     def IS_CHANGED(**_kwargs):

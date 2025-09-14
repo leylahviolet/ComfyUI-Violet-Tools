@@ -43,7 +43,7 @@ class BodyBard:
     RETURN_TYPES = ("BODY_STRING",)
     RETURN_NAMES = ("body",)
     FUNCTION = "compose"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
     def IS_CHANGED(**kwargs):

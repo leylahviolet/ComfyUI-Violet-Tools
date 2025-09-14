@@ -27,7 +27,7 @@ class NegativityNullifier:
     RETURN_TYPES = ("NULLIFIER_STRING",)
     RETURN_NAMES = ("nullifier",)
     FUNCTION = "purify"
-    CATEGORY = "Violet Tools 💅"
+    CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
     def IS_CHANGED(**kwargs):

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from .quality_queen import QualityQueen
-from .scene_seductress import SceneSeductress
-from .body_bard import BodyBard
-from .glamour_goddess import GlamourGoddess
-from .aesthetic_alchemist import AestheticAlchemist
-from .pose_priestess import PosePriestess
-from .encoding_enchantress import EncodingEnchantress
-from .negativity_nullifier import NegativityNullifier
-from .persona_preserver import CharacterCreator
-from .persona_patcher import CharacterCache
+from .nodes.quality_queen import QualityQueen
+from .nodes.scene_seductress import SceneSeductress
+from .nodes.body_bard import BodyBard
+from .nodes.glamour_goddess import GlamourGoddess
+from .nodes.aesthetic_alchemist import AestheticAlchemist
+from .nodes.pose_priestess import PosePriestess
+from .nodes.encoding_enchantress import EncodingEnchantress
+from .nodes.negativity_nullifier import NegativityNullifier
+from .nodes.character_creator import CharacterCreator
+from .nodes.character_cache import CharacterCache
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,
@@ -33,5 +33,5 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PosePriestess": "🤩 Pose Priestess",
     "NegativityNullifier": "🚫 Negativity Nullifier",
     "CharacterCreator": "💖 Character Creator",
-    "CharacterCache": "�️ Character Cache"
+    "CharacterCache": "🗃️ Character Cache"
 }
