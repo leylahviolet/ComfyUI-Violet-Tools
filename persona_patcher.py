@@ -96,31 +96,38 @@ class PersonaPatcher:
             
             # Quality Queen
             if 'quality' in char_data and char_data['quality'].get('text'):
-                profile_lines.append(f"👑 Quality Queen: {char_data['quality']['text'][:60]}{'...' if len(char_data['quality']['text']) > 60 else ''}")
+                text = char_data['quality']['text']
+                profile_lines.append(f"👑 Quality Queen: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             # Scene Seductress
             if 'scene' in char_data and char_data['scene'].get('text'):
-                profile_lines.append(f"🎭 Scene Seductress: {char_data['scene']['text'][:60]}{'...' if len(char_data['scene']['text']) > 60 else ''}")
+                text = char_data['scene']['text']
+                profile_lines.append(f"🎭 Scene Seductress: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             # Glamour Goddess
             if 'glamour' in char_data and char_data['glamour'].get('text'):
-                profile_lines.append(f"✨ Glamour Goddess: {char_data['glamour']['text'][:60]}{'...' if len(char_data['glamour']['text']) > 60 else ''}")
+                text = char_data['glamour']['text']
+                profile_lines.append(f"✨ Glamour Goddess: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             # Body Bard
             if 'body' in char_data and char_data['body'].get('text'):
-                profile_lines.append(f"💃 Body Bard: {char_data['body']['text'][:60]}{'...' if len(char_data['body']['text']) > 60 else ''}")
+                text = char_data['body']['text']
+                profile_lines.append(f"💃 Body Bard: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             # Aesthetic Alchemist
             if 'aesthetic' in char_data and char_data['aesthetic'].get('text'):
-                profile_lines.append(f"💋 Aesthetic Alchemist: {char_data['aesthetic']['text'][:60]}{'...' if len(char_data['aesthetic']['text']) > 60 else ''}")
+                text = char_data['aesthetic']['text']
+                profile_lines.append(f"💋 Aesthetic Alchemist: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             # Pose Priestess
             if 'pose' in char_data and char_data['pose'].get('text'):
-                profile_lines.append(f"🤩 Pose Priestess: {char_data['pose']['text'][:60]}{'...' if len(char_data['pose']['text']) > 60 else ''}")
+                text = char_data['pose']['text']
+                profile_lines.append(f"🤩 Pose Priestess: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             # Negativity Nullifier
             if 'negative' in char_data and char_data['negative'].get('text'):
-                profile_lines.append(f"🚫 Negativity Nullifier: {char_data['negative']['text'][:60]}{'...' if len(char_data['negative']['text']) > 60 else ''}")
+                text = char_data['negative']['text']
+                profile_lines.append(f"🚫 Negativity Nullifier: {text[:120]}{'...' if len(text) > 120 else ''}")
             
             if len(profile_lines) == 1:  # Only the header line
                 profile_lines.append("(No character data found)")
