@@ -41,8 +41,7 @@ class PersonaPatcher:
             options.extend(chars)
         return {
             "required": {
-                "character": (options, {"default": "None", "tooltip": "Select saved character or random"}),
-                "refresh": ("BOOLEAN", {"default": False, "tooltip": "Toggle to refresh character list"})
+                "character": (options, {"default": "None", "tooltip": "Select saved character or random"})
             }
         }
 
@@ -52,12 +51,11 @@ class PersonaPatcher:
     CATEGORY = "Violet Tools 💅"
 
     @staticmethod
-    def IS_CHANGED(refresh=False, **_kwargs):
-        # refresh parameter triggers UI updates when toggled
+    def IS_CHANGED(**_kwargs):
+        # Always refresh to keep character list up-to-date
         return time.time()
 
-    def patch(self, character: str, refresh: bool = False):
-        # refresh parameter handled by IS_CHANGED for UI updates
+    def patch(self, character: str):
         if character == "None":
             return ({}, "", "🗝️ Select a character to load")
 
