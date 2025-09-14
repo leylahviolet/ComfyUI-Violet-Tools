@@ -31,6 +31,10 @@ class PosePriestess:
                 "arm_gesture": (arm_gestures, { "default": arm_gestures[1] }),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
+            },
+            "optional": {
+                "character_data": ("CHARACTER_DATA", {}),
+                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character pose overrides"})
             }
         }
 
@@ -50,7 +54,16 @@ class PosePriestess:
         import time
         return time.time()
 
-    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra):
+    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra, character_data=None, character_apply=False):
+        if character_apply and character_data and isinstance(character_data, dict):
+            pd = character_data.get("data", {}).get("pose", {})
+            if pd:
+                general_pose = pd.get("general_pose", general_pose)
+                general_pose_strength = pd.get("general_pose_strength", general_pose_strength)
+                arm_gesture = pd.get("arm_gesture", arm_gesture)
+                arm_gesture_strength = pd.get("arm_gesture_strength", arm_gesture_strength)
+                if pd.get("extra"):
+                    extra = pd.get("extra")
         """
         Generate combined pose prompts with weighted blending from general poses and arm gestures.
         

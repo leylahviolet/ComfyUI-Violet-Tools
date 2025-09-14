@@ -44,6 +44,10 @@ class SceneSeductress:
                 "lighting": (["None", "Random"] + list(cls.lighting.keys()), {"default": "Random"}),
                 "lighting_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
+            },
+            "optional": {
+                "character_data": ("CHARACTER_DATA", {}),
+                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character scene overrides"})
             }
         }
         
@@ -67,7 +71,25 @@ class SceneSeductress:
         return time.time()
 
     def generate(self, framing, framing_strength, angle, angle_strength, emotion, emotion_strength, 
-                 time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra):
+                 time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra,
+                 character_data=None, character_apply=False):
+        if character_apply and character_data and isinstance(character_data, dict):
+            sd = character_data.get("data", {}).get("scene", {})
+            if sd:
+                framing = sd.get("framing", framing)
+                framing_strength = sd.get("framing_strength", framing_strength)
+                angle = sd.get("angle", angle)
+                angle_strength = sd.get("angle_strength", angle_strength)
+                emotion = sd.get("emotion", emotion)
+                emotion_strength = sd.get("emotion_strength", emotion_strength)
+                time_of_day = sd.get("time_of_day", time_of_day)
+                time_of_day_strength = sd.get("time_of_day_strength", time_of_day_strength)
+                environment = sd.get("environment", environment)
+                environment_strength = sd.get("environment_strength", environment_strength)
+                lighting = sd.get("lighting", lighting)
+                lighting_strength = sd.get("lighting_strength", lighting_strength)
+                if sd.get("extra"):
+                    extra = sd.get("extra")
         """
         Generate combined scene prompts with weighted blending from multiple scene categories.
         

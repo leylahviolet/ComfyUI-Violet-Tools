@@ -5,6 +5,27 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-09-14
+
+### 🎯 Improved
+
+- **Persona System UX**: Streamlined persona workflow with single character input/output
+- **Character Profiles**: Removed truncation limits for full character data visibility
+- **Simplified Workflow**: Persona Preserver now connects directly to Encoding Enchantress character output
+- **Better Naming**: Renamed inputs/outputs for clarity (character_data → character, character_name → name)
+
+### 🔧 Fixed
+
+- **UTF-8 Encoding**: Added proper encoding declarations for Windows compatibility
+- **Directory Paths**: Characters now save to ComfyUI's output directory for easy access
+- **Node Registration**: Resolved encoding issues preventing persona nodes from loading
+
+### 📝 Technical
+
+- Updated version references across all components
+- Improved error handling and status messages
+- Enhanced character profile display in Persona Patcher
+
 ## [1.3.0] - 2025-09-14
 
 ### Added

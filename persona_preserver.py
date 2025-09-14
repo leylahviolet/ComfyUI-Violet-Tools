@@ -55,7 +55,7 @@ class PersonaPreserver:
         character_data = {
             "name": name,
             "created": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "violet_tools_version": "1.3.0",
+            "violet_tools_version": "1.3.1",
             "data": character.get("data", {}) if isinstance(character, dict) else {}
         }
         

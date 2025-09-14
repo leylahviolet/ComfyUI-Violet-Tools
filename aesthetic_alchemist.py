@@ -28,6 +28,10 @@ class AestheticAlchemist:
                 "aesthetic_2": (aesthetics, {"default": aesthetics[2]}),
                 "aesthetic_2_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
+            },
+            "optional": {
+                "character_data": ("CHARACTER_DATA", {}),
+                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character aesthetic overrides"})
             }
         }
 
@@ -50,7 +54,16 @@ class AestheticAlchemist:
         import time
         return time.time()
 
-    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_strength, aesthetic_2_strength, extra):
+    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_strength, aesthetic_2_strength, extra, character_data=None, character_apply=False):
+        if character_apply and character_data and isinstance(character_data, dict):
+            ad = character_data.get("data", {}).get("aesthetic", {})
+            if ad:
+                aesthetic_1 = ad.get("aesthetic_1", aesthetic_1)
+                aesthetic_1_strength = ad.get("aesthetic_1_strength", aesthetic_1_strength)
+                aesthetic_2 = ad.get("aesthetic_2", aesthetic_2)
+                aesthetic_2_strength = ad.get("aesthetic_2_strength", aesthetic_2_strength)
+                if ad.get("extra"):
+                    extra = ad.get("extra")
         """
         Generate aesthetic prompts by optionally blending selected styles.
         
