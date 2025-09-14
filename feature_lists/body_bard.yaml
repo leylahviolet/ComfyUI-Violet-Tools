@@ -3,16 +3,21 @@ age:
   child: child
   teen: teen
   young: young
-  twenty year old: twenty-year-old
-  twenty five year old: twenty-five-year-old
-  thirty year old: thirty-year-old
-  thirty five year old: thirty-five-year-old
-  forty year old: forty-year-old
-  forty five year old: forty-five-year-old
-  fifty year old: fifty-year-old
+  young adult: young-adult
+  adult: adult
+  middle-aged: middle-aged
   mature: mature
+  senior: senior
   elderly: elderly
   old: old
+  eighteen years old: eighteen-years-old
+  twenty years old: twenty-years-old
+  twenty five years old: twenty-five-years-old
+  thirty years old: thirty-years-old
+  thirty five years old: thirty-five-years-old
+  forty years old: forty-years-old
+  forty five years old: forty-five-years-old
+  fifty years old: fifty-years-old
 gender:
   child: child
   boy: boy
@@ -20,6 +25,8 @@ gender:
   adult: adult
   man: man
   woman: woman
+  femboy: femboy
+  tomboy: tomboy
   nonbinary: nonbinary
   genderfluid: genderfluid
   androgynous: androgynous
@@ -107,7 +114,6 @@ ass_shape:
   soft: soft ass
   squishy: squishy ass
   cellulite: cellulite ass
-  saddlebags: saddlebags-ass
   sagging: sagging ass
 hips:
   skinny: skinny hips

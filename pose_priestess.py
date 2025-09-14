@@ -28,7 +28,7 @@ class PosePriestess:
             "required": {
                 "general_pose": (general_poses, { "default": general_poses[1] }),
                 "general_pose_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
-                "arm_gesture": (arm_gestures, { "default": arm_gestures[0] }),
+                "arm_gesture": (arm_gestures, { "default": arm_gestures[1] }),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             }

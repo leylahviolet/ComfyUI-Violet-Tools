@@ -56,6 +56,9 @@ hair_color:
   gray: gray hair
   black: black hair
   charcoal: charcoal hair
+  brown: brown hair
+  light brown: light brown hair
+  dark brown: dark brown hair
   red: red hair
   light red: light red hair
   dark red: dark red hair
@@ -131,6 +134,9 @@ highlight_color:
   gray: gray highlights
   black: black highlights
   charcoal: charcoal highlights
+  brown: brown highlights
+  light brown: light brown highlights
+  dark brown: dark brown highlights
   red: red highlights
   light red: light red highlights
   dark red: dark red highlights
@@ -206,6 +212,9 @@ dip_dye_color:
   gray: gray dip-dyed hair
   black: black dip-dyed hair
   charcoal: charcoal dip-dyed hair
+  brown: brown dip-dyed hair
+  light brown: light brown dip-dyed hair
+  dark brown: dark brown dip-dyed hair
   red: red dip-dyed hair
   light red: light red dip-dyed hair
   dark red: dark red dip-dyed hair

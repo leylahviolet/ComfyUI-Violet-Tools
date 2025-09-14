@@ -1,7 +1,7 @@
 class EncodingEnchantress:
     """
     A ComfyUI node that combines and encodes multiple prompt strings with individual strength controls.
-    Supports quality, glamour, body, aesthetic, pose, and negative inputs from Violet Tools nodes.
+    Supports quality, scene, glamour, body, aesthetic, pose, and negative inputs from Violet Tools nodes.
     
     Four operation modes:
     - "closeup": Encodes glamour separately, adds closeup/portrait keywords for facial focus
@@ -34,6 +34,7 @@ class EncodingEnchantress:
             },
             "optional": {
                 "quality": ("QUALITY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
+                "scene": ("SCENE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "glamour": ("GLAMOUR_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "body": ("BODY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
@@ -139,7 +140,7 @@ class EncodingEnchantress:
         return result
 
     def condition(self, clip, mode, body_strength, vibe_strength, negative_strength,
-                  quality="", glamour="", body="", aesthetic="", pose="", nullifier=""):
+                  quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier=""):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -148,16 +149,16 @@ class EncodingEnchantress:
         "closeup" mode:
         - Encodes glamour separately with body_strength for character emphasis
         - Combines body + pose with closeup keywords, encoded with body_strength
-        - Combines quality + aesthetic with closeup keywords, encoded with vibe_strength
+        - Combines quality + scene + aesthetic with closeup keywords, encoded with vibe_strength
         - Uses _combine_conditioning to merge glamour, body, and vibe conditionings
         
         "portrait" mode:
         - Combines glamour + body into one conditioning with body_strength
-        - Combines quality + pose + aesthetic with portrait keyword, encoded with vibe_strength
+        - Combines quality + scene + pose + aesthetic with portrait keyword, encoded with vibe_strength
         - Uses _combine_conditioning to merge the two conditionings
         
         "smooth blend" mode (default):
-        - Combines all prompts (quality, body, glamour, aesthetic, pose) into single conditioning
+        - Combines all prompts (quality, scene, body, glamour, aesthetic, pose) into single conditioning
         - Encodes everything together with neutral strength (1.0) for smooth blending
         
         "compete combine" mode:
@@ -165,7 +166,7 @@ class EncodingEnchantress:
         - Combines body + glamour with full body keyword, encoded with body_strength
         - Encodes pose separately with body_strength
         - Encodes aesthetic separately with vibe_strength
-        - Encodes quality with vibe_strength
+        - Encodes quality + scene with vibe_strength
         - Uses _combine_conditioning to merge all separate conditionings
         
         Args:
@@ -175,6 +176,7 @@ class EncodingEnchantress:
             vibe_strength (float): Strength multiplier for quality + aesthetic combination
             negative_strength (float): Strength multiplier for negative prompt
             quality (str): Quality prompt string
+            scene (str): Scene prompt string
             glamour (str): Glamour prompt string
             body (str): Body prompt string
             aesthetic (str): Aesthetic prompt string
@@ -186,7 +188,7 @@ class EncodingEnchantress:
         """
         
         # Combine all text for reference
-        pos_text = self._combine_text(quality, body, glamour, aesthetic, pose)
+        pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
         
         # Encode negative
         enc_negative = self.encode_with_strength(clip, nullifier, negative_strength) if nullifier else None
@@ -200,8 +202,8 @@ class EncodingEnchantress:
             body_pose_text = self._combine_text(body, pose, "portrait, closeup, face focus")
             enc_body = self.encode_with_strength(clip, body_pose_text, body_strength) if body_pose_text else None
             
-            # Combine quality, aesthetic, encode with vibe_strength
-            vibe_combined_text = self._combine_text(quality, aesthetic, "portrait, closeup, face focus")
+            # Combine quality, scene, aesthetic, encode with vibe_strength
+            vibe_combined_text = self._combine_text(quality, scene, aesthetic, "portrait, closeup, face focus")
             enc_vibe = self.encode_with_strength(clip, vibe_combined_text, vibe_strength) if vibe_combined_text else None
             
             # Combine all conditionings: glamour, body, and vibe
@@ -211,8 +213,8 @@ class EncodingEnchantress:
             body_combined_text = self._combine_text(glamour, body, "(body turned to the side, face turned to viewer, dynamic portrait with upper chest visible:1.5)")
             enc_body = self.encode_with_strength(clip, body_combined_text, body_strength) if body_combined_text else None
 
-            # Concat quality, pose, aesthetic with portrait keyword, encode with vibe_strength
-            vibe_combined_text = self._combine_text(quality, pose, aesthetic, "(head and shoulders portrait, body turned to the side, face turned to viewer, dynamic portrait with upper chest visible:1.5)")
+            # Concat quality, scene, pose, aesthetic with portrait keyword, encode with vibe_strength
+            vibe_combined_text = self._combine_text(quality, scene, pose, aesthetic, "(head and shoulders portrait, body turned to the side, face turned to viewer, dynamic portrait with upper chest visible:1.5)")
             enc_vibe = self.encode_with_strength(clip, vibe_combined_text, vibe_strength) if vibe_combined_text else None
 
             # Combine the two main conditionings
@@ -228,8 +230,8 @@ class EncodingEnchantress:
             # Encode aesthetic with vibe_strength if present
             enc_aesthetic = self.encode_with_strength(clip, aesthetic, vibe_strength) if aesthetic else None
 
-            # Encode quality with vibe_strength
-            enc_vibe = self.encode_with_strength(clip, quality, vibe_strength) if quality else None
+            # Encode quality + scene with vibe_strength
+            enc_vibe = self.encode_with_strength(clip, self._combine_text(quality, scene), vibe_strength) if quality or scene else None
 
             # Combine all separate conditionings for competing behavior
             positive_combined = self._combine_conditioning(enc_vibe, enc_body, enc_pose, enc_aesthetic)
