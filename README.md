@@ -1,6 +1,8 @@
 # ComfyUI Violet Tools 💅
 
-A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
+[![Version](https://img.shields.io/badge/version-1.3.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+
+A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
 ## Features
 
@@ -50,6 +52,19 @@ Pose and positioning control node with separate categories for different content
 
 Negative prompt management system with smart defaults and customizable exclusions.
 
+### 🪪 Persona System (NEW in 1.3.x)
+
+Save, re-load, patch, and apply consistent character/persona traits across workflows:
+
+- Persona Preserver saves structured character YAML (auto-migrated if schema evolves)
+- Persona Patcher loads, randomly selects, or refreshes available personas
+- Silent schema migration + write-back keeps old persona files up to date
+- All major Violet nodes accept `character_data` to override style/body/pose/aesthetic fields
+- Encoding Enchantress can passthrough merged persona-driven prompt segments
+- Deterministic when selecting specific persona; optional randomness when exploring
+
+See Quick Start below for a minimal persona workflow.
+
 ## Supported Aesthetic Styles
 
 The Aesthetic Alchemist includes carefully curated definitions for:
@@ -78,11 +93,22 @@ The Aesthetic Alchemist includes carefully curated definitions for:
    git clone https://github.com/leylahkrell/ComfyUI-Violet-Tools.git
    ```
 
-2. Restart ComfyUI to load the new nodes.
-
-3. The nodes will appear in the "Violet Tools 💅" category in your node menu.
+1. Restart ComfyUI to load the new nodes.
+1. The nodes will appear in the "Violet Tools 💅" category in your node menu.
 
 ## Usage
+
+## ⚡ Persona Workflow Quick Start (1.3.x)
+
+1. Add `Persona Preserver` downstream of your configured Violet nodes (e.g. Aesthetic Alchemist, Body Bard, Glamour Goddess, Pose Priestess, Quality Queen). Feed each node's prompt fragments into it along with a character name. Run once to save.
+2. A YAML persona file is created (auto-versioned with `violet_tools_version`).
+3. Add `Persona Patcher` to a new or existing workflow. Select a saved persona from the dropdown (or enable random / refresh to explore).
+4. Connect `Persona Patcher`'s `CHARACTER_DATA` output into any Violet nodes that support persona overrides (all major style/pose/body/quality/aesthetic nodes, plus Encoding Enchantress).
+5. Set each node's `character_apply` (or equivalent toggle) to enable override merging.
+6. Generate: persona traits merge with your current parameters. Update persona fields manually or regenerate partial nodes; rerun Preserver to update.
+7. Old personas load seamlessly—silent migration normalizes them and writes back updated schema automatically.
+
+Tip: Use multiple Persona Preserver runs (different character names) to build a reusable cast. Use random persona selection in Persona Patcher for varied inspiration.
 
 ## 🎨 Example Workflow
 
@@ -101,7 +127,7 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 | **Portrait** | Dynamic portraits, upper body shots | ![Portrait](examples/sample-outputs/portrait-mode-sample.png) |
 | **Compete Combine** | Full body art, experimental results | ![Compete Combine](examples/sample-outputs/compete-combine-mode-sample.png) |
 
-*All samples generated with identical prompts, only mode changed*
+Note: All samples generated with identical prompts; only mode changed.
 
 ### Basic Workflow
 
@@ -146,6 +172,8 @@ ComfyUI-Violet-Tools/
     ├── negative_defaults.yaml # Default negative prompts
     ├── poses.yaml             # Pose and position options
     └── qualities.yaml         # Quality tags and styles
+
+Persona files you create are stored alongside your ComfyUI workflow execution directory (or the configured persona storage path if overridden). They are plain YAML—feel free to version-control curated personas.
 ```
 
 ## Configuration
