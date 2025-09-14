@@ -1,3 +1,6 @@
+import yaml
+import os
+
 class EncodingEnchantress:
     """
     A ComfyUI node that combines and encodes multiple prompt strings with individual strength controls.
@@ -40,6 +43,8 @@ class EncodingEnchantress:
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
+                "character_data": ("CHARACTER_DATA", {}),
+                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Generate prompts directly from character without intermediate nodes"})
             }
         }
 
@@ -139,8 +144,126 @@ class EncodingEnchantress:
             result = result + c
         return result
 
+    def _filter_scene_framing(self, scene_text):
+        """
+        Remove framing-related terms from scene text to avoid conflicts in closeup/portrait modes.
+        Dynamically loads framing terms from scene_seductress.yaml to stay in sync with user edits.
+        
+        Args:
+            scene_text (str): Original scene text that may contain framing elements
+            
+        Returns:
+            str: Scene text with framing elements removed
+        """
+        if not scene_text:
+            return scene_text
+            
+        # Load framing terms dynamically from scene_seductress.yaml
+        framing_terms = self._load_framing_terms()
+        
+        # Split scene text into parts
+        parts = [part.strip() for part in scene_text.split(',')]
+        filtered_parts = []
+        
+        for part in parts:
+            # Check if this part contains framing terms (with strength notation support)
+            part_lower = part.lower()
+            
+            # Handle weighted terms like "(portrait:1.2)" or "portrait"
+            is_framing = False
+            for term in framing_terms:
+                if term in part_lower:
+                    # Check if it's actually a framing term and not part of something else
+                    # Simple check: if the term appears as a standalone word or in parentheses
+                    if (f" {term} " in f" {part_lower} " or 
+                        part_lower.startswith(f"({term}:") or 
+                        part_lower == term or
+                        part_lower.startswith(f"{term}:")):
+                        is_framing = True
+                        break
+            
+            if not is_framing:
+                filtered_parts.append(part)
+        
+        return ", ".join(filtered_parts)
+
+    def _load_framing_terms(self):
+        """
+        Load framing and angle terms from scene_seductress.yaml file.
+        
+        Returns:
+            list: List of framing-related terms to filter out (case-insensitive)
+        """
+        try:
+            # Get the path to the YAML file
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            yaml_path = os.path.join(current_dir, "feature_lists", "scene_seductress.yaml")
+            
+            # Load the YAML file
+            with open(yaml_path, 'r', encoding='utf-8') as f:
+                data = yaml.safe_load(f)
+            
+            framing_terms = []
+            
+            # Extract framing terms (both keys and values)
+            if 'framing' in data:
+                for key, value in data['framing'].items():
+                    framing_terms.append(key.lower())
+                    framing_terms.append(value.lower())
+            
+            # Extract angle terms (also framing-related)
+            if 'angle' in data:
+                for key, value in data['angle'].items():
+                    framing_terms.append(key.lower())
+                    framing_terms.append(value.lower())
+            
+            # Add some common close-up variants not in the YAML
+            additional_terms = [
+                "close-up", "closeup", "medium shot", "long shot",
+                "extreme close-up", "extreme closeup", "bust shot", "waist shot"
+            ]
+            framing_terms.extend(additional_terms)
+            
+            return framing_terms
+            
+        except (FileNotFoundError, yaml.YAMLError, KeyError) as e:
+            # Fallback to hardcoded list if YAML loading fails
+            print(f"Warning: Could not load framing terms from YAML ({e}), using fallback list")
+            return [
+                "portrait", "upper body", "cowboy shot", "cowboy-shot", "feet out of frame", 
+                "full body", "wide shot", "very wide shot", "lower body", "head out of frame", 
+                "eyes out of frame", "close-up", "closeup", "medium shot", "long shot",
+                "extreme close-up", "extreme closeup", "bust shot", "waist shot",
+                "panoramic view", "panoramic", "bird's eye view", "birds eye view",
+                "top-down perspective", "top down perspective", "aerial shot", "aerial view",
+                "overhead shot", "overhead view", "worm's eye view", "low angle shot",
+                "high angle shot", "dutch angle", "profile shot", "three-quarter view",
+                "front view", "back view", "side view", "cropped", "framing"
+            ]
+
+    def _check_for_cowboys(self, scene_text):
+        """
+        Check if scene text contains "cowboy shot" or "cowboy-shot" framing terms.
+        Returns "cowboy" to add to negative prompt if found.
+        
+        Args:
+            scene_text (str): Scene text to check for cowboy shot framing
+            
+        Returns:
+            str: "cowboy" if cowboy shot framing is detected, empty string otherwise
+        """
+        if not scene_text:
+            return ""
+            
+        scene_lower = scene_text.lower()
+        if "cowboy shot" in scene_lower or "cowboy-shot" in scene_lower:
+            return "cowboy"
+        
+        return ""
+
     def condition(self, clip, mode, body_strength, vibe_strength, negative_strength,
-                  quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier=""):
+                  quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier="",
+                  character_data=None, character_apply=False):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -187,37 +310,67 @@ class EncodingEnchantress:
             tuple: (positive_conditioning, negative_conditioning, positive_text, negative_text)
         """
         
-        # Combine all text for reference
+        # If character_apply is true, pull segments straight from character_data when missing
+        if character_apply and character_data and isinstance(character_data, dict):
+            cd = character_data.get("data", {})
+            # Only inject if the provided segment is blank (user didn't connect node) to avoid overwriting explicit inputs
+            if not quality and "quality" in cd:
+                quality = cd["quality"].get("text", "")
+            if not scene and "scene" in cd:
+                scene = cd["scene"].get("text", "")
+            if not glamour and "glamour" in cd:
+                glamour = cd["glamour"].get("text", "")
+            if not body and "body" in cd:
+                body = cd["body"].get("text", "")
+            if not aesthetic and "aesthetic" in cd:
+                aesthetic = cd["aesthetic"].get("text", "")
+            if not pose and "pose" in cd:
+                pose = cd["pose"].get("text", "")
+            if not nullifier and "negative" in cd:
+                nullifier = cd["negative"].get("text", "")
+
+        # Combine all text for reference after injections
         pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
         
+        # Check for cowboy shot framing and add "cowboy" to negative if needed
+        cowboy_negative = self._check_for_cowboys(scene)
+        combined_negative = self._combine_text(nullifier, cowboy_negative)
+        
         # Encode negative
-        enc_negative = self.encode_with_strength(clip, nullifier, negative_strength) if nullifier else None
+        enc_negative = self.encode_with_strength(clip, combined_negative, negative_strength) if combined_negative else None
         negative_combined = self._combine_conditioning(enc_negative)
         
         if mode == "closeup":
             # Closeup mode: encode glamour separately for character emphasis with closeup focus
+            # Filter framing from scene to avoid conflicts with closeup framing
+            filtered_scene = self._filter_scene_framing(scene)
+            
             enc_glamour = self.encode_with_strength(clip, glamour, body_strength) if glamour else None
             
             # Combine body and pose, encode with body_strength
             body_pose_text = self._combine_text(body, pose, "portrait, closeup, face focus")
             enc_body = self.encode_with_strength(clip, body_pose_text, body_strength) if body_pose_text else None
             
-            # Combine quality, scene, aesthetic, encode with vibe_strength
-            vibe_combined_text = self._combine_text(quality, scene, aesthetic, "portrait, closeup, face focus")
+            # Combine quality, filtered scene, aesthetic, encode with vibe_strength
+            vibe_combined_text = self._combine_text(quality, filtered_scene, aesthetic, "portrait, closeup, face focus")
             enc_vibe = self.encode_with_strength(clip, vibe_combined_text, vibe_strength) if vibe_combined_text else None
             
             # Combine all conditionings: glamour, body, and vibe
             positive_combined = self._combine_conditioning(enc_glamour, enc_body, enc_vibe)
         elif mode == "portrait":
-            # Portrait mode: combine glamour + body, then put pose + aesthetic + quality together
-            body_combined_text = self._combine_text(glamour, body, "(body turned to the side, face turned to viewer, dynamic portrait with upper chest visible:1.5)")
-            enc_body = self.encode_with_strength(clip, body_combined_text, body_strength) if body_combined_text else None
-
-            # Concat quality, scene, pose, aesthetic with portrait keyword, encode with vibe_strength
-            vibe_combined_text = self._combine_text(quality, scene, pose, aesthetic, "(head and shoulders portrait, body turned to the side, face turned to viewer, dynamic portrait with upper chest visible:1.5)")
+            # Portrait mode: body dominates, quality, scene, and aesthetics support
+            # Filter framing from scene to avoid conflicts with portrait framing
+            filtered_scene = self._filter_scene_framing(scene)
+            
+            # Combine body and pose with portrait focus, encode with body_strength
+            body_pose_text = self._combine_text(body, pose, "portrait")
+            enc_body = self.encode_with_strength(clip, body_pose_text, body_strength) if body_pose_text else None
+            
+            # Combine glamour, quality, filtered scene, and aesthetic, encode with vibe_strength
+            vibe_combined_text = self._combine_text(glamour, quality, filtered_scene, aesthetic, "portrait")
             enc_vibe = self.encode_with_strength(clip, vibe_combined_text, vibe_strength) if vibe_combined_text else None
-
-            # Combine the two main conditionings
+            
+            # Combine body and vibe conditionings
             positive_combined = self._combine_conditioning(enc_body, enc_vibe)
         elif mode == "compete combine":
             # Compete combine mode: create separate conditionings for each element to compete/oscillate
@@ -240,7 +393,7 @@ class EncodingEnchantress:
             enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0) if pos_text else None
             positive_combined = enc_all_positive if enc_all_positive else [[]]
 
-        return (positive_combined, negative_combined, pos_text, nullifier)
+        return (positive_combined, negative_combined, pos_text, combined_negative)
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,
