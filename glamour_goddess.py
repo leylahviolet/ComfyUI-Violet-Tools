@@ -42,7 +42,7 @@ class GlamourGoddess:
         
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": ""})
         types["optional"] = {
-            "character_data": ("CHARACTER_DATA", {}),
+            "character": ("CHARACTER_DATA", {}),
             "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character glamour overrides"})
         }
         return types
@@ -87,9 +87,9 @@ class GlamourGoddess:
                 # Fallback to the choice itself
                 return choice
 
-    def invoke(self, character_data=None, character_apply=False, **kwargs):
-        if character_apply and character_data and isinstance(character_data, dict):
-            gd = character_data.get("data", {}).get("glamour", {})
+    def invoke(self, character=None, character_apply=False, **kwargs):
+        if character_apply and character and isinstance(character, dict):
+            gd = character.get("data", {}).get("glamour", {})
             if gd:
                 for key in self.FEATURES.keys():
                     if key in gd:

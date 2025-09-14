@@ -46,7 +46,7 @@ class SceneSeductress:
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             },
             "optional": {
-                "character_data": ("CHARACTER_DATA", {}),
+                "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character scene overrides"})
             }
         }
@@ -72,9 +72,9 @@ class SceneSeductress:
 
     def generate(self, framing, framing_strength, angle, angle_strength, emotion, emotion_strength, 
                  time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra,
-                 character_data=None, character_apply=False):
-        if character_apply and character_data and isinstance(character_data, dict):
-            sd = character_data.get("data", {}).get("scene", {})
+                 character=None, character_apply=False):
+        if character_apply and character and isinstance(character, dict):
+            sd = character.get("data", {}).get("scene", {})
             if sd:
                 framing = sd.get("framing", framing)
                 framing_strength = sd.get("framing_strength", framing_strength)

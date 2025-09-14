@@ -35,7 +35,7 @@ class BodyBard:
         
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": ""})
         types["optional"] = {
-            "character_data": ("CHARACTER_DATA", {}),
+            "character": ("CHARACTER_DATA", {}),
             "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character body overrides"})
         }
         return types
@@ -70,9 +70,9 @@ class BodyBard:
                 # Fallback to the choice itself
                 return choice
 
-    def compose(self, character_data=None, character_apply=False, **kwargs):
-        if character_apply and character_data and isinstance(character_data, dict):
-            bd = character_data.get("data", {}).get("body", {})
+    def compose(self, character=None, character_apply=False, **kwargs):
+        if character_apply and character and isinstance(character, dict):
+            bd = character.get("data", {}).get("body", {})
             if bd:
                 for key in self.FEATURES.keys():
                     if key in bd:

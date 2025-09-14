@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import os, json, time, random
 
-class PersonaPatcher:
-    """🗝️ Persona Patcher
+class CharacterCache:
+    """�️ Character Cache
     
     Loads saved characters and outputs their data for use with other Violet Tools nodes.
     
@@ -47,7 +47,7 @@ class PersonaPatcher:
 
     RETURN_TYPES = ("CHARACTER_DATA", "STRING", "STRING")
     RETURN_NAMES = ("character", "name", "status")
-    FUNCTION = "patch"
+    FUNCTION = "load_character"
     CATEGORY = "Violet Tools 💅"
 
     @staticmethod
@@ -55,14 +55,14 @@ class PersonaPatcher:
         # Always refresh to keep character list up-to-date
         return time.time()
 
-    def patch(self, character: str):
+    def load_character(self, character: str):
         if character == "None":
             return ({}, "", "🗝️ Select a character to load")
 
         chars = self.list_characters()
         if not chars:
             folder = self.get_characters_folder()
-            return ({}, "", f"⚠️ No characters found. Save some with Persona Preserver first.\nLooking in: {folder}")
+            return ({}, "", f"⚠️ No characters found. Save some with Character Creator first.\nLooking in: {folder}")
 
         # Random selection
         selected_name = character
@@ -137,5 +137,5 @@ class PersonaPatcher:
         except (OSError, json.JSONDecodeError) as e:
             return ({}, "", f"❌ Error loading '{selected_name}': {e}")
 
-NODE_CLASS_MAPPINGS = {"PersonaPatcher": PersonaPatcher}
-NODE_DISPLAY_NAME_MAPPINGS = {"PersonaPatcher": "🗝️ Persona Patcher"}
+NODE_CLASS_MAPPINGS = {"CharacterCache": CharacterCache}
+NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCache": "�️ Character Cache"}

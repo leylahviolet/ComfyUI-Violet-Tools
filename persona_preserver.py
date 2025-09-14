@@ -3,13 +3,13 @@ import json
 import os
 import time
 
-class PersonaPreserver:
-    """💖 Persona Preserver (Save Only)
+class CharacterCreator:
+    """💖 Character Creator (Save Only)
     
     Connects to outputs from other Violet Tools nodes and saves them as a named character.
     Much simpler - just provide the character name and connect your configured nodes!
     
-    Loading is handled by 🗝️ Persona Patcher.
+    Loading is handled by �️ Character Cache.
     """
 
     @classmethod
@@ -35,14 +35,14 @@ class PersonaPreserver:
 
     RETURN_TYPES = ("STRING",)
     RETURN_NAMES = ("status",)
-    FUNCTION = "save_persona"
+    FUNCTION = "save_character"
     CATEGORY = "Violet Tools 💅"
 
     @staticmethod
     def IS_CHANGED(**_kwargs):
         return time.time()
 
-    def save_persona(self, character_name="", character=None):
+    def save_character(self, character_name="", character=None):
         if not character_name or not character_name.strip():
             return ("💖 Enter a character name to save",)
         
@@ -73,8 +73,8 @@ class PersonaPreserver:
         except OSError as e:
             return (f"❌ Error saving character: {e}",)
 
-NODE_CLASS_MAPPINGS = {"PersonaPreserver": PersonaPreserver}
-NODE_DISPLAY_NAME_MAPPINGS = {"PersonaPreserver": "💖 Persona Preserver"}
+NODE_CLASS_MAPPINGS = {"CharacterCreator": CharacterCreator}
+NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCreator": "💖 Character Creator"}
 
-NODE_CLASS_MAPPINGS = {"PersonaPreserver": PersonaPreserver}
-NODE_DISPLAY_NAME_MAPPINGS = {"PersonaPreserver": "💖 Persona Preserver"}
+NODE_CLASS_MAPPINGS = {"CharacterCreator": CharacterCreator}
+NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCreator": "💖 Character Creator"}

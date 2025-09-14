@@ -30,7 +30,7 @@ class AestheticAlchemist:
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             },
             "optional": {
-                "character_data": ("CHARACTER_DATA", {}),
+                "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character aesthetic overrides"})
             }
         }
@@ -54,9 +54,9 @@ class AestheticAlchemist:
         import time
         return time.time()
 
-    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_strength, aesthetic_2_strength, extra, character_data=None, character_apply=False):
-        if character_apply and character_data and isinstance(character_data, dict):
-            ad = character_data.get("data", {}).get("aesthetic", {})
+    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_strength, aesthetic_2_strength, extra, character=None, character_apply=False):
+        if character_apply and character and isinstance(character, dict):
+            ad = character.get("data", {}).get("aesthetic", {})
             if ad:
                 aesthetic_1 = ad.get("aesthetic_1", aesthetic_1)
                 aesthetic_1_strength = ad.get("aesthetic_1_strength", aesthetic_1_strength)

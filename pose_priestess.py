@@ -33,7 +33,7 @@ class PosePriestess:
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             },
             "optional": {
-                "character_data": ("CHARACTER_DATA", {}),
+                "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character pose overrides"})
             }
         }
@@ -54,9 +54,9 @@ class PosePriestess:
         import time
         return time.time()
 
-    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra, character_data=None, character_apply=False):
-        if character_apply and character_data and isinstance(character_data, dict):
-            pd = character_data.get("data", {}).get("pose", {})
+    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra, character=None, character_apply=False):
+        if character_apply and character and isinstance(character, dict):
+            pd = character.get("data", {}).get("pose", {})
             if pd:
                 general_pose = pd.get("general_pose", general_pose)
                 general_pose_strength = pd.get("general_pose_strength", general_pose_strength)

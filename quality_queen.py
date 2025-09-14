@@ -33,7 +33,7 @@ class QualityQueen:
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             },
             "optional": {
-                "character_data": ("CHARACTER_DATA", {}),
+                "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character quality overrides"})
             }
         }
@@ -54,10 +54,10 @@ class QualityQueen:
         import time
         return time.time()
 
-    def generate(self, include_boilerplate, style, extra, character_data=None, character_apply=False):
+    def generate(self, include_boilerplate, style, extra, character=None, character_apply=False):
         # Character override
-        if character_apply and character_data and isinstance(character_data, dict):
-            qd = character_data.get("data", {}).get("quality", {})
+        if character_apply and character and isinstance(character, dict):
+            qd = character.get("data", {}).get("quality", {})
             if qd:
                 include_boilerplate = qd.get("include_boilerplate", include_boilerplate)
                 if qd.get("style") not in (None, "Random", "None", ""):

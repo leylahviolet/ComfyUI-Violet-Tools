@@ -19,7 +19,7 @@ class NegativityNullifier:
                 "extra": ("STRING", {"multiline": True, "default": ""}),
             },
             "optional": {
-                "character_data": ("CHARACTER_DATA", {}),
+                "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character negative overrides"})
             }
         }
@@ -34,9 +34,9 @@ class NegativityNullifier:
         import time
         return time.time()
 
-    def purify(self, include_boilerplate, extra, character_data=None, character_apply=False):
-        if character_apply and character_data and isinstance(character_data, dict):
-            nd = character_data.get("data", {}).get("negative", {})
+    def purify(self, include_boilerplate, extra, character=None, character_apply=False):
+        if character_apply and character and isinstance(character, dict):
+            nd = character.get("data", {}).get("negative", {})
             if nd:
                 include_boilerplate = nd.get("include_boilerplate", include_boilerplate)
                 if nd.get("extra"):
