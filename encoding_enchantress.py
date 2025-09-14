@@ -43,13 +43,13 @@ class EncodingEnchantress:
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                "character_data": ("CHARACTER_DATA", {}),
+                "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Generate prompts directly from character without intermediate nodes"})
             }
         }
 
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING")
-    RETURN_NAMES = ("positive", "negative", "pos_text", "neg_text")
+    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "CHARACTER_DATA")
+    RETURN_NAMES = ("positive", "negative", "pos_text", "neg_text", "character")
     FUNCTION = "condition"
     CATEGORY = "Violet Tools 💅"
 
@@ -263,7 +263,7 @@ class EncodingEnchantress:
 
     def condition(self, clip, mode, body_strength, vibe_strength, negative_strength,
                   quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier="",
-                  character_data=None, character_apply=False):
+                  character=None, character_apply=False):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -310,9 +310,9 @@ class EncodingEnchantress:
             tuple: (positive_conditioning, negative_conditioning, positive_text, negative_text)
         """
         
-        # If character_apply is true, pull segments straight from character_data when missing
-        if character_apply and character_data and isinstance(character_data, dict):
-            cd = character_data.get("data", {})
+        # If character_apply is true, pull segments straight from character when missing
+        if character_apply and character and isinstance(character, dict):
+            cd = character.get("data", {})
             # Only inject if the provided segment is blank (user didn't connect node) to avoid overwriting explicit inputs
             if not quality and "quality" in cd:
                 quality = cd["quality"].get("text", "")
@@ -393,7 +393,20 @@ class EncodingEnchantress:
             enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0) if pos_text else None
             positive_combined = enc_all_positive if enc_all_positive else [[]]
 
-        return (positive_combined, negative_combined, pos_text, combined_negative)
+        # Create character data structure for saving
+        character_output = {
+            "data": {
+                "quality": {"text": quality} if quality else {},
+                "scene": {"text": scene} if scene else {},
+                "glamour": {"text": glamour} if glamour else {},
+                "body": {"text": body} if body else {},
+                "aesthetic": {"text": aesthetic} if aesthetic else {},
+                "pose": {"text": pose} if pose else {},
+                "negative": {"text": nullifier} if nullifier else {}
+            }
+        }
+
+        return (positive_combined, negative_combined, pos_text, combined_negative, character_output)
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,

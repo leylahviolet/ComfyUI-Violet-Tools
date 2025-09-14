@@ -29,18 +29,12 @@ class PersonaPreserver:
                 "character_name": ("STRING", {"multiline": False, "default": "", "tooltip": "Enter a name to save this character configuration"}),
             },
             "optional": {
-                "quality": ("QUALITY_STRING", {"multiline": False, "forceInput": True}),
-                "scene": ("SCENE_STRING", {"multiline": False, "forceInput": True}),
-                "glamour": ("GLAMOUR_STRING", {"multiline": False, "forceInput": True}),
-                "body": ("BODY_STRING", {"multiline": False, "forceInput": True}),
-                "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True}),
-                "pose": ("POSE_STRING", {"multiline": False, "forceInput": True}),
-                "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True}),
+                "character": ("CHARACTER_DATA", {"forceInput": True, "tooltip": "Connect from Encoding Enchantress character output"}),
             }
         }
 
-    RETURN_TYPES = ("CHARACTER_DATA", "STRING")
-    RETURN_NAMES = ("character_data", "status")
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("status",)
     FUNCTION = "save_persona"
     CATEGORY = "Violet Tools 💅"
 
@@ -48,26 +42,21 @@ class PersonaPreserver:
     def IS_CHANGED(**_kwargs):
         return time.time()
 
-    def save_persona(self, character_name="", quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier=""):
+    def save_persona(self, character_name="", character=None):
         if not character_name or not character_name.strip():
-            return ({}, "💖 Enter a character name to save")
+            return ("💖 Enter a character name to save",)
+        
+        if not character:
+            return ("💖 Connect Encoding Enchantress character output to save",)
         
         name = character_name.strip()
         
-        # Create character data structure
+        # Use the character data directly from Encoding Enchantress
         character_data = {
             "name": name,
             "created": time.strftime("%Y-%m-%d %H:%M:%S"),
             "violet_tools_version": "1.3.0",
-            "data": {
-                "quality": {"text": quality} if quality else {},
-                "scene": {"text": scene} if scene else {},
-                "glamour": {"text": glamour} if glamour else {},
-                "body": {"text": body} if body else {},
-                "aesthetic": {"text": aesthetic} if aesthetic else {},
-                "pose": {"text": pose} if pose else {},
-                "negative": {"text": nullifier} if nullifier else {}
-            }
+            "data": character.get("data", {}) if isinstance(character, dict) else {}
         }
         
         try:
@@ -79,11 +68,10 @@ class PersonaPreserver:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(character_data, f, indent=2, ensure_ascii=False)
             
-            status = f"✅ Character '{name}' saved to {file_path}"
-            return (character_data, status)
+            return (f"✅ Character '{name}' saved to {file_path}",)
             
         except OSError as e:
-            return ({}, f"❌ Error saving character: {e}")
+            return (f"❌ Error saving character: {e}",)
 
 NODE_CLASS_MAPPINGS = {"PersonaPreserver": PersonaPreserver}
 NODE_DISPLAY_NAME_MAPPINGS = {"PersonaPreserver": "💖 Persona Preserver"}
