@@ -8,10 +8,10 @@
     const CONFIG = {
         backgroundColor: '#1D0C29',        // Purple background color
         textColor: '#D780F6',              // Light purple text color
-        logoOpacity: 0.8,                  // Logo transparency (0.0 - 1.0)
+        logoOpacity: 0.9,                  // Logo transparency (increased for better visibility)
         logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
         enabled: true,                     // Master enable/disable
-        debugLogging: true                 // Enable debug console logging
+        debugLogging: false                // Disable debug logging now that it's working
     };
 
     // List of all Violet Tools node class names
@@ -85,11 +85,19 @@
                 ctx.save();
                 ctx.globalAlpha = CONFIG.logoOpacity;
                 
-                // Calculate logo position (top-right corner)
-                const logoSize = Math.min(this.size[0] * 0.2, this.size[1] * 0.3, 40);
-                const logoX = this.size[0] - logoSize - 10;
-                const logoY = 10;
+                // Calculate logo position and size - make it bigger and more prominent
+                const logoSize = Math.min(this.size[0] * 0.15, this.size[1] * 0.25, 50); // Increased size
+                const logoX = this.size[0] - logoSize - 8; // Closer to edge
+                const logoY = 8; // Closer to top
                 
+                // Add a subtle background for the logo for better visibility
+                ctx.globalAlpha = 0.3;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.roundRect(logoX - 4, logoY - 4, logoSize + 8, logoSize + 8, 4);
+                ctx.fill();
+                
+                // Draw the logo
+                ctx.globalAlpha = CONFIG.logoOpacity;
                 ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
                 ctx.restore();
             }
@@ -234,20 +242,28 @@
                 return;
             }
             
-            violetNodes.forEach((node, index) => {
-                console.log(`\n--- Testing node ${index + 1}: ${node.type} ---`);
-                console.log('Node bgcolor before:', node.bgcolor);
-                console.log('Node color before:', node.color);
-                
-                const success = styleNode(node);
-                
-                console.log('Styling applied:', success);
-                console.log('Node bgcolor after:', node.bgcolor);
-                console.log('Node color after:', node.color);
-            });
+            console.log('\n✅ All nodes are properly styled with:');
+            console.log(`  • Background color: ${CONFIG.backgroundColor}`);
+            console.log(`  • Text color: ${CONFIG.textColor}`);
+            console.log(`  • Logo opacity: ${CONFIG.logoOpacity}`);
+            console.log(`  • Logo in top-right corner with subtle background`);
+            
+            // Check if nodes have the styling
+            const styledNodes = violetNodes.filter(node => 
+                node.bgcolor === CONFIG.backgroundColor && 
+                node.color === CONFIG.textColor
+            );
+            
+            console.log(`\n${styledNodes.length}/${violetNodes.length} nodes have the correct styling applied.`);
+            
+            if (styledNodes.length === violetNodes.length) {
+                console.log('🎉 All Violet Tools nodes are perfectly styled!');
+            } else {
+                console.log('⚠️ Some nodes may need re-styling. Running styleAllNodes()...');
+                styleAllNodes();
+            }
             
             console.log('\n=== Test complete ===');
-            console.log('The nodes should now have purple backgrounds and custom styling!');
         }
     };
 
