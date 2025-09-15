@@ -19,7 +19,7 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         enabled: true,          // Master enable/disable
         showTooltips: true,     // Show color name tooltips
         animationDuration: 200, // Animation duration in ms
-        popupEnhancement: false // Temporarily disabled until stable
+        popupEnhancement: true // Re-enabled with stricter filtering
     };
 
     // Color palette data - will be populated from palette.json
@@ -393,8 +393,10 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
                             const h = Array.isArray(size) ? size[1] : size;
                             if (w._colorChips && w.value && w._colorChips[w.value]) {
                                 const color = w._colorChips[w.value];
-                                const chipSize = 10;
-                                const chipX = this.size[0] - chipSize - 18; // near right padding
+                                const chipSize = 12;
+                                // Align chip inside the row: right padding ~10, leave 4px gap from right border triangle
+                                const rightPadding = 12;
+                                const chipX = this.size[0] - rightPadding - chipSize;
                                 const chipY = y + (h - chipSize)/2;
                                 ctx.fillStyle = color;
                                 ctx.fillRect(chipX, chipY, chipSize, chipSize);
@@ -459,11 +461,16 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
 
     // Decorate option popup entries with inline color chips
     function decoratePopupIfColorList(rootNode) {
-        if (!CONFIG.popupEnhancement) return; // disabled for stability
+        if (!CONFIG.popupEnhancement) return;
         if (!flatColorMap || Object.keys(flatColorMap).length === 0) return;
-        // Heuristic: find list items inside a dropdown container
-        const optionNodes = rootNode.querySelectorAll('div, li, span');
-        optionNodes.forEach(el => {
+        // Only proceed if this rootNode looks like a LiteGraph combo list (has an input filter OR many short text children)
+        if (!rootNode.querySelector || rootNode._vtPopupScanned) return;
+        const hasFilter = rootNode.querySelector('input');
+        if (!hasFilter && (!rootNode.className || !/litegraph|graph|combo|popup/i.test(rootNode.className))) return;
+        rootNode._vtPopupScanned = true;
+        // Collect potential option nodes: leaf div/span elements with text only
+        const potential = Array.from(rootNode.querySelectorAll('div, span, li')).filter(el => !el.firstElementChild && (el.textContent||'').trim().length > 0 && (el.textContent||'').length < 40);
+        potential.forEach(el => {
             if (el._vtColorized) return; // already processed
             // Match text content to a known color name (exact match ignoring case)
             const rawText = (el.textContent || '').trim();
