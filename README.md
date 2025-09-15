@@ -213,6 +213,33 @@ Character files you create are stored alongside your ComfyUI output directory. T
 
 All aesthetic options, style definitions, and feature lists are stored in YAML files within the `feature_lists/` directory. These can be customized to add new styles, modify existing options, or adjust the available choices for each node.
 
+## Debug Logging
+
+Most verbose console output is disabled by default to keep the ComfyUI browser console clean. You can toggle diagnostic logging at runtime without reloading:
+
+Enable debug logging (includes palette load status, node styling lifecycle, enhancement counts):
+
+```javascript
+VioletTools.enableDebug();
+```
+
+Disable debug logging again:
+
+```javascript
+VioletTools.disableDebug();
+```
+
+What gets logged when enabled:
+
+- Node styling extension init/complete events
+- Color palette load confirmation or fallback usage
+- Flat color map build size
+- Per-node color widget enhancement counts
+- Legacy value sanitation notices
+
+
+These helpers set `config.debugLogging = true/false` for both the node styling and color chips modules if present. They are safe to call multiple times.
+
 ## Requirements
 
 - ComfyUI

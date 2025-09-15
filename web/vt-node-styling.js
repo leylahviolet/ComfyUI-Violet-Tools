@@ -281,4 +281,33 @@
         }
     };
 
+    // Shared global namespace + debug helpers
+    window.VioletTools = window.VioletTools || {};
+    if (!window.VioletTools.enableDebug) {
+        window.VioletTools.enableDebug = function() {
+            try {
+                if (window.VioletToolsNodeStylingV2) {
+                    window.VioletToolsNodeStylingV2.config.debugLogging = true;
+                }
+                if (window.VioletToolsColorChips) {
+                    window.VioletToolsColorChips.config.debugLogging = true;
+                }
+                console.log('Violet Tools: Debug logging ENABLED');
+            } catch(e) {}
+        };
+    }
+    if (!window.VioletTools.disableDebug) {
+        window.VioletTools.disableDebug = function() {
+            try {
+                if (window.VioletToolsNodeStylingV2) {
+                    window.VioletToolsNodeStylingV2.config.debugLogging = false;
+                }
+                if (window.VioletToolsColorChips) {
+                    window.VioletToolsColorChips.config.debugLogging = false;
+                }
+                console.log('Violet Tools: Debug logging DISABLED');
+            } catch(e) {}
+        };
+    }
+
 })();
