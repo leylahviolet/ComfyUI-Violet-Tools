@@ -178,7 +178,9 @@
     function initialize() {
         if (!CONFIG.enabled) return;
         
-        console.log('Violet Tools: Initializing node styling extension v2.0...');
+        if (CONFIG.debugLogging) {
+            console.log('Violet Tools: Initializing node styling extension v2.0...');
+        }
         
         // Load logo
         loadLogo();
@@ -196,7 +198,9 @@
             styleAllNodes();
         }, 10000);
         
-        console.log('Violet Tools: Node styling extension v2.0 initialized');
+        if (CONFIG.debugLogging) {
+            console.log('Violet Tools: Node styling extension v2.0 initialized');
+        }
     }
 
     // Update configuration

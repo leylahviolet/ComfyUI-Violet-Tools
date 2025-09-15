@@ -17,7 +17,8 @@
         enabled: true,          // Master enable/disable
         showTooltips: true,     // Show color name tooltips
         animationDuration: 200, // Animation duration in ms
-        popupEnhancement: true // Re-enabled with stricter filtering
+        popupEnhancement: true, // Re-enabled with stricter filtering
+        debugLogging: false     // Silence non-essential logs by default
     };
 
     // Color palette data - will be populated from palette.json
@@ -133,7 +134,9 @@
             const response = await fetch('/extensions/comfyui-violet-tools/palette.json');
             if (response.ok) {
                 colorPalette = await response.json();
-                console.log('Violet Tools: Color palette loaded successfully');
+                if (CONFIG.debugLogging) {
+                    console.log('Violet Tools: Color palette loaded successfully');
+                }
                 buildFlatColorMap();
                 return;
             }
@@ -167,7 +170,9 @@
                 if (typeof hex === 'string') flatColorMap[name] = hex;
             }
         }
-        console.log(`[VT] Built flat color map with ${Object.keys(flatColorMap).length} entries`);
+        if (CONFIG.debugLogging) {
+            console.log(`[VT] Built flat color map with ${Object.keys(flatColorMap).length} entries`);
+        }
     }
 
     // Check if a widget should have color chips
@@ -365,7 +370,9 @@
                 const cleaned = w.options.values.map(v => typeof v === 'string' ? v.replace(/^[\u{1F7E5}-\u{1F7EB}⬛⬜🟫🔳]\s*/u, '').trim() : v);
                 if (cleaned.some((c,i)=>c!==w.options.values[i])) {
                     w.options.values = cleaned;
-                    console.log('[VT] Sanitized legacy emoji values for widget', w.name);
+                    if (CONFIG.debugLogging) {
+                        console.log('[VT] Sanitized legacy emoji values for widget', w.name);
+                    }
                 }
             }
         });
@@ -373,7 +380,9 @@
         node.widgets.forEach(widget => { if (enhanceWidget(widget, node)) enhancedCount++; });
 
         if (enhancedCount > 0) {
-            console.log(`Violet Tools: Enhanced ${enhancedCount} color widgets in ${node.constructor?.name || 'unknown'} node`);
+            if (CONFIG.debugLogging) {
+                console.log(`Violet Tools: Enhanced ${enhancedCount} color widgets in ${node.constructor?.name || 'unknown'} node`);
+            }
         }
         
         // Install single foreground drawer (after widgets so chips overlay & visible)
