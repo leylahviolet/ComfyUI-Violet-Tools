@@ -283,15 +283,24 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         // Modify widget to include extra height for color chips
         const originalComputeSize = widget.computeSize;
         widget.computeSize = function() {
-            const size = originalComputeSize ? originalComputeSize.call(this) : [this.size[0], this.size[1]];
+            // Get base size safely
+            let baseSize;
+            if (originalComputeSize) {
+                baseSize = originalComputeSize.call(this);
+            } else if (this.size && this.size.length >= 2) {
+                baseSize = [this.size[0], this.size[1]];
+            } else {
+                baseSize = [200, 30]; // Default size
+            }
             
             // Add height for color chips (2 rows of chips)
             const chipSize = 12;
             const padding = 2;
-            const rows = Math.min(2, Math.ceil(colorArray.length / Math.floor((size[0] - 10) / (chipSize + padding))));
+            const chipsPerRow = Math.floor((baseSize[0] - 10) / (chipSize + padding));
+            const rows = Math.min(2, Math.ceil(colorArray.length / Math.max(1, chipsPerRow)));
             const extraHeight = rows * (chipSize + padding) + padding;
             
-            return [size[0], size[1] + extraHeight];
+            return [baseSize[0], baseSize[1] + extraHeight];
         };
 
         // Store original widget mouse function
