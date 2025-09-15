@@ -450,4 +450,16 @@
         }
     };
 
+    // Expose test function to global window for debugging
+    window.testChips = testChips;
+    
+    // Simple check function to verify extension is loaded
+    window.vtColorChipsLoaded = function() {
+        console.log('✅ Violet Tools Color Chips extension is loaded and ready!');
+        console.log('Available functions: testChips()');
+        return true;
+    };
+    
+    console.log('🎨 Violet Tools Color Chips extension loaded');
+
 })();
