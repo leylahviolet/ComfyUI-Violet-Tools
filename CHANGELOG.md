@@ -5,6 +5,26 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-09-14
+
+### ✨ New Features
+
+- **Token Report System**: Added comprehensive token usage analysis to Encoding Enchantress
+  - Optional `token_report` boolean input to enable detailed token counting
+  - New `tokens` STRING output with formatted per-node token breakdown
+  - Shows token usage per 77-token chunk for each Violet Tools prompt node
+  - SDXL support: Merges 'g' and 'l' streams using max-per-chunk strategy
+  - Handles multi-chunk prompts with clear chunk indexing (chunk 0, chunk 1, etc.)
+  - Skips empty prompts to keep reports clean and focused
+  - Proper error handling with fallback messages for CLIP connection issues
+
+### 🎯 Technical Details
+
+- Tokenization analysis without redundant encoding for performance
+- Node-specific labeling with emoji icons for easy identification
+- Graceful handling of weighted syntax and emphasis in prompts
+- Memory-efficient implementation with single-pass tokenization
+
 ## [1.3.2] - 2025-09-14
 
 ### 🏗️ Organizational

@@ -11,6 +11,11 @@ class EncodingEnchantress:
     - "portrait": Combines glamour + body, puts pose + aesthetic + quality together with portrait keyword
     - "smooth blend": Combines all prompts into a single conditioning for smooth blending (default)
     - "compete combine": Creates separate conditionings for each element to compete/oscillate
+    
+    Features:
+    - Token reporting: Optional detailed analysis of token usage per prompt node with 77-token chunk breakdown
+    - Character system integration: Direct prompt injection from saved character profiles
+    - SDXL support: Handles both 'g' and 'l' token streams with max-per-chunk merging for accurate reporting
     """
 
     @classmethod
@@ -34,6 +39,7 @@ class EncodingEnchantress:
                     "tooltip": "Strength for quality + aesthetic prompts (not used in smooth blend)"
                 }),
                 "negative_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 3.0, "step": 0.01}),
+                "token_report": ("BOOLEAN", {"default": False, "tooltip": "Generate detailed token usage report for each prompt"}),
             },
             "optional": {
                 "quality": ("QUALITY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
@@ -48,8 +54,8 @@ class EncodingEnchantress:
             }
         }
 
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "CHARACTER_DATA")
-    RETURN_NAMES = ("positive", "negative", "pos_text", "neg_text", "character")
+    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "CHARACTER_DATA", "STRING")
+    RETURN_NAMES = ("positive", "negative", "pos_text", "neg_text", "character", "tokens")
     FUNCTION = "condition"
     CATEGORY = "Violet Tools 💅/Character"
 
@@ -143,6 +149,99 @@ class EncodingEnchantress:
         for c in valid[1:]:
             result = result + c
         return result
+
+    def _per_chunk_counts(self, stream_chunks):
+        """
+        Count non-pad tokens in each chunk of a stream.
+        
+        Args:
+            stream_chunks: list[list[Tuple[token_id, weight, ...]]]
+            
+        Returns:
+            list: Count of non-pad tokens per chunk
+        """
+        out = []
+        for chunk in stream_chunks:
+            n = 0
+            for tok in chunk:
+                # tok[0] is token_id; pad == 0
+                if tok[0] != 0:
+                    n += 1
+            out.append(n)
+        return out
+
+    def _merge_streams_by_max(self, tokens_dict):
+        """
+        Merge multiple token streams by taking max count per chunk index.
+        
+        Args:
+            tokens_dict: dict like {'g': [[...], [...]], 'l': [[...], ...]} (keys optional)
+            
+        Returns:
+            list: Merged token counts using max per chunk index
+        """
+        g_counts = self._per_chunk_counts(tokens_dict.get('g', []))
+        l_counts = self._per_chunk_counts(tokens_dict.get('l', []))
+        num_chunks = max(len(g_counts), len(l_counts))
+        merged = []
+        for i in range(num_chunks):
+            gi = g_counts[i] if i < len(g_counts) else 0
+            li = l_counts[i] if i < len(l_counts) else 0
+            merged.append(max(gi, li))
+        return merged
+
+    def _section(self, label, merged_counts):
+        """
+        Build a section of the token report for one node.
+        
+        Args:
+            label: Node display name with emoji
+            merged_counts: list of token counts per chunk
+            
+        Returns:
+            str: Formatted section or None if empty
+        """
+        if not merged_counts or sum(merged_counts) == 0:
+            return None  # skip empty
+        lines = [label]
+        for i, n in enumerate(merged_counts):
+            lines.append(f"chunk {i}: {n} tokens")
+        return "\n".join(lines)
+
+    def _make_token_report(self, clip, items, enabled):
+        """
+        Generate comprehensive token usage report.
+        
+        Args:
+            clip: CLIP model instance for tokenization
+            items: list of (label, text) pairs to analyze
+            enabled: boolean flag for report generation
+            
+        Returns:
+            str: Formatted token report or disabled message
+        """
+        if not enabled:
+            return "Toggle on token_report for a full report of tokens used for each prompt node of Violet Tools."
+        
+        # Check if CLIP is valid
+        if not clip or not hasattr(clip, 'tokenize'):
+            print("[Encoding Enchantress] Warning: CLIP is missing or invalid for token report")
+            return "There was a problem with CLIP... Check your connections?"
+            
+        sections = []
+        for label, text in items:
+            if not text or not text.strip():
+                continue
+            try:
+                tokens_dict = clip.tokenize(text)
+                merged = self._merge_streams_by_max(tokens_dict)
+                sec = self._section(label, merged)
+                if sec:
+                    sections.append(sec)
+            except (AttributeError, KeyError, IndexError, TypeError) as e:
+                print(f"[Encoding Enchantress] token report error in '{label}': {e}")
+                continue
+        return "\n\n".join(sections)
 
     def _filter_scene_framing(self, scene_text):
         """
@@ -261,7 +360,7 @@ class EncodingEnchantress:
         
         return ""
 
-    def condition(self, clip, mode, body_strength, vibe_strength, negative_strength,
+    def condition(self, clip, mode, body_strength, vibe_strength, negative_strength, token_report,
                   quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier="",
                   character=None, character_apply=False):
         """
@@ -406,7 +505,20 @@ class EncodingEnchantress:
             }
         }
 
-        return (positive_combined, negative_combined, pos_text, combined_negative, character_output)
+        # Generate token report
+        token_items = [
+            ("👑 Quality Queen", quality),
+            ("🎭 Scene Seductress", scene),
+            ("✨ Glamour Goddess", glamour),
+            ("💃 Body Bard", body),
+            ("💋 Aesthetic Alchemist", aesthetic),
+            ("🤩 Pose Priestess", pose),
+            ("🚫 Negativity Nullifier", nullifier)
+        ]
+        
+        token_report_text = self._make_token_report(clip, token_items, token_report)
+
+        return (positive_combined, negative_combined, pos_text, combined_negative, character_output, token_report_text)
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,

@@ -2,7 +2,7 @@
 import os, json, time, random
 
 class CharacterCache:
-    """�️ Character Cache
+    """🗃️ Character Cache
     
     Loads saved characters and outputs their data for use with other Violet Tools nodes.
     
@@ -138,4 +138,4 @@ class CharacterCache:
             return ({}, "", f"❌ Error loading '{selected_name}': {e}")
 
 NODE_CLASS_MAPPINGS = {"CharacterCache": CharacterCache}
-NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCache": "�️ Character Cache"}
+NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCache": "🗃️ Character Cache"}

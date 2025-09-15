@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.3.2-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.3-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -8,7 +8,15 @@ A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image
 
 ### 🧬 Encoding Enchantress
 
-Advanced text encoding and prompt processing node for enhanced prompt interpretation.
+Advanced text encoding and prompt processing node for enhanced prompt interpretation with comprehensive token analysis:
+
+- Four encoding modes: closeup, portrait, smooth blend, and compete combine
+- Individual strength controls for different prompt elements
+- Character system integration for direct prompt injection
+- **Token Report System**: Detailed analysis of token usage per Violet Tools node
+  - Shows 77-token chunk breakdown for each prompt component
+  - SDXL support with merged stream analysis
+  - Optional reporting to avoid performance impact when disabled
 
 ### 👑 Quality Queen
 
