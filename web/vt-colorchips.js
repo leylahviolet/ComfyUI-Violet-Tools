@@ -267,7 +267,7 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         return container;
     }
 
-    // Enhance a widget with color chips using LiteGraph canvas rendering
+    // Enhance a widget with color chips in dropdown options
     function enhanceWidget(widget, node) {
         if (!shouldEnhanceWidget(widget, node)) return false;
         
@@ -275,90 +275,75 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         const colors = colorPalette.colorFields[fieldName];
         if (!colors) return false;
 
-        console.log(`[DEBUG] Enhancing widget ${fieldName} with canvas rendering...`);
+        console.log(`[DEBUG] Enhancing widget ${fieldName} with dropdown color chips...`);
 
-        // Store the colors as an array of [name, hex] pairs
-        const colorArray = Object.entries(colors);
+        // Store the colors for later use
+        widget._colorChips = colors;
 
-        // Modify widget to include extra height for color chips
-        const originalComputeSize = widget.computeSize;
-        widget.computeSize = function() {
-            // Get base size safely
-            let baseSize;
-            if (originalComputeSize) {
-                baseSize = originalComputeSize.call(this);
-            } else if (this.size && this.size.length >= 2) {
-                baseSize = [this.size[0], this.size[1]];
-            } else {
-                baseSize = [200, 30]; // Default size
-            }
-            
-            // Add height for color chips (2 rows of chips)
-            const chipSize = 16;  // Increased from 12
-            const padding = 4;    // Increased from 2
-            const verticalSpacing = 8; // Extra spacing above chips
-            const chipsPerRow = Math.floor((baseSize[0] - 20) / (chipSize + padding)); // More margin
-            const rows = Math.min(2, Math.ceil(colorArray.length / Math.max(1, chipsPerRow)));
-            const extraHeight = verticalSpacing + rows * (chipSize + padding) + padding;
-            
-            return [baseSize[0], baseSize[1] + extraHeight];
-        };
-
-        // Store original widget mouse function
-        const originalMouse = widget.mouse;
-        
-        // Override mouse handling for color chip clicks
-        widget.mouse = function(event, pos, node) {
-            // Call original mouse handler first
-            if (originalMouse && originalMouse.call(this, event, pos, node)) {
-                return true;
-            }
-            
-            // Handle color chip clicks
-            if (event.type === "pointerdown") {
-                const chipSize = 16;  // Match the drawing size
-                const padding = 4;    // Match the drawing padding
-                const chipsPerRow = Math.floor((node.size[0] - 20) / (chipSize + padding)); // Match the drawing calculation
-                
-                // Calculate chip area position relative to widget
-                const chipStartY = this.size[1] - (chipSize + padding) * 2 - 8; // Account for vertical spacing
-                
-                for (let i = 0; i < colorArray.length; i++) {
-                    const row = Math.floor(i / chipsPerRow);
-                    const col = i % chipsPerRow;
-                    
-                    const chipX = 10 + col * (chipSize + padding); // Match the drawing margin
-                    const chipY = chipStartY + row * (chipSize + padding);
-                    
-                    // Check if click is within this chip
-                    if (pos[0] >= chipX && pos[0] <= chipX + chipSize &&
-                        pos[1] >= chipY && pos[1] <= chipY + chipSize) {
-                        
-                        const [colorName, hexColor] = colorArray[i];
-                        console.log(`[DEBUG] Color chip clicked: ${colorName} (${hexColor})`);
-                        
-                        // Update widget value
-                        this.value = colorName;
-                        if (this.callback) {
-                            this.callback(colorName);
-                        }
-                        
-                        // Force node to redraw
-                        node.setDirtyCanvas(true);
-                        
-                        return true;
-                    }
+        // Override the widget's option display
+        const originalOptionsValues = widget.options?.values;
+        if (originalOptionsValues) {
+            // Create enhanced options with color chips
+            widget.options.values = originalOptionsValues.map(optionValue => {
+                const hexColor = colors[optionValue];
+                if (hexColor) {
+                    // Add color chip emoji/unicode block based on color
+                    const colorChip = getColorChip(hexColor);
+                    return `${colorChip} ${optionValue}`;
                 }
+                return optionValue; // No color for this option
+            });
+        }
+
+        // Override the display of the selected value
+        const originalDraw = widget.draw;
+        widget.draw = function(ctx, node, widget_width, y, H) {
+            // Call original widget draw
+            if (originalDraw) {
+                originalDraw.call(this, ctx, node, widget_width, y, H);
             }
             
-            return false;
+            // Draw color chip next to selected value
+            const currentColor = colors[this.value];
+            if (currentColor) {
+                // Draw a small color square next to the value
+                const chipSize = 12;
+                const chipX = widget_width - chipSize - 25; // Position near the right edge
+                const chipY = y + (H - chipSize) / 2; // Center vertically
+                
+                ctx.fillStyle = currentColor;
+                ctx.fillRect(chipX, chipY, chipSize, chipSize);
+                
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(chipX, chipY, chipSize, chipSize);
+            }
         };
 
         // Mark as enhanced
         enhancedWidgets.add(widget);
-        console.log(`[DEBUG] Widget ${fieldName} enhanced with canvas color chips`);
+        console.log(`[DEBUG] Widget ${fieldName} enhanced with dropdown color chips`);
         
         return true;
+    }
+    
+    // Get a color chip character/emoji based on hex color
+    function getColorChip(hexColor) {
+        // Convert hex to rough color categories and return appropriate emoji
+        const color = hexColor.toLowerCase();
+        
+        // Simple color mapping - you can make this more sophisticated
+        if (color.includes('red') || color.startsWith('#f') || color.startsWith('#e')) return '🟥';
+        if (color.includes('orange') || color.startsWith('#ff8') || color.startsWith('#ff6')) return '🟧';
+        if (color.includes('yellow') || color.startsWith('#ff') || color.startsWith('#fe')) return '🟨';
+        if (color.includes('green') || color.startsWith('#0') || color.startsWith('#1')) return '🟩';
+        if (color.includes('blue') || color.startsWith('#00') || color.startsWith('#0')) return '🟦';
+        if (color.includes('purple') || color.startsWith('#8') || color.startsWith('#9')) return '🟪';
+        if (color.includes('black') || color.startsWith('#000') || color.startsWith('#111')) return '⬛';
+        if (color.includes('white') || color.startsWith('#fff') || color.startsWith('#eee')) return '⬜';
+        
+        // Default to a neutral square
+        return '🟫';
     }
 
     // Enhanced node processing
@@ -366,79 +351,18 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         if (!node || !node.widgets) return;
         
         let enhancedCount = 0;
-        const enhancedWidgets = [];
         
         node.widgets.forEach(widget => {
             if (enhanceWidget(widget, node)) {
                 enhancedCount++;
-                enhancedWidgets.push(widget);
             }
         });
         
         if (enhancedCount > 0) {
             console.log(`Violet Tools: Enhanced ${enhancedCount} color widgets in ${node.constructor?.name || 'unknown'} node`);
-            
-            // Override node's onDrawForeground to draw color chips
-            const originalDrawForeground = node.onDrawForeground;
-            node.onDrawForeground = function(ctx) {
-                // Call original drawing first
-                if (originalDrawForeground) {
-                    originalDrawForeground.call(this, ctx);
-                }
-                
-                // Draw color chips for each enhanced widget
-                enhancedWidgets.forEach(widget => {
-                    drawColorChipsForWidget(ctx, widget, node);
-                });
-            };
-            
-            // Force node to redraw
-            node.setDirtyCanvas(true);
         }
     }
     
-    // Draw color chips for a specific widget
-    function drawColorChipsForWidget(ctx, widget, node) {
-        const fieldName = widget.name;
-        const colors = colorPalette.colorFields[fieldName];
-        if (!colors) return;
-        
-        const colorArray = Object.entries(colors);
-        const chipSize = 16;    // Match the size calculation
-        const padding = 4;      // Match the padding calculation
-        const chipsPerRow = Math.floor((node.size[0] - 20) / (chipSize + padding)); // More margin
-        
-        // Find widget position in node
-        let widgetY = 30; // Start after title
-        const widgetIndex = node.widgets.indexOf(widget);
-        for (let i = 0; i < widgetIndex; i++) {
-            widgetY += node.widgets[i].computeSize ? node.widgets[i].computeSize()[1] : 20;
-        }
-        
-        // Position chips below the widget with better spacing
-        const chipStartX = 10;  // More left margin
-        const chipStartY = widgetY + (widget.computeSize ? widget.computeSize()[1] : 20) - 35; // More space from widget
-        
-        // Draw color chips
-        for (let i = 0; i < Math.min(colorArray.length, chipsPerRow * 2); i++) {
-            const [colorName, hexColor] = colorArray[i];
-            const row = Math.floor(i / chipsPerRow);
-            const col = i % chipsPerRow;
-            
-            const chipX = chipStartX + col * (chipSize + padding);
-            const chipY = chipStartY + row * (chipSize + padding);
-            
-            // Draw chip background
-            ctx.fillStyle = hexColor;
-            ctx.fillRect(chipX, chipY, chipSize, chipSize);
-            
-            // Draw border
-            ctx.strokeStyle = widget.value === colorName ? '#ffffff' : '#666666';
-            ctx.lineWidth = widget.value === colorName ? 2 : 1;
-            ctx.strokeRect(chipX, chipY, chipSize, chipSize);
-        }
-    }
-
     // Monitor for new nodes
     function observeNodes() {
         // Hook into ComfyUI's node creation
