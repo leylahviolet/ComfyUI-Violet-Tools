@@ -5,6 +5,40 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2025-09-14
+
+### 🎨 New Features
+
+- **Color Chips UI Enhancement**: Revolutionary visual color selection interface
+  - Visual color swatches (20×20px) replace tedious dropdown navigation
+  - 18 color fields enhanced across Glamour Goddess and Body Bard nodes
+  - 60+ colors per field with complete spectrum coverage and light/dark variants
+  - Instant search functionality - type to filter colors by name
+  - Smart tooltips showing color names and precise hex values
+  - One-click selection instantly updates dropdown values
+  - Zero breaking changes - existing workflows continue working perfectly
+
+### 🎯 Enhanced Nodes
+
+- **Glamour Goddess** (11 color fields): hair_color, highlight_color, dip_dye_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
+- **Body Bard** (4 color fields): skin_tone, areola_shade, pubic_hair_color, armpit_hair_color
+
+### 🔧 Technical Implementation
+
+- **Web Extension System**: Added `WEB_DIRECTORY` export for JavaScript extension loading
+- **Color Palette Data**: Comprehensive `palette.json` with 1000+ color-to-hex mappings
+- **Smart Color Mapping**: Intelligent hex value assignments (e.g., "light red" = `#FF6666`, "dark red" = `#CC0000`)
+- **Performance Optimized**: Only loads for Violet Tools nodes with color fields
+- **Browser Integration**: Seamless ComfyUI widget system integration with hover animations
+
+### 🎨 User Experience
+
+- **Visual Feedback**: See exactly what "cyan-teal" or "rose-red" looks like before selection
+- **Faster Workflow**: No more scrolling through 60+ dropdown options
+- **Color Coordination**: Easily match hair highlights to eye colors visually
+- **Search & Filter**: Find colors quickly with partial name matching
+- **Responsive Design**: Adapts to different screen sizes and node layouts
+
 ## [1.3.3] - 2025-09-14
 
 ### ✨ New Features

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from .nodes.quality_queen import QualityQueen
 from .nodes.scene_seductress import SceneSeductress
 from .nodes.body_bard import BodyBard
@@ -9,6 +10,9 @@ from .nodes.encoding_enchantress import EncodingEnchantress
 from .nodes.negativity_nullifier import NegativityNullifier
 from .nodes.character_creator import CharacterCreator
 from .nodes.character_cache import CharacterCache
+
+# Enable web extensions
+WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,

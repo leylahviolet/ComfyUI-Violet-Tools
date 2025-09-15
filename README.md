@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.3.3-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.4-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -72,6 +72,26 @@ Save, re-load, and apply consistent character traits across workflows:
 - Deterministic when selecting specific characters; optional randomness when exploring
 
 See Quick Start below for a minimal character workflow.
+
+## 🎨 Color Chips UI Enhancement (NEW in 1.3.4)
+
+Revolutionary visual color selection interface that transforms tedious dropdown navigation into an intuitive, visual experience:
+
+- **Visual Color Swatches**: See exactly what "cyan-teal" or "rose-red" looks like with 20×20px color chips
+- **18 Color Fields Enhanced**: All hair colors, makeup colors, eye colors, nail colors, and skin tones
+- **60+ Colors Per Field**: Complete spectrum coverage with light/dark variants
+- **Instant Search**: Type to filter colors by name (search "teal", "red", "dark", etc.)
+- **Smart Tooltips**: Hover to see color names and hex values
+- **One-Click Selection**: Click any color chip to instantly set the dropdown value
+- **Zero Breaking Changes**: Existing workflows continue working perfectly
+- **Performance Optimized**: Only loads for Violet Tools nodes with color fields
+
+**Supported Color Fields:**
+
+- **Glamour Goddess**: hair_color, highlight_color, dip_dye_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
+- **Body Bard**: skin_tone, areola_shade, pubic_hair_color, armpit_hair_color
+
+The color chips automatically appear below color dropdown widgets in supported nodes, providing immediate visual feedback and dramatically faster color selection. No more scrolling through 60+ options to find the perfect shade!
 
 ## Supported Aesthetic Styles
 
