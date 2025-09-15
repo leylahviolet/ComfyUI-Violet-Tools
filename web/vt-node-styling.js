@@ -98,27 +98,17 @@
                 const ih = logoImage.naturalHeight || logoImage.height || 1;
                 const aspect = iw / ih;
 
-                // Fit logo maintaining aspect, but constrain so its bottom sits ~42% down the node
-                const targetBottom = this.size[1] * 0.42; // desired bottom position
-                const availableHeight = Math.max(0, targetBottom - padTop);
-
-                // Start from max possible height (below title) then clamp to availableHeight and width
-                let h = Math.min(maxH, availableHeight);
-                if (h <= 0) { ctx.restore(); return; }
+                // Restore full size: fit as large as possible below title while preserving aspect
+                let h = maxH;
                 let w = h * aspect;
-                if (w > maxW) {
-                    w = maxW;
-                    h = w / aspect;
-                    // Re-clamp if now taller than available
-                    if (h > availableHeight) {
-                        h = availableHeight;
-                        w = h * aspect;
-                    }
-                }
+                if (w > maxW) { w = maxW; h = w / aspect; }
 
+                // Raise the logo upward: anchor nearer the title bar, leaving only minimal padTop
                 const logoX = (this.size[0] - w) / 2;
-                let logoY = targetBottom - h;
-                if (logoY < padTop) logoY = padTop; // safety clamp
+                const raiseFactor = 0.15; // move up by 15% of remaining vertical slack compared to centered
+                const centeredY = padTop + (maxH - h) / 2;
+                let logoY = centeredY - (maxH - h) * raiseFactor;
+                if (logoY < padTop) logoY = padTop;
 
                 ctx.globalAlpha = CONFIG.logoOpacity;
                 ctx.drawImage(logoImage, logoX, logoY, w, h);
