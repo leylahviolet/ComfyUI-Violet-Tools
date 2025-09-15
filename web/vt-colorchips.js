@@ -4,10 +4,12 @@
  * For use with Violet Tools nodes that have color selection fields
  */
 
-console.log('🚀 Loading Violet Tools Color Chips extension...');
+console.log('🚀 [VT-COLORCHIPS] Script execution started...');
 
 (function() {
     'use strict';
+
+    console.log('🚀 [VT-COLORCHIPS] Inside IIFE...');
 
     // Configuration
     const CONFIG = {
