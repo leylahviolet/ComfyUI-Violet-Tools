@@ -512,6 +512,60 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         return true;
     };
     
+    // Debug function to inspect DOM structure
+    window.vtInspectDOM = function() {
+        console.log('=== DOM Structure Inspection ===');
+        
+        // Look for any elements that might be nodes
+        const allElements = document.querySelectorAll('*');
+        const potentialNodes = [];
+        
+        console.log(`Total DOM elements: ${allElements.length}`);
+        
+        // Look for elements with various node-related classes/attributes
+        const nodeSelectors = [
+            '.comfy-node',
+            '.litegraph-node', 
+            '[data-node-id]',
+            '[id*="node"]',
+            '.node',
+            '[class*="node"]',
+            '[class*="litegraph"]',
+            '[class*="comfy"]'
+        ];
+        
+        nodeSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            if (elements.length > 0) {
+                console.log(`Found ${elements.length} elements with selector: ${selector}`);
+                elements.forEach((el, i) => {
+                    if (i < 3) { // Show first 3 examples
+                        console.log(`  Element ${i+1}:`, el);
+                        console.log(`    - Classes: ${el.className}`);
+                        console.log(`    - ID: ${el.id}`);
+                        console.log(`    - Data attributes:`, Object.keys(el.dataset));
+                    }
+                });
+            }
+        });
+        
+        // Look specifically for select elements
+        const selects = document.querySelectorAll('select');
+        console.log(`\nFound ${selects.length} select elements:`);
+        selects.forEach((sel, i) => {
+            if (i < 5) { // Show first 5
+                console.log(`  Select ${i+1}:`, sel);
+                console.log(`    - Parent classes: ${sel.parentElement ? sel.parentElement.className : 'none'}`);
+                console.log(`    - Options count: ${sel.options.length}`);
+                if (sel.options.length > 0) {
+                    console.log(`    - First few options:`, Array.from(sel.options).slice(0, 3).map(opt => opt.value));
+                }
+            }
+        });
+        
+        return { totalElements: allElements.length, selects: selects.length };
+    };
+    
     // Debug function to check if chips are in the DOM
     window.vtCheckChipsInDOM = function() {
         const chipContainers = document.querySelectorAll('.vt-color-chips');
