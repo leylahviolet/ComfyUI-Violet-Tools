@@ -153,22 +153,67 @@ class EncodingEnchantress:
 
     def _per_chunk_counts(self, stream_chunks):
         """
-        Count non-pad tokens in each chunk of a stream.
-        
+        Count real (non-padding) tokens in each chunk of a stream.
+
+        ComfyUI / SDXL tokenization typically returns fixed-length (77) chunks.
+        After the actual text tokens, the sequence is padded – frequently by
+        repeating the end-of-text token (e.g. 49407) rather than using id 0.
+        The previous implementation only excluded id==0, which caused every
+        chunk to report a full 77 tokens (since padding was not filtered).
+
+        Heuristic implemented here:
+        1. Identify a trailing run of a single repeated token id at the end
+           of the chunk (candidate padding id).
+        2. Trim that entire trailing run (we do NOT count those).
+        3. From the remaining tokens, exclude known special tokens:
+           - start token (49406)
+           - end token (49407)
+           - explicit pad (0) if present
+        4. If the heuristic would yield zero but the old method produced >0,
+           fall back to the old method (safety for unusual vocabularies).
+
         Args:
-            stream_chunks: list[list[Tuple[token_id, weight, ...]]]
-            
+            stream_chunks: list of chunks, each a list of (token_id, weight, ...)
         Returns:
-            list: Count of non-pad tokens per chunk
+            list[int]: Count of non-padding, non-special tokens per chunk.
         """
         out = []
+        SPECIAL_IDS = {0, 49406, 49407}
         for chunk in stream_chunks:
-            n = 0
-            for tok in chunk:
-                # tok[0] is token_id; pad == 0
-                if tok[0] != 0:
-                    n += 1
-            out.append(n)
+            if not chunk:
+                out.append(0)
+                continue
+
+            token_ids = [t[0] for t in chunk]
+
+            # Identify trailing run of identical id
+            pad_id = token_ids[-1]
+            idx = len(token_ids) - 1
+            while idx >= 0 and token_ids[idx] == pad_id:
+                idx -= 1
+            # All indices > idx are trailing repeats of pad_id
+            trimmed_ids = token_ids[:idx+1]
+
+            # If everything was the same token (empty / fully padded)
+            if not trimmed_ids:
+                out.append(0)
+                continue
+
+            # Remove a *single* final end token if present after trim stage
+            # (Sometimes there is exactly one end token followed by repeats of same id.)
+            if trimmed_ids and trimmed_ids[-1] in SPECIAL_IDS:
+                trimmed_ids = trimmed_ids[:-1]
+
+            # Count non-special ids
+            count = sum(1 for tid in trimmed_ids if tid not in SPECIAL_IDS)
+
+            # Fallback: if heuristic collapses everything but raw (old) count was non-zero
+            if count == 0:
+                legacy = sum(1 for tid in token_ids if tid != 0)
+                if legacy > 0:
+                    count = legacy  # fallback to previous behavior
+
+            out.append(count)
         return out
 
     def _merge_streams_by_max(self, tokens_dict):
