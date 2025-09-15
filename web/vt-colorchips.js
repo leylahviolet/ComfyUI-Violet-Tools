@@ -321,7 +321,36 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         // Placeholder flag so we only attach one popup enhancer per widget.
         widget._vtPopupEnhanced = false;
 
-        // Do NOT override widget.draw (previously caused widget invisibility). Drawing handled at node level.
+        // Per-widget chip drawing: suffix inside the widget row after original draw.
+        if (!widget._vtOriginalDraw) {
+            widget._vtOriginalDraw = widget.draw;
+            widget.draw = function(ctx, nodeRef, widgetWidth, y, h) {
+                // Run original draw first
+                if (this._vtOriginalDraw) {
+                    this._vtOriginalDraw(ctx, nodeRef, widgetWidth, y, h);
+                }
+                try {
+                    const colorMap = this._colorChips;
+                    if (!colorMap) return;
+                    const currentColor = colorMap[this.value];
+                    if (!currentColor) return;
+                    const chipSize = h ? Math.min(h - 6, 14) : 12; // fit nicely within row
+                    const chipY = y + (h - chipSize) / 2;
+                    // Reserve a small gap from right arrow area (~14px arrow region)
+                    const arrowReserve = 14;
+                    const chipX = widgetWidth - arrowReserve - chipSize;
+                    ctx.save();
+                    ctx.fillStyle = currentColor;
+                    ctx.fillRect(chipX, chipY, chipSize, chipSize);
+                    ctx.strokeStyle = '#222';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(chipX, chipY, chipSize, chipSize);
+                    ctx.restore();
+                } catch(e) {
+                    // If error occurs, silently ignore
+                }
+            };
+        }
 
         console.log(`[DEBUG] Widget ${fieldName} enhanced with dropdown color chips`);
         
@@ -356,9 +385,9 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
     // Enhanced node processing
     function enhanceNode(node) {
         if (!node || !node.widgets) return;
-        
+
         let enhancedCount = 0;
-        
+
         // Sanitize any legacy emoji-prefixed values (migration safeguard)
         node.widgets.forEach(w => {
             if (w?.options?.values && Array.isArray(w.options.values)) {
@@ -370,75 +399,10 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             }
         });
 
-        node.widgets.forEach(widget => {
-            if (enhanceWidget(widget, node)) {
-                enhancedCount++;
-            }
-        });
-        
+        node.widgets.forEach(widget => { if (enhanceWidget(widget, node)) enhancedCount++; });
+
         if (enhancedCount > 0) {
             console.log(`Violet Tools: Enhanced ${enhancedCount} color widgets in ${node.constructor?.name || 'unknown'} node`);
-            // Install a single foreground drawer if not already
-            if (!node._vtColorChipsDrawInstalled) {
-                const originalFG = node.onDrawForeground;
-                node.onDrawForeground = function(ctx) {
-                    if (originalFG) originalFG.call(this, ctx);
-                    try {
-                        if (!this.widgets) return;
-                        // Iterate widgets to find color ones
-                        // Mirror LiteGraph widget layout logic for accurate vertical alignment
-                        const titleH = LiteGraph.NODE_TITLE_HEIGHT || 30;
-                        const baseSpacing = 4; // typical spacing between widgets in LiteGraph
-                        let y = (this.widgets_start_y !== undefined ? this.widgets_start_y : (titleH + baseSpacing));
-                        for (let i = 0; i < this.widgets.length; i++) {
-                            const w = this.widgets[i];
-                            let h;
-                            try {
-                                if (w.computeSize) {
-                                    const sz = w.computeSize(this.size[0]);
-                                    h = Array.isArray(sz) ? sz[1] : sz;
-                                }
-                            } catch {}
-                            if (!h || h < 10) h = (LiteGraph.NODE_WIDGET_HEIGHT || 20);
-                            if (w._colorChips && w.value && w._colorChips[w.value]) {
-                                const color = w._colorChips[w.value];
-                                const chipSize = 12;
-                                const rightPadding = 12;
-                                const chipX = this.size[0] - rightPadding - chipSize;
-                                const chipY = y + (h - chipSize) * 0.5;
-                                ctx.fillStyle = color;
-                                ctx.fillRect(chipX, chipY, chipSize, chipSize);
-                                ctx.strokeStyle = '#222';
-                                ctx.lineWidth = 1;
-                                ctx.strokeRect(chipX, chipY, chipSize, chipSize);
-                            }
-                            y += h + baseSpacing;
-                        }
-                    } catch(e) {
-                        // If drawing fails, don't break node rendering
-                    }
-                };
-                node._vtColorChipsDrawInstalled = true;
-                node.setDirtyCanvas(true, true);
-            }
-        }
-    }
-    
-    // Monitor for new nodes
-    function observeNodes() {
-        // Hook into ComfyUI's node creation
-        if (window.LiteGraph && window.LiteGraph.LGraphNode) {
-            const originalConfigure = window.LiteGraph.LGraphNode.prototype.configure;
-            window.LiteGraph.LGraphNode.prototype.configure = function(data) {
-                const result = originalConfigure.call(this, data);
-                
-                // Small delay to ensure widgets are fully initialized
-                setTimeout(() => {
-                    enhanceNode(this);
-                }, 100);
-                
-                return result;
-            };
         }
         
         // Also monitor DOM changes for widgets
