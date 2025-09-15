@@ -5,6 +5,25 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-09-15
+
+### ✨ Improvements
+
+- **Color Chips Refinement**: Consolidated to a single production `vt-colorchips.js` file; removed legacy `-debug` and `-simple` variants.
+- **Visual Alignment**: Added precise offset layout for inline color chips in node widgets; improved dropdown chip prefixes.
+- **Logo Positioning**: Encoding Enchantress logo top-aligned and sizing stabilized.
+- **Output Reorder**: `Encoding Enchantress` outputs now ordered as `positive, negative, tokens, character, pos, neg` with `pos_text/neg_text` renamed externally to `pos/neg`.
+- **Skin Tone Palette Update**: Adjusted olive, golden, amber, mahogany, cocoa, ebony, dark ebony hex values; removed obsolete `light ebony` shade.
+
+### 🧹 Cleanup
+
+- Removed verbose console debugging from color chip extension.
+- Deleted unused `vt-colorchips-debug.js` and `vt-colorchips-simple.js`.
+
+### 🔧 Internal
+
+- Minor refactors for maintainability; no breaking API changes.
+
 ## [1.3.5] - 2025-09-14
 
 ### 🔧 Fixed
@@ -86,7 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `persona_preserver.py` → `character_creator.py`
   - `persona_patcher.py` → `character_cache.py`
 
-### 🎯 Improved
+### 🎯 Improved (Persona System)
 
 - **Node Names**: Refined naming for better semantic clarity:
   - "Persona Preserver" → "💖 Character Creator"
@@ -109,7 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Simplified Workflow**: Persona Preserver now connects directly to Encoding Enchantress character output
 - **Better Naming**: Renamed inputs/outputs for clarity (character_data → character, character_name → name)
 
-### 🔧 Fixed
+### 🔧 Fixed (Persona System)
 
 - **UTF-8 Encoding**: Added proper encoding declarations for Windows compatibility
 - **Directory Paths**: Characters now save to ComfyUI's output directory for easy access

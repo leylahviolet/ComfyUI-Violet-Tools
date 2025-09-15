@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.3.5-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.4.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -73,7 +73,7 @@ Save, re-load, and apply consistent character traits across workflows:
 
 See Quick Start below for a minimal character workflow.
 
-## 🎨 Color Chips UI Enhancement (NEW in 1.3.4)
+## 🎨 Color Chips UI Enhancement (Updated in 1.4.0)
 
 Revolutionary visual color selection interface that transforms tedious dropdown navigation into an intuitive, visual experience:
 
@@ -91,7 +91,7 @@ Revolutionary visual color selection interface that transforms tedious dropdown 
 - **Glamour Goddess**: hair_color, highlight_color, dip_dye_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
 - **Body Bard**: skin_tone, areola_shade, pubic_hair_color, armpit_hair_color
 
-The color chips automatically appear below color dropdown widgets in supported nodes, providing immediate visual feedback and dramatically faster color selection. No more scrolling through 60+ options to find the perfect shade!
+The color chips automatically appear below color dropdown widgets in supported nodes (now with streamlined single JS implementation), providing immediate visual feedback and dramatically faster color selection. No more scrolling through 60+ options to find the perfect shade!
 
 ## Supported Aesthetic Styles
 

@@ -4,12 +4,10 @@
  * For use with Violet Tools nodes that have color selection fields
  */
 
-console.log('🚀 [VT-COLORCHIPS] Script execution started...');
 
 (function() {
     'use strict';
 
-    console.log('🚀 [VT-COLORCHIPS] Inside IIFE...');
 
     // Configuration
     const CONFIG = {
@@ -312,7 +310,6 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         const colors = colorPalette.colorFields[fieldName];
         if (!colors) return false;
 
-        console.log(`[DEBUG] Enhancing widget ${fieldName} with dropdown color chips...`);
 
         // Store the colors for later use
         widget._colorChips = colors;
@@ -327,7 +324,6 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             delete widget._vtOriginalDraw;
         }
 
-        console.log(`[DEBUG] Widget ${fieldName} enhanced with dropdown color chips`);
         
         return true;
     }
@@ -505,7 +501,6 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
 
     // Initialize the extension
     async function initialize() {
-        console.log('Violet Tools: Initializing color chips extension...');
         
         // Inject CSS
         injectStyles();
@@ -521,7 +516,6 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         // Start observing for nodes
         observeNodes();
         
-        console.log('Violet Tools: Color chips extension initialized successfully');
     }
 
     // Start initialization when DOM is ready
@@ -699,6 +693,6 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         return { containers: chipContainers.length, chips: chipElements.length };
     };
     
-    console.log('🎨 Violet Tools Color Chips extension loaded');
+    // Silenced debug banner after stabilization
 
 })();
