@@ -321,35 +321,10 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         // Placeholder flag so we only attach one popup enhancer per widget.
         widget._vtPopupEnhanced = false;
 
-        // Per-widget chip drawing: suffix inside the widget row after original draw.
-        if (!widget._vtOriginalDraw) {
-            widget._vtOriginalDraw = widget.draw;
-            widget.draw = function(ctx, nodeRef, widgetWidth, y, h) {
-                // Run original draw first
-                if (this._vtOriginalDraw) {
-                    this._vtOriginalDraw(ctx, nodeRef, widgetWidth, y, h);
-                }
-                try {
-                    const colorMap = this._colorChips;
-                    if (!colorMap) return;
-                    const currentColor = colorMap[this.value];
-                    if (!currentColor) return;
-                    const chipSize = h ? Math.min(h - 6, 14) : 12; // fit nicely within row
-                    const chipY = y + (h - chipSize) / 2;
-                    // Reserve a small gap from right arrow area (~14px arrow region)
-                    const arrowReserve = 14;
-                    const chipX = widgetWidth - arrowReserve - chipSize;
-                    ctx.save();
-                    ctx.fillStyle = currentColor;
-                    ctx.fillRect(chipX, chipY, chipSize, chipSize);
-                    ctx.strokeStyle = '#222';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(chipX, chipY, chipSize, chipSize);
-                    ctx.restore();
-                } catch(e) {
-                    // If error occurs, silently ignore
-                }
-            };
+        // Ensure any previous widget-level override is removed (stability)
+        if (widget._vtOriginalDraw) {
+            widget.draw = widget._vtOriginalDraw;
+            delete widget._vtOriginalDraw;
         }
 
         console.log(`[DEBUG] Widget ${fieldName} enhanced with dropdown color chips`);
@@ -405,30 +380,45 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             console.log(`Violet Tools: Enhanced ${enhancedCount} color widgets in ${node.constructor?.name || 'unknown'} node`);
         }
         
-        // Also monitor DOM changes for widgets
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                mutation.addedNodes.forEach(function(node) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        // Check if this looks like a ComfyUI widget
-                        const selects = node.querySelectorAll('select');
-                        selects.forEach(select => {
-                            // Try to find the associated widget and enhance it
-                            // This is a fallback for cases where the node hook doesn't work
-                        });
-                        // Detect combo popup list (has filter input + list of options)
-                        if (CONFIG.popupEnhancement) {
-                            decoratePopupIfColorList(node);
+        // Install single foreground drawer (after widgets so chips overlay & visible)
+        if (!node._vtColorChipsDrawInstalled) {
+            const originalFG = node.onDrawForeground;
+            node.onDrawForeground = function(ctx) {
+                if (originalFG) originalFG.call(this, ctx);
+                try {
+                    if (!this.widgets) return;
+                    const titleH = (window.LiteGraph && LiteGraph.NODE_TITLE_HEIGHT) || 30;
+                    const spacing = 4;
+                    let y = (this.widgets_start_y !== undefined ? this.widgets_start_y : (titleH + spacing));
+                    for (let i = 0; i < this.widgets.length; i++) {
+                        const w = this.widgets[i];
+                        let h;
+                        try {
+                            if (w.computeSize) {
+                                const sz = w.computeSize(this.size[0]);
+                                h = Array.isArray(sz) ? sz[1] : sz;
+                            }
+                        } catch {}
+                        if (!h || h < 10) h = (window.LiteGraph && LiteGraph.NODE_WIDGET_HEIGHT) || 20;
+                        if (w._colorChips && w.value && w._colorChips[w.value]) {
+                            const color = w._colorChips[w.value];
+                            const chipSize = Math.min(h - 6, 14);
+                            const arrowReserve = 14; // approximate triangle area
+                            const chipX = this.size[0] - arrowReserve - chipSize;
+                            const chipY = y + (h - chipSize) / 2;
+                            ctx.fillStyle = color;
+                            ctx.fillRect(chipX, chipY, chipSize, chipSize);
+                            ctx.strokeStyle = '#222';
+                            ctx.lineWidth = 1;
+                            ctx.strokeRect(chipX, chipY, chipSize, chipSize);
                         }
+                        y += h + spacing;
                     }
-                });
-            });
-        });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
+                } catch(e) { /* swallow */ }
+            };
+            node._vtColorChipsDrawInstalled = true;
+            node.setDirtyCanvas(true, true);
+        }
     }
 
     // Decorate option popup entries with inline color chips
