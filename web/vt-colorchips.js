@@ -4,6 +4,8 @@
  * For use with Violet Tools nodes that have color selection fields
  */
 
+console.log('🚀 Loading Violet Tools Color Chips extension...');
+
 (function() {
     'use strict';
 
@@ -109,14 +111,46 @@
     // Load color palette data
     async function loadColorPalette() {
         try {
-            // Use the correct lowercase extension path that ComfyUI serves
-            const response = await fetch('/extensions/comfyui-violet-tools/palette.json');
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            // Try multiple possible paths for the palette file
+            const possiblePaths = [
+                '/extensions/ComfyUI-Violet-Tools/palette.json',
+                '/extensions/comfyui-violet-tools/palette.json',
+                './palette.json',
+                'palette.json'
+            ];
+            
+            let response = null;
+            let successPath = null;
+            
+            for (const path of possiblePaths) {
+                try {
+                    response = await fetch(path);
+                    if (response.ok) {
+                        successPath = path;
+                        break;
+                    }
+                } catch (e) {
+                    // Continue to next path
+                }
+            }
+            
+            if (!response || !response.ok) {
+                throw new Error(`Could not load palette from any path`);
+            }
+            
             colorPalette = await response.json();
-            console.log('Violet Tools: Color palette loaded successfully');
+            console.log(`Violet Tools: Color palette loaded successfully from ${successPath}`);
         } catch (error) {
             console.warn('Violet Tools: Failed to load color palette:', error);
-            colorPalette = null;
+            // Provide a minimal fallback palette so the extension still works
+            colorPalette = {
+                colorFields: {
+                    "base_color": ["#ff0000", "#00ff00", "#0000ff"],
+                    "color": ["#ff0000", "#00ff00", "#0000ff"],
+                    "accent_color": ["#ff0000", "#00ff00", "#0000ff"]
+                }
+            };
+            console.log('Violet Tools: Using fallback color palette');
         }
     }
 
