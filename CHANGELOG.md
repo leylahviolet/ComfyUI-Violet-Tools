@@ -5,6 +5,21 @@ All notable changes to ComfyUI Violet Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5] - 2025-09-14
+
+### 🔧 Fixed
+
+- **Critical Path Issue**: Fixed YAML file path resolution for nodes moved to `nodes/` directory
+  - Corrected `feature_lists` path resolution in all node files
+  - Added proper parent directory navigation (`os.path.dirname` called twice)
+  - Resolves `FileNotFoundError` on ComfyUI startup that prevented extension loading
+  - Affects all nodes: Quality Queen, Glamour Goddess, Body Bard, Aesthetic Alchemist, Pose Priestess, Scene Seductress, Negativity Nullifier, Encoding Enchantress
+
+### 📋 Notes
+
+- This is a critical hotfix for v1.3.4 that ensures proper loading of YAML configuration files
+- All color chips functionality from v1.3.4 remains intact and functional
+
 ## [1.3.4] - 2025-09-14
 
 ### 🎨 New Features
