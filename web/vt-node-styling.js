@@ -108,7 +108,7 @@
                 }
 
                 const logoX = (this.size[0] - w) / 2;
-                const logoY = padTop + (maxH - h) / 2;
+                const logoY = padTop + (maxH - h) / 4; // slightly higher than center
 
                 ctx.globalAlpha = CONFIG.logoOpacity;
                 ctx.drawImage(logoImage, logoX, logoY, w, h);

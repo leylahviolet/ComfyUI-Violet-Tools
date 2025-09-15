@@ -364,7 +364,85 @@
         config: CONFIG,
         palette: () => colorPalette,
         enhance: enhanceNode,
-        version: '1.0.0'
+        version: '1.0.0',
+        // Test function for debugging color chips
+        testChips: function() {
+            console.log('=== Violet Tools Color Chips Test ===');
+            
+            // Check if palette loaded
+            if (!colorPalette) {
+                console.log('❌ Color palette not loaded');
+                return;
+            }
+            
+            console.log('✅ Color palette loaded:', Object.keys(colorPalette.colorFields).length, 'color fields');
+            
+            // Check for Violet Tools nodes
+            if (!window.app || !window.app.graph || !window.app.graph._nodes) {
+                console.log('❌ No graph or nodes found');
+                return;
+            }
+            
+            const violetNodes = window.app.graph._nodes.filter(node => 
+                node.type && node.type.match(/^(GlamourGoddess|BodyBard|AestheticAlchemist|QualityQueen|SceneSeductress|PosePriestess|EncodingEnchantress|NegativityNullifier|CharacterCreator|CharacterCache)$/)
+            );
+            
+            console.log(`Found ${violetNodes.length} Violet Tools nodes:`, violetNodes.map(n => n.type));
+            
+            if (violetNodes.length === 0) {
+                console.log('❌ No Violet Tools nodes found. Add some to test color chips.');
+                return;
+            }
+            
+            // Check widgets on each node
+            let totalWidgets = 0;
+            let colorWidgets = 0;
+            let enhancedWidgets = 0;
+            
+            violetNodes.forEach((node, index) => {
+                console.log(`\n--- Node ${index + 1}: ${node.type} ---`);
+                console.log('Node widgets:', node.widgets?.length || 0);
+                
+                if (node.widgets) {
+                    node.widgets.forEach((widget, widgetIndex) => {
+                        totalWidgets++;
+                        console.log(`  Widget ${widgetIndex}: ${widget.name} (type: ${widget.type})`);
+                        
+                        if (widget.type === 'combo' && Object.keys(colorPalette.colorFields).includes(widget.name)) {
+                            colorWidgets++;
+                            console.log(`    ✅ Color field found: ${widget.name}`);
+                            
+                            if (shouldEnhanceWidget(widget, node)) {
+                                console.log(`    ✅ Should enhance this widget`);
+                                
+                                // Try to enhance it
+                                try {
+                                    enhanceWidget(widget, node);
+                                    enhancedWidgets++;
+                                    console.log(`    ✅ Enhancement applied`);
+                                } catch (error) {
+                                    console.log(`    ❌ Enhancement failed:`, error);
+                                }
+                            } else {
+                                console.log(`    ⚠️ Widget not marked for enhancement`);
+                            }
+                        }
+                    });
+                }
+            });
+            
+            console.log(`\n=== Summary ===`);
+            console.log(`Total widgets: ${totalWidgets}`);
+            console.log(`Color field widgets: ${colorWidgets}`);
+            console.log(`Enhanced widgets: ${enhancedWidgets}`);
+            console.log(`Available color fields:`, Object.keys(colorPalette.colorFields));
+            
+            if (enhancedWidgets > 0) {
+                console.log('🎉 Color chips should be visible on enhanced widgets!');
+            } else {
+                console.log('⚠️ No widgets were enhanced. Check if widgets match color field names.');
+            }
+        }
     };
 
 })();
