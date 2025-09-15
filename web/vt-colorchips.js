@@ -479,6 +479,32 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         });
     }
 
+    // Observe node creation and optionally popup opening
+    function observeNodes() {
+        if (observeNodes._installed) return;
+        observeNodes._installed = true;
+        // Hook node configure to enhance widgets after creation
+        if (window.LiteGraph && window.LiteGraph.LGraphNode) {
+            const originalConfigure = window.LiteGraph.LGraphNode.prototype.configure;
+            window.LiteGraph.LGraphNode.prototype.configure = function(data) {
+                const res = originalConfigure.call(this, data);
+                setTimeout(() => enhanceNode(this), 50);
+                return res;
+            };
+        }
+        // Minimal mutation observer only if popup enhancement active
+        if (CONFIG.popupEnhancement) {
+            const mo = new MutationObserver(muts => {
+                for (const m of muts) {
+                    for (const n of m.addedNodes) {
+                        if (n.nodeType === 1) decoratePopupIfColorList(n);
+                    }
+                }
+            });
+            mo.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
     // Initialize the extension
     async function initialize() {
         console.log('Violet Tools: Initializing color chips extension...');
