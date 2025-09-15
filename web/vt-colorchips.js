@@ -277,12 +277,22 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         
         // Find the widget element in the DOM
         const widgetElement = widget.element;
-        if (!widgetElement || !widgetElement.parentNode) return false;
+        console.log(`[DEBUG] Widget ${fieldName}:`, {
+            hasElement: !!widgetElement,
+            element: widgetElement,
+            hasParent: !!(widgetElement && widgetElement.parentNode),
+            parentNode: widgetElement ? widgetElement.parentNode : null
+        });
         
+        if (!widgetElement || !widgetElement.parentNode) {
+            console.warn(`[DEBUG] Cannot find DOM element for widget ${fieldName}`);
+            return false;
+        }
+
         // Insert chip container after the widget
+        console.log(`[DEBUG] Inserting chip container for ${fieldName}...`);
         widgetElement.parentNode.insertBefore(chipContainer, widgetElement.nextSibling);
-        
-        // Mark as enhanced
+        console.log(`[DEBUG] Chip container inserted for ${fieldName}`);        // Mark as enhanced
         enhancedWidgets.add(widget);
         
         // Listen for widget value changes to update selection
@@ -473,6 +483,24 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         console.log('✅ Violet Tools Color Chips extension is loaded and ready!');
         console.log('Available functions: testChips()');
         return true;
+    };
+    
+    // Debug function to check if chips are in the DOM
+    window.vtCheckChipsInDOM = function() {
+        const chipContainers = document.querySelectorAll('.vt-color-chips');
+        const chipElements = document.querySelectorAll('.vt-color-chip');
+        console.log('=== DOM Chip Check ===');
+        console.log(`Found ${chipContainers.length} chip containers in DOM`);
+        console.log(`Found ${chipElements.length} individual chips in DOM`);
+        
+        chipContainers.forEach((container, i) => {
+            console.log(`Container ${i+1}:`, container);
+            console.log(`  - Visible: ${container.offsetWidth > 0 && container.offsetHeight > 0}`);
+            console.log(`  - Style: ${container.style.cssText || 'none'}`);
+            console.log(`  - Computed style display: ${getComputedStyle(container).display}`);
+        });
+        
+        return { containers: chipContainers.length, chips: chipElements.length };
     };
     
     console.log('🎨 Violet Tools Color Chips extension loaded');
