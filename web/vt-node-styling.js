@@ -82,26 +82,36 @@
                 originalOnDrawBackground.call(this, ctx, canvas);
             }
             
-            // Draw logo overlay - make it much bigger and more prominent
-            if (logoImage && logoImage.complete) {
+            // Draw logo only on EncodingEnchantress
+            const _type = (this.type || '').toLowerCase();
+            if (logoImage && logoImage.complete && _type === 'encodingenchantress') {
                 ctx.save();
                 ctx.globalAlpha = CONFIG.logoOpacity;
                 
-                // Calculate logo position and size - much bigger and more centered
-                const logoSize = Math.min(this.size[0] * 0.4, this.size[1] * 0.5, 80); // Much larger
-                const logoX = (this.size[0] - logoSize) / 2; // Center horizontally
-                const logoY = (this.size[1] - logoSize) / 2; // Center vertically
-                
-                // Add a subtle background circle for the logo for better visibility
-                ctx.globalAlpha = 0.2;
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-                ctx.beginPath();
-                ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize/2 + 8, 0, 2 * Math.PI);
-                ctx.fill();
-                
-                // Draw the logo
+                // Fill available height (below title) while preserving aspect ratio
+                const padTop = 26;     // leave space for title bar
+                const padSide = 8;     // side/bottom padding
+                const maxH = Math.max(0, this.size[1] - padTop - padSide);
+                const maxW = Math.max(0, this.size[0] - padSide * 2);
+
+                const iw = logoImage.naturalWidth  || logoImage.width  || 1;
+                const ih = logoImage.naturalHeight || logoImage.height || 1;
+                const aspect = iw / ih;
+
+                // start by fitting to height
+                let h = maxH;
+                let w = h * aspect;
+                // if too wide, clamp to width and recalc height
+                if (w > maxW) {
+                    w = maxW;
+                    h = w / aspect;
+                }
+
+                const logoX = (this.size[0] - w) / 2;
+                const logoY = padTop + (maxH - h) / 2;
+
                 ctx.globalAlpha = CONFIG.logoOpacity;
-                ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+                ctx.drawImage(logoImage, logoX, logoY, w, h);
                 ctx.restore();
             }
         };
