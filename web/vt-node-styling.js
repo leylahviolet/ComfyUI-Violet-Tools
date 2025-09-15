@@ -14,7 +14,7 @@
         logoOpacity: 0.8,                  // Logo transparency (0.0 - 1.0)
         logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
         enabled: true,                     // Master enable/disable
-        debugLogging: true                 // Enable debug console logging for troubleshooting
+        debugLogging: false                // Disable debug console logging (was too spammy)
     };
 
     // List of all Violet Tools node class names
@@ -129,13 +129,14 @@
 
     // Check if a node is a Violet Tools node
     function isVioletToolsNode(node) {
-        if (!node || !node.constructor) return false;
+        if (!node || !node.type) return false;
         
-        const nodeClass = node.constructor.name;
-        const isVioletTools = VIOLET_TOOLS_NODES.includes(nodeClass);
+        const nodeType = node.type;
+        const isVioletTools = VIOLET_TOOLS_NODES.includes(nodeType);
         
-        if (CONFIG.debugLogging && nodeClass) {
-            console.log(`Violet Tools: Checking node ${nodeClass} - isVioletTools: ${isVioletTools}`);
+        // Only log when we find a Violet Tools node, not for every node
+        if (CONFIG.debugLogging && isVioletTools) {
+            console.log(`Violet Tools: Found ${nodeType} node for styling`);
         }
         
         return isVioletTools;
@@ -145,7 +146,7 @@
     function styleNode(node) {
         if (!node || !isVioletToolsNode(node) || styledNodes.has(node)) {
             if (CONFIG.debugLogging && node && isVioletToolsNode(node) && styledNodes.has(node)) {
-                console.log(`Violet Tools: Node ${node.constructor.name} already styled, skipping`);
+                console.log(`Violet Tools: Node ${node.type} already styled, skipping`);
             }
             return false;
         }
@@ -154,7 +155,7 @@
         const nodeElement = findNodeElement(node);
         if (!nodeElement) {
             if (CONFIG.debugLogging) {
-                console.log(`Violet Tools: Could not find DOM element for ${node.constructor.name} node`);
+                console.log(`Violet Tools: Could not find DOM element for ${node.type} node`);
             }
             return false;
         }
@@ -166,7 +167,7 @@
         styledNodes.add(node);
         
         if (CONFIG.debugLogging) {
-            console.log(`Violet Tools: Successfully styled ${node.constructor.name} node`, nodeElement);
+            console.log(`Violet Tools: Successfully styled ${node.type} node`, nodeElement);
         }
         
         return true;
@@ -282,7 +283,7 @@
         
         window.app.graph._nodes.forEach((node, index) => {
             if (CONFIG.debugLogging && index < 3) { // Log first 3 nodes for debugging
-                console.log(`Node ${index}:`, node.constructor?.name, node);
+                console.log(`Node ${index}:`, node.type, node);
             }
             
             if (styleNode(node)) {
@@ -366,10 +367,10 @@
         // Start observing for new nodes
         observeNodes();
         
-        // Periodic re-styling (fallback)
+        // Periodic re-styling (fallback) - reduced frequency
         setInterval(() => {
             styleAllNodes();
-        }, 5000);
+        }, 10000); // Changed from 5 seconds to 10 seconds
         
         console.log('Violet Tools: Node styling extension initialized');
     }
