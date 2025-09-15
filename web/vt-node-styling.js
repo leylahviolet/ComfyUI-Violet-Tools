@@ -108,7 +108,9 @@
                 }
 
                 const logoX = (this.size[0] - w) / 2;
-                const logoY = padTop + (maxH - h) / 4; // slightly higher than center
+                // Position so bottom of logo sits at ~half the node height
+                let logoY = (this.size[1] * 0.5) - h;
+                if (logoY < padTop) logoY = padTop;
 
                 ctx.globalAlpha = CONFIG.logoOpacity;
                 ctx.drawImage(logoImage, logoX, logoY, w, h);
