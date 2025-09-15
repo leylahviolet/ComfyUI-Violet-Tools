@@ -321,31 +321,7 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         // Placeholder flag so we only attach one popup enhancer per widget.
         widget._vtPopupEnhanced = false;
 
-        // Override the display of the selected value
-        const originalDraw = widget.draw;
-        widget.draw = function(ctx, node, widget_width, y, H) {
-            try {
-                if (originalDraw) {
-                    originalDraw.call(this, ctx, node, widget_width, y, H);
-                }
-                const currentColor = colors[this.value];
-                if (currentColor) {
-                    const chipSize = 12;
-                    const chipX = widget_width - chipSize - 25;
-                    const chipY = y + (H - chipSize) / 2;
-                    ctx.fillStyle = currentColor;
-                    ctx.fillRect(chipX, chipY, chipSize, chipSize);
-                    ctx.strokeStyle = '#666';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(chipX, chipY, chipSize, chipSize);
-                }
-            } catch (e) {
-                // Fail safe: revert to original draw if ours breaks
-                console.warn('[VT] draw override failed, reverting.', e);
-                widget.draw = originalDraw;
-                if (originalDraw) originalDraw.call(this, ctx, node, widget_width, y, H);
-            }
-        };
+        // Do NOT override widget.draw (previously caused widget invisibility). Drawing handled at node level.
 
         console.log(`[DEBUG] Widget ${fieldName} enhanced with dropdown color chips`);
         
@@ -402,6 +378,39 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         
         if (enhancedCount > 0) {
             console.log(`Violet Tools: Enhanced ${enhancedCount} color widgets in ${node.constructor?.name || 'unknown'} node`);
+            // Install a single foreground drawer if not already
+            if (!node._vtColorChipsDrawInstalled) {
+                const originalFG = node.onDrawForeground;
+                node.onDrawForeground = function(ctx) {
+                    if (originalFG) originalFG.call(this, ctx);
+                    try {
+                        if (!this.widgets) return;
+                        // Iterate widgets to find color ones
+                        let y = LiteGraph.NODE_TITLE_HEIGHT || 30;
+                        for (let i = 0; i < this.widgets.length; i++) {
+                            const w = this.widgets[i];
+                            const size = w.computeSize ? w.computeSize(this.size[0]) : [this.size[0], LiteGraph.NODE_WIDGET_HEIGHT || 20];
+                            const h = Array.isArray(size) ? size[1] : size;
+                            if (w._colorChips && w.value && w._colorChips[w.value]) {
+                                const color = w._colorChips[w.value];
+                                const chipSize = 10;
+                                const chipX = this.size[0] - chipSize - 18; // near right padding
+                                const chipY = y + (h - chipSize)/2;
+                                ctx.fillStyle = color;
+                                ctx.fillRect(chipX, chipY, chipSize, chipSize);
+                                ctx.strokeStyle = '#222';
+                                ctx.lineWidth = 1;
+                                ctx.strokeRect(chipX, chipY, chipSize, chipSize);
+                            }
+                            y += h;
+                        }
+                    } catch(e) {
+                        // If drawing fails, don't break node rendering
+                    }
+                };
+                node._vtColorChipsDrawInstalled = true;
+                node.setDirtyCanvas(true, true);
+            }
         }
     }
     
