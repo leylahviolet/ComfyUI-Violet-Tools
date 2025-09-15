@@ -14,7 +14,7 @@
         logoOpacity: 0.8,                  // Logo transparency (0.0 - 1.0)
         logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
         enabled: true,                     // Master enable/disable
-        debugLogging: false                // Enable debug console logging
+        debugLogging: true                 // Enable debug console logging for troubleshooting
     };
 
     // List of all Violet Tools node class names
@@ -132,16 +132,32 @@
         if (!node || !node.constructor) return false;
         
         const nodeClass = node.constructor.name;
-        return VIOLET_TOOLS_NODES.includes(nodeClass);
+        const isVioletTools = VIOLET_TOOLS_NODES.includes(nodeClass);
+        
+        if (CONFIG.debugLogging && nodeClass) {
+            console.log(`Violet Tools: Checking node ${nodeClass} - isVioletTools: ${isVioletTools}`);
+        }
+        
+        return isVioletTools;
     }
 
     // Apply styling to a single node
     function styleNode(node) {
-        if (!node || !isVioletToolsNode(node) || styledNodes.has(node)) return false;
+        if (!node || !isVioletToolsNode(node) || styledNodes.has(node)) {
+            if (CONFIG.debugLogging && node && isVioletToolsNode(node) && styledNodes.has(node)) {
+                console.log(`Violet Tools: Node ${node.constructor.name} already styled, skipping`);
+            }
+            return false;
+        }
         
         // Find the DOM element for this node
         const nodeElement = findNodeElement(node);
-        if (!nodeElement) return false;
+        if (!nodeElement) {
+            if (CONFIG.debugLogging) {
+                console.log(`Violet Tools: Could not find DOM element for ${node.constructor.name} node`);
+            }
+            return false;
+        }
         
         // Apply the styling class
         nodeElement.classList.add('violet-tools-node');
@@ -150,7 +166,7 @@
         styledNodes.add(node);
         
         if (CONFIG.debugLogging) {
-            console.log(`Violet Tools: Styled ${node.constructor.name} node`);
+            console.log(`Violet Tools: Successfully styled ${node.constructor.name} node`, nodeElement);
         }
         
         return true;
@@ -158,15 +174,54 @@
 
     // Find the DOM element for a given node
     function findNodeElement(node) {
+        if (CONFIG.debugLogging) {
+            console.log(`Violet Tools: Looking for DOM element for node:`, node);
+            console.log(`Node properties:`, {
+                element: node.element,
+                domNode: node.domNode, 
+                node: node.node,
+                id: node.id,
+                title: node.title
+            });
+        }
+        
         // Try different methods to find the node's DOM element
-        if (node.element) return node.element;
-        if (node.domNode) return node.domNode;
-        if (node.node) return node.node;
+        if (node.element) {
+            if (CONFIG.debugLogging) console.log('Found via node.element');
+            return node.element;
+        }
+        if (node.domNode) {
+            if (CONFIG.debugLogging) console.log('Found via node.domNode');
+            return node.domNode;
+        }
+        if (node.node) {
+            if (CONFIG.debugLogging) console.log('Found via node.node');
+            return node.node;
+        }
         
         // Fallback: search by node ID or other identifiers
         if (node.id !== undefined) {
             const candidate = document.querySelector(`[data-node-id="${node.id}"]`);
-            if (candidate) return candidate;
+            if (candidate) {
+                if (CONFIG.debugLogging) console.log(`Found via data-node-id="${node.id}"`);
+                return candidate;
+            }
+        }
+        
+        // Try to find by title or other attributes
+        if (node.title) {
+            const candidates = document.querySelectorAll('.comfy-node, .litegraph-node');
+            for (const candidate of candidates) {
+                const titleElement = candidate.querySelector('.comfy-node-header, .litegraph-title');
+                if (titleElement && titleElement.textContent === node.title) {
+                    if (CONFIG.debugLogging) console.log(`Found via title match: "${node.title}"`);
+                    return candidate;
+                }
+            }
+        }
+        
+        if (CONFIG.debugLogging) {
+            console.log('Violet Tools: Could not find DOM element for node');
         }
         
         return null;
@@ -174,17 +229,69 @@
 
     // Style all existing nodes
     function styleAllNodes() {
-        if (!window.app || !window.app.graph || !window.app.graph._nodes) return;
+        if (CONFIG.debugLogging) {
+            console.log('Violet Tools: Attempting to style all nodes...');
+            console.log('Window app:', window.app);
+            console.log('App graph:', window.app?.graph);
+            console.log('Graph nodes:', window.app?.graph?._nodes);
+        }
+        
+        if (!window.app || !window.app.graph || !window.app.graph._nodes) {
+            if (CONFIG.debugLogging) {
+                console.log('Violet Tools: No nodes found in app.graph._nodes, trying alternative approaches...');
+            }
+            
+            // Try alternative node access methods
+            let nodes = null;
+            if (window.app?.graph?.nodes) {
+                nodes = window.app.graph.nodes;
+            } else if (window.app?.graph?._nodes_by_id) {
+                nodes = Object.values(window.app.graph._nodes_by_id);
+            }
+            
+            if (nodes) {
+                if (CONFIG.debugLogging) {
+                    console.log(`Violet Tools: Found ${nodes.length} nodes via alternative method`);
+                }
+                
+                let styledCount = 0;
+                nodes.forEach(node => {
+                    if (styleNode(node)) {
+                        styledCount++;
+                    }
+                });
+                
+                if (CONFIG.debugLogging) {
+                    console.log(`Violet Tools: Styled ${styledCount} nodes`);
+                }
+                return;
+            }
+            
+            if (CONFIG.debugLogging) {
+                console.log('Violet Tools: No nodes found via any method');
+            }
+            return;
+        }
         
         let styledCount = 0;
-        window.app.graph._nodes.forEach(node => {
+        const totalNodes = window.app.graph._nodes.length;
+        
+        if (CONFIG.debugLogging) {
+            console.log(`Violet Tools: Found ${totalNodes} total nodes`);
+        }
+        
+        window.app.graph._nodes.forEach((node, index) => {
+            if (CONFIG.debugLogging && index < 3) { // Log first 3 nodes for debugging
+                console.log(`Node ${index}:`, node.constructor?.name, node);
+            }
+            
             if (styleNode(node)) {
                 styledCount++;
             }
         });
         
-        if (CONFIG.debugLogging && styledCount > 0) {
-            console.log(`Violet Tools: Styled ${styledCount} nodes`);
+        if (CONFIG.debugLogging) {
+            console.log(`Violet Tools: Styled ${styledCount} out of ${totalNodes} nodes`);
         }
     }
 
