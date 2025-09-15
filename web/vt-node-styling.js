@@ -14,7 +14,7 @@
         logoOpacity: 0.8,                  // Logo transparency (0.0 - 1.0)
         logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
         enabled: true,                     // Master enable/disable
-        debugLogging: false                // Disable debug console logging (was too spammy)
+        debugLogging: true                 // Temporarily enable for DOM debugging
     };
 
     // List of all Violet Tools node class names
@@ -176,14 +176,7 @@
     // Find the DOM element for a given node
     function findNodeElement(node) {
         if (CONFIG.debugLogging) {
-            console.log(`Violet Tools: Looking for DOM element for node:`, node);
-            console.log(`Node properties:`, {
-                element: node.element,
-                domNode: node.domNode, 
-                node: node.node,
-                id: node.id,
-                title: node.title
-            });
+            console.log(`Violet Tools: Looking for DOM element for ${node.type} node:`, node);
         }
         
         // Try different methods to find the node's DOM element
@@ -195,34 +188,51 @@
             if (CONFIG.debugLogging) console.log('Found via node.domNode');
             return node.domNode;
         }
-        if (node.node) {
-            if (CONFIG.debugLogging) console.log('Found via node.node');
-            return node.node;
+        
+        // ComfyUI specific approaches
+        if (node.canvas) {
+            if (CONFIG.debugLogging) console.log('Found via node.canvas');
+            return node.canvas;
         }
         
-        // Fallback: search by node ID or other identifiers
+        // Try to find by node ID in various formats
         if (node.id !== undefined) {
-            const candidate = document.querySelector(`[data-node-id="${node.id}"]`);
-            if (candidate) {
-                if (CONFIG.debugLogging) console.log(`Found via data-node-id="${node.id}"`);
-                return candidate;
-            }
-        }
-        
-        // Try to find by title or other attributes
-        if (node.title) {
-            const candidates = document.querySelectorAll('.comfy-node, .litegraph-node');
-            for (const candidate of candidates) {
-                const titleElement = candidate.querySelector('.comfy-node-header, .litegraph-title');
-                if (titleElement && titleElement.textContent === node.title) {
-                    if (CONFIG.debugLogging) console.log(`Found via title match: "${node.title}"`);
+            const selectors = [
+                `[data-node-id="${node.id}"]`,
+                `[data-id="${node.id}"]`,
+                `#node-${node.id}`,
+                `.node-${node.id}`
+            ];
+            
+            for (const selector of selectors) {
+                const candidate = document.querySelector(selector);
+                if (candidate) {
+                    if (CONFIG.debugLogging) console.log(`Found via selector: ${selector}`);
                     return candidate;
                 }
             }
         }
         
+        // Try to find by title matching
+        if (node.title) {
+            const candidates = document.querySelectorAll('.comfy-node, .litegraph-node, [class*="node"]');
+            if (CONFIG.debugLogging) console.log(`Searching ${candidates.length} potential node elements for title "${node.title}"`);
+            
+            for (const candidate of candidates) {
+                const titleElements = candidate.querySelectorAll('*');
+                for (const elem of titleElements) {
+                    if (elem.textContent && elem.textContent.trim() === node.title) {
+                        if (CONFIG.debugLogging) console.log(`Found via title match in element:`, candidate);
+                        return candidate;
+                    }
+                }
+            }
+        }
+        
+        // Last resort: try to find by position or other attributes
         if (CONFIG.debugLogging) {
-            console.log('Violet Tools: Could not find DOM element for node');
+            console.log('Violet Tools: Could not find DOM element for node. Available properties:', Object.keys(node));
+            console.log('All potential node elements:', document.querySelectorAll('.comfy-node, .litegraph-node, [class*="node"]'));
         }
         
         return null;
@@ -388,7 +398,45 @@
         updateConfig: updateConfig,
         styleAllNodes: styleAllNodes,
         styleNode: styleNode,
-        version: '1.0.0'
+        version: '1.0.0',
+        // Manual test function
+        testStyling: function() {
+            console.log('=== Violet Tools Manual Styling Test ===');
+            
+            // Find Violet Tools nodes
+            const violetNodes = window.app.graph._nodes.filter(node => 
+                node.type && VIOLET_TOOLS_NODES.includes(node.type)
+            );
+            
+            console.log(`Found ${violetNodes.length} Violet Tools nodes:`, violetNodes.map(n => n.type));
+            
+            if (violetNodes.length === 0) {
+                console.log('No Violet Tools nodes found. Add some to test styling.');
+                return;
+            }
+            
+            // Test each node
+            violetNodes.forEach((node, index) => {
+                console.log(`\n--- Testing node ${index + 1}: ${node.type} ---`);
+                console.log('Node object:', node);
+                console.log('Node title:', node.title);
+                console.log('Node id:', node.id);
+                
+                const domElement = findNodeElement(node);
+                if (domElement) {
+                    console.log('Found DOM element:', domElement);
+                    console.log('Current classes:', domElement.className);
+                    
+                    // Try to apply styling manually
+                    domElement.classList.add('violet-tools-node');
+                    console.log('Added violet-tools-node class. New classes:', domElement.className);
+                } else {
+                    console.log('❌ Could not find DOM element for this node');
+                }
+            });
+            
+            console.log('\n=== Test complete ===');
+        }
     };
 
 })();
