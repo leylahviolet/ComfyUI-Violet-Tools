@@ -104,7 +104,8 @@
     // Load color palette data
     async function loadColorPalette() {
         try {
-            const response = await fetch('/extensions/ComfyUI-Violet-Tools/palette.json');
+            // Use relative path from the extension's web directory
+            const response = await fetch('extensions/ComfyUI-Violet-Tools/palette.json');
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             colorPalette = await response.json();
             console.log('Violet Tools: Color palette loaded successfully');
