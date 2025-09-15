@@ -26,38 +26,43 @@
     // CSS styles for color chips
     const chipStyles = `
         .vt-color-chips {
-            display: flex;
+            display: flex !important;
             flex-wrap: wrap;
-            gap: 2px;
-            margin-top: 4px;
-            max-height: ${CONFIG.chipSize * CONFIG.maxRows + (CONFIG.maxRows - 1) * 2}px;
+            gap: 3px;
+            margin-top: 6px;
+            max-height: ${CONFIG.chipSize * CONFIG.maxRows + (CONFIG.maxRows - 1) * 3}px;
             overflow-y: auto;
-            padding: 2px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 4px;
+            padding: 6px;
+            background: rgba(0,0,0,0.3) !important;
+            border-radius: 6px;
+            border: 2px solid #555 !important;
+            position: relative !important;
+            z-index: 1000 !important;
         }
         
         .vt-color-chip {
-            width: ${CONFIG.chipSize}px;
-            height: ${CONFIG.chipSize}px;
-            border: 1px solid #333;
-            border-radius: 3px;
+            width: ${CONFIG.chipSize}px !important;
+            height: ${CONFIG.chipSize}px !important;
+            border: 2px solid #666 !important;
+            border-radius: 4px;
             cursor: pointer;
             transition: transform ${CONFIG.animationDuration}ms ease, box-shadow ${CONFIG.animationDuration}ms ease;
             box-sizing: border-box;
+            position: relative !important;
+            z-index: 1001 !important;
         }
         
         .vt-color-chip:hover {
-            transform: scale(1.1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            border-color: #fff;
-            z-index: 10;
-            position: relative;
+            transform: scale(1.3) !important;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.4) !important;
+            border-color: #fff !important;
+            z-index: 1002 !important;
+            position: relative !important;
         }
         
         .vt-color-chip.selected {
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 1px #333;
+            border: 3px solid #fff !important;
+            box-shadow: 0 0 0 2px #333 !important;
         }
         
         .vt-chip-tooltip {
