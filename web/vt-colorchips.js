@@ -320,8 +320,6 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             }
         };
 
-        // Mark as enhanced
-        enhancedWidgets.add(widget);
         console.log(`[DEBUG] Widget ${fieldName} enhanced with dropdown color chips`);
         
         return true;
@@ -329,21 +327,27 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
     
     // Get a color chip character/emoji based on hex color
     function getColorChip(hexColor) {
-        // Convert hex to rough color categories and return appropriate emoji
-        const color = hexColor.toLowerCase();
+        // Convert hex to RGB for better color analysis
+        const hex = hexColor.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
         
-        // Simple color mapping - you can make this more sophisticated
-        if (color.includes('red') || color.startsWith('#f') || color.startsWith('#e')) return '🟥';
-        if (color.includes('orange') || color.startsWith('#ff8') || color.startsWith('#ff6')) return '🟧';
-        if (color.includes('yellow') || color.startsWith('#ff') || color.startsWith('#fe')) return '🟨';
-        if (color.includes('green') || color.startsWith('#0') || color.startsWith('#1')) return '🟩';
-        if (color.includes('blue') || color.startsWith('#00') || color.startsWith('#0')) return '🟦';
-        if (color.includes('purple') || color.startsWith('#8') || color.startsWith('#9')) return '🟪';
-        if (color.includes('black') || color.startsWith('#000') || color.startsWith('#111')) return '⬛';
-        if (color.includes('white') || color.startsWith('#fff') || color.startsWith('#eee')) return '⬜';
+        // Simple color mapping based on RGB values
+        if (r > 200 && g < 100 && b < 100) return '🟥'; // Red
+        if (r > 200 && g > 150 && b < 100) return '🟧'; // Orange
+        if (r > 200 && g > 200 && b < 100) return '🟨'; // Yellow
+        if (r < 100 && g > 150 && b < 100) return '🟩'; // Green
+        if (r < 100 && g < 100 && b > 150) return '🟦'; // Blue
+        if (r > 100 && g < 100 && b > 150) return '🟪'; // Purple/Violet
+        if (r < 80 && g < 80 && b < 80) return '⬛'; // Black/Dark
+        if (r > 200 && g > 200 && b > 200) return '⬜'; // White/Light
+        
+        // For browns and other colors
+        if (r > g && r > b && g > 100) return '🟫'; // Brown
         
         // Default to a neutral square
-        return '🟫';
+        return '�';
     }
 
     // Enhanced node processing
