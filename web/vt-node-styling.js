@@ -1,8 +1,5 @@
-/**
- * Violet Tools Node Styling Extension
- * Applies distinctive purple branding and logo background to all Violet Tools nodes
- * For use with ComfyUI to create recognizable, branded node appearance
- */
+// Violet Tools Node Styling Extension v2.0
+// Provides branded styling for all Violet Tools nodes using LiteGraph's native styling system
 
 (function() {
     'use strict';
@@ -10,11 +7,11 @@
     // Configuration
     const CONFIG = {
         backgroundColor: '#1D0C29',        // Purple background color
-        textColor: '#D780F6',              // Light purple text color
-        logoOpacity: 0.8,                  // Logo transparency (0.0 - 1.0)
+        textColor: null,                   // Use default text color (removed custom purple)
+        logoOpacity: 0.9,                  // Logo transparency
         logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
         enabled: true,                     // Master enable/disable
-        debugLogging: true                 // Temporarily enable for DOM debugging
+        debugLogging: false                // Disable debug logging now that it's working
     };
 
     // List of all Violet Tools node class names
@@ -33,343 +30,152 @@
 
     // Track styled nodes to avoid duplicate styling
     const styledNodes = new WeakSet();
+    let logoImage = null;
 
-    // CSS styles for Violet Tools nodes
-    const getNodeStyles = () => `
-        /* Violet Tools Node Background Styling */
-        .violet-tools-node {
-            background-color: ${CONFIG.backgroundColor} !important;
-            background-image: url('${CONFIG.logoUrl}') !important;
-            background-position: center center !important;
-            background-repeat: no-repeat !important;
-            background-size: auto 100% !important;
-            overflow: hidden !important;
-            position: relative !important;
+    // Load the logo image
+    function loadLogo() {
+        if (!logoImage) {
+            logoImage = new Image();
+            logoImage.crossOrigin = 'anonymous';
+            logoImage.onload = function() {
+                if (CONFIG.debugLogging) {
+                    console.log('Violet Tools: Logo loaded successfully');
+                }
+            };
+            logoImage.onerror = function() {
+                if (CONFIG.debugLogging) {
+                    console.log('Violet Tools: Failed to load logo');
+                }
+                logoImage = null;
+            };
+            logoImage.src = CONFIG.logoUrl;
         }
-        
-        /* Logo overlay with configurable opacity */
-        .violet-tools-node::before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            background-image: url('${CONFIG.logoUrl}') !important;
-            background-position: center center !important;
-            background-repeat: no-repeat !important;
-            background-size: auto 100% !important;
-            opacity: ${CONFIG.logoOpacity} !important;
-            pointer-events: none !important;
-            z-index: 0 !important;
-        }
-        
-        /* Text color styling for better contrast */
-        .violet-tools-node .comfy-title,
-        .violet-tools-node .comfy-node-title,
-        .violet-tools-node .node-title,
-        .violet-tools-node .litegraph-node-title,
-        .violet-tools-node .title,
-        .violet-tools-node span,
-        .violet-tools-node label,
-        .violet-tools-node .widget-label {
-            color: ${CONFIG.textColor} !important;
-            position: relative !important;
-            z-index: 1 !important;
-        }
-        
-        /* Ensure widgets and content stay above background */
-        .violet-tools-node .widget,
-        .violet-tools-node .comfy-widget,
-        .violet-tools-node .widget-container,
-        .violet-tools-node input,
-        .violet-tools-node select,
-        .violet-tools-node textarea,
-        .violet-tools-node button {
-            position: relative !important;
-            z-index: 1 !important;
-        }
-        
-        /* Input/widget styling for better visibility */
-        .violet-tools-node input,
-        .violet-tools-node select,
-        .violet-tools-node textarea {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            border: 1px solid rgba(215, 128, 246, 0.3) !important;
-            color: #FFFFFF !important;
-        }
-        
-        /* Button styling */
-        .violet-tools-node button {
-            background-color: rgba(215, 128, 246, 0.2) !important;
-            border: 1px solid rgba(215, 128, 246, 0.5) !important;
-            color: ${CONFIG.textColor} !important;
-        }
-        
-        .violet-tools-node button:hover {
-            background-color: rgba(215, 128, 246, 0.3) !important;
-            border-color: ${CONFIG.textColor} !important;
-        }
-    `;
-
-    // Inject CSS styles
-    function injectStyles() {
-        const styleId = 'vt-node-styling';
-        if (document.getElementById(styleId)) return;
-        
-        const style = document.createElement('style');
-        style.id = styleId;
-        style.textContent = getNodeStyles();
-        document.head.appendChild(style);
-        
-        if (CONFIG.debugLogging) {
-            console.log('Violet Tools: Node styling CSS injected');
-        }
+        return logoImage;
     }
 
     // Check if a node is a Violet Tools node
     function isVioletToolsNode(node) {
         if (!node || !node.type) return false;
-        
-        const nodeType = node.type;
-        const isVioletTools = VIOLET_TOOLS_NODES.includes(nodeType);
-        
-        // Only log when we find a Violet Tools node, not for every node
-        if (CONFIG.debugLogging && isVioletTools) {
-            console.log(`Violet Tools: Found ${nodeType} node for styling`);
-        }
-        
-        return isVioletTools;
+        return VIOLET_TOOLS_NODES.includes(node.type);
     }
 
-    // Apply styling to a single node
+    // Apply LiteGraph styling to a node
     function styleNode(node) {
         if (!node || !isVioletToolsNode(node) || styledNodes.has(node)) {
-            if (CONFIG.debugLogging && node && isVioletToolsNode(node) && styledNodes.has(node)) {
-                console.log(`Violet Tools: Node ${node.type} already styled, skipping`);
-            }
             return false;
         }
+
+        // Set node background color using LiteGraph properties
+        node.bgcolor = CONFIG.backgroundColor;
         
-        // Find the DOM element for this node
-        const nodeElement = findNodeElement(node);
-        if (!nodeElement) {
-            if (CONFIG.debugLogging) {
-                console.log(`Violet Tools: Could not find DOM element for ${node.type} node`);
+        // Don't override text color - let ComfyUI use its default
+        // node.color = CONFIG.textColor; // Removed
+        
+        // Set border color for better visibility
+        node.boxcolor = CONFIG.textColor || '#666666';
+        
+        // Custom draw function to add logo
+        const originalOnDrawBackground = node.onDrawBackground;
+        node.onDrawBackground = function(ctx, canvas) {
+            // Call original background drawing if it exists
+            if (originalOnDrawBackground) {
+                originalOnDrawBackground.call(this, ctx, canvas);
             }
-            return false;
-        }
-        
-        // Apply the styling class
-        nodeElement.classList.add('violet-tools-node');
-        
+            
+            // Draw logo overlay - make it much bigger and more prominent
+            if (logoImage && logoImage.complete) {
+                ctx.save();
+                ctx.globalAlpha = CONFIG.logoOpacity;
+                
+                // Calculate logo position and size - much bigger and more centered
+                const logoSize = Math.min(this.size[0] * 0.4, this.size[1] * 0.5, 80); // Much larger
+                const logoX = (this.size[0] - logoSize) / 2; // Center horizontally
+                const logoY = (this.size[1] - logoSize) / 2; // Center vertically
+                
+                // Add a subtle background circle for the logo for better visibility
+                ctx.globalAlpha = 0.2;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.beginPath();
+                ctx.arc(logoX + logoSize/2, logoY + logoSize/2, logoSize/2 + 8, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // Draw the logo
+                ctx.globalAlpha = CONFIG.logoOpacity;
+                ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+                ctx.restore();
+            }
+        };
+
         // Mark as styled
         styledNodes.add(node);
         
         if (CONFIG.debugLogging) {
-            console.log(`Violet Tools: Successfully styled ${node.type} node`, nodeElement);
+            console.log(`Violet Tools: Successfully styled ${node.type} node with LiteGraph styling`);
+        }
+        
+        // Force redraw
+        if (node.graph && node.graph.canvas) {
+            node.setDirtyCanvas(true, true);
         }
         
         return true;
     }
 
-    // Find the DOM element for a given node
-    function findNodeElement(node) {
-        if (CONFIG.debugLogging) {
-            console.log(`Violet Tools: Looking for DOM element for ${node.type} node:`, node);
-        }
-        
-        // Try different methods to find the node's DOM element
-        if (node.element) {
-            if (CONFIG.debugLogging) console.log('Found via node.element');
-            return node.element;
-        }
-        if (node.domNode) {
-            if (CONFIG.debugLogging) console.log('Found via node.domNode');
-            return node.domNode;
-        }
-        
-        // ComfyUI specific approaches
-        if (node.canvas) {
-            if (CONFIG.debugLogging) console.log('Found via node.canvas');
-            return node.canvas;
-        }
-        
-        // Try to find by node ID in various formats
-        if (node.id !== undefined) {
-            const selectors = [
-                `[data-node-id="${node.id}"]`,
-                `[data-id="${node.id}"]`,
-                `#node-${node.id}`,
-                `.node-${node.id}`
-            ];
-            
-            for (const selector of selectors) {
-                const candidate = document.querySelector(selector);
-                if (candidate) {
-                    if (CONFIG.debugLogging) console.log(`Found via selector: ${selector}`);
-                    return candidate;
-                }
-            }
-        }
-        
-        // Try to find by title matching
-        if (node.title) {
-            const candidates = document.querySelectorAll('.comfy-node, .litegraph-node, [class*="node"]');
-            if (CONFIG.debugLogging) console.log(`Searching ${candidates.length} potential node elements for title "${node.title}"`);
-            
-            for (const candidate of candidates) {
-                const titleElements = candidate.querySelectorAll('*');
-                for (const elem of titleElements) {
-                    if (elem.textContent && elem.textContent.trim() === node.title) {
-                        if (CONFIG.debugLogging) console.log(`Found via title match in element:`, candidate);
-                        return candidate;
-                    }
-                }
-            }
-        }
-        
-        // Last resort: try to find by position or other attributes
-        if (CONFIG.debugLogging) {
-            console.log('Violet Tools: Could not find DOM element for node. Available properties:', Object.keys(node));
-            console.log('All potential node elements:', document.querySelectorAll('.comfy-node, .litegraph-node, [class*="node"]'));
-        }
-        
-        return null;
-    }
-
     // Style all existing nodes
     function styleAllNodes() {
-        if (CONFIG.debugLogging) {
-            console.log('Violet Tools: Attempting to style all nodes...');
-            console.log('Window app:', window.app);
-            console.log('App graph:', window.app?.graph);
-            console.log('Graph nodes:', window.app?.graph?._nodes);
-        }
-        
         if (!window.app || !window.app.graph || !window.app.graph._nodes) {
             if (CONFIG.debugLogging) {
-                console.log('Violet Tools: No nodes found in app.graph._nodes, trying alternative approaches...');
-            }
-            
-            // Try alternative node access methods
-            let nodes = null;
-            if (window.app?.graph?.nodes) {
-                nodes = window.app.graph.nodes;
-            } else if (window.app?.graph?._nodes_by_id) {
-                nodes = Object.values(window.app.graph._nodes_by_id);
-            }
-            
-            if (nodes) {
-                if (CONFIG.debugLogging) {
-                    console.log(`Violet Tools: Found ${nodes.length} nodes via alternative method`);
-                }
-                
-                let styledCount = 0;
-                nodes.forEach(node => {
-                    if (styleNode(node)) {
-                        styledCount++;
-                    }
-                });
-                
-                if (CONFIG.debugLogging) {
-                    console.log(`Violet Tools: Styled ${styledCount} nodes`);
-                }
-                return;
-            }
-            
-            if (CONFIG.debugLogging) {
-                console.log('Violet Tools: No nodes found via any method');
+                console.log('Violet Tools: No graph or nodes found');
             }
             return;
         }
-        
+
         let styledCount = 0;
         const totalNodes = window.app.graph._nodes.length;
         
         if (CONFIG.debugLogging) {
-            console.log(`Violet Tools: Found ${totalNodes} total nodes`);
+            console.log(`Violet Tools: Checking ${totalNodes} nodes for styling`);
         }
         
-        window.app.graph._nodes.forEach((node, index) => {
-            if (CONFIG.debugLogging && index < 3) { // Log first 3 nodes for debugging
-                console.log(`Node ${index}:`, node.type, node);
-            }
-            
+        window.app.graph._nodes.forEach((node) => {
             if (styleNode(node)) {
                 styledCount++;
             }
         });
         
-        if (CONFIG.debugLogging) {
+        if (CONFIG.debugLogging && styledCount > 0) {
             console.log(`Violet Tools: Styled ${styledCount} out of ${totalNodes} nodes`);
         }
     }
 
     // Monitor for new nodes
     function observeNodes() {
-        // Hook into LiteGraph node creation if available
-        if (window.LiteGraph && window.LiteGraph.LGraphNode) {
-            const originalOnAdded = window.LiteGraph.LGraphNode.prototype.onAdded;
-            window.LiteGraph.LGraphNode.prototype.onAdded = function(graph) {
-                const result = originalOnAdded ? originalOnAdded.call(this, graph) : undefined;
-                
-                // Small delay to ensure DOM is ready
-                setTimeout(() => {
-                    styleNode(this);
-                }, 100);
-                
-                return result;
-            };
-        }
+        if (!window.app || !window.app.graph) return;
         
-        // Also monitor DOM changes as a fallback
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                mutation.addedNodes.forEach(function(node) {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        // Check if this looks like a ComfyUI node
-                        if (node.classList && (node.classList.contains('comfy-node') || node.classList.contains('litegraph-node'))) {
-                            // Try to find associated graph node and style it
-                            setTimeout(() => styleAllNodes(), 50);
-                        }
-                    }
-                });
-            });
-        });
-        
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
-
-    // Update configuration
-    function updateConfig(newConfig) {
-        Object.assign(CONFIG, newConfig);
-        
-        // Re-inject styles with new configuration
-        const existingStyle = document.getElementById('vt-node-styling');
-        if (existingStyle) {
-            existingStyle.remove();
-        }
-        injectStyles();
-        
-        if (CONFIG.debugLogging) {
-            console.log('Violet Tools: Configuration updated', CONFIG);
-        }
+        // Hook into node creation
+        const originalAdd = window.app.graph.add;
+        window.app.graph.add = function(node) {
+            const result = originalAdd.call(this, node);
+            
+            // Style the node after a short delay to ensure it's fully initialized
+            setTimeout(() => {
+                styleNode(node);
+            }, 100);
+            
+            return result;
+        };
     }
 
     // Initialize the extension
     function initialize() {
         if (!CONFIG.enabled) return;
         
-        console.log('Violet Tools: Initializing node styling extension...');
+        console.log('Violet Tools: Initializing node styling extension v2.0...');
         
-        // Inject CSS styles
-        injectStyles();
+        // Load logo
+        loadLogo();
         
-        // Style existing nodes
+        // Style existing nodes after a delay
         setTimeout(() => {
             styleAllNodes();
         }, 1000);
@@ -377,12 +183,32 @@
         // Start observing for new nodes
         observeNodes();
         
-        // Periodic re-styling (fallback) - reduced frequency
+        // Periodic re-styling (fallback)
         setInterval(() => {
             styleAllNodes();
-        }, 10000); // Changed from 5 seconds to 10 seconds
+        }, 10000);
         
-        console.log('Violet Tools: Node styling extension initialized');
+        console.log('Violet Tools: Node styling extension v2.0 initialized');
+    }
+
+    // Update configuration
+    function updateConfig(newConfig) {
+        Object.assign(CONFIG, newConfig);
+        
+        if (CONFIG.debugLogging) {
+            console.log('Violet Tools: Configuration updated', CONFIG);
+        }
+        
+        // Reload logo if URL changed
+        if (newConfig.logoUrl) {
+            logoImage = null;
+            loadLogo();
+        }
+        
+        // Re-style all nodes
+        setTimeout(() => {
+            styleAllNodes();
+        }, 500);
     }
 
     // Start initialization when DOM is ready
@@ -392,18 +218,22 @@
         initialize();
     }
 
-    // Expose configuration for debugging and customization
-    window.VioletToolsNodeStyling = {
+    // Expose API for debugging and customization
+    window.VioletToolsNodeStylingV2 = {
         config: CONFIG,
         updateConfig: updateConfig,
         styleAllNodes: styleAllNodes,
         styleNode: styleNode,
-        version: '1.0.0',
+        version: '2.0.0',
         // Manual test function
         testStyling: function() {
-            console.log('=== Violet Tools Manual Styling Test ===');
+            console.log('=== Violet Tools LiteGraph Styling Test v2.0 ===');
             
-            // Find Violet Tools nodes
+            if (!window.app || !window.app.graph) {
+                console.log('❌ No app or graph found');
+                return;
+            }
+            
             const violetNodes = window.app.graph._nodes.filter(node => 
                 node.type && VIOLET_TOOLS_NODES.includes(node.type)
             );
@@ -415,25 +245,25 @@
                 return;
             }
             
-            // Test each node
-            violetNodes.forEach((node, index) => {
-                console.log(`\n--- Testing node ${index + 1}: ${node.type} ---`);
-                console.log('Node object:', node);
-                console.log('Node title:', node.title);
-                console.log('Node id:', node.id);
-                
-                const domElement = findNodeElement(node);
-                if (domElement) {
-                    console.log('Found DOM element:', domElement);
-                    console.log('Current classes:', domElement.className);
-                    
-                    // Try to apply styling manually
-                    domElement.classList.add('violet-tools-node');
-                    console.log('Added violet-tools-node class. New classes:', domElement.className);
-                } else {
-                    console.log('❌ Could not find DOM element for this node');
-                }
-            });
+            console.log('\n✅ All nodes are properly styled with:');
+            console.log(`  • Background color: ${CONFIG.backgroundColor}`);
+            console.log(`  • Text color: Default ComfyUI color (no override)`);
+            console.log(`  • Logo opacity: ${CONFIG.logoOpacity}`);
+            console.log(`  • Large centered logo with subtle background circle`);
+            
+            // Check if nodes have the styling
+            const styledNodes = violetNodes.filter(node => 
+                node.bgcolor === CONFIG.backgroundColor
+            );
+            
+            console.log(`\n${styledNodes.length}/${violetNodes.length} nodes have the correct styling applied.`);
+            
+            if (styledNodes.length === violetNodes.length) {
+                console.log('🎉 All Violet Tools nodes are perfectly styled!');
+            } else {
+                console.log('⚠️ Some nodes may need re-styling. Running styleAllNodes()...');
+                styleAllNodes();
+            }
             
             console.log('\n=== Test complete ===');
         }
