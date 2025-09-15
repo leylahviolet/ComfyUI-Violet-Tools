@@ -40,7 +40,7 @@ Changelog = "https://github.com/leylahkrell/ComfyUI-Violet-Tools/blob/main/CHANG
 [tool.comfy]
 PublisherId = "leylahkrell"
 DisplayName = "Violet Tools 💅"
-Icon = "https://raw.githubusercontent.com/leylahkrell/ComfyUI-Violet-Tools/main/images/VT_logo.png"
+Icon = "https://raw.githubusercontent.com/leylahkrell/ComfyUI-Violet-Tools/main/web/VT_logo.png"
 
 [tool.setuptools]
 packages = ["violet_tools"]
