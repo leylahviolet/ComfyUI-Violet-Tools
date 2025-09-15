@@ -295,7 +295,7 @@ class EncodingEnchantress:
         """
         try:
             # Get the path to the YAML file
-            current_dir = os.path.dirname(os.path.abspath(__file__))
+            current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             yaml_path = os.path.join(current_dir, "feature_lists", "scene_seductress.yaml")
             
             # Load the YAML file

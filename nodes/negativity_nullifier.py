@@ -7,7 +7,7 @@ class NegativityNullifier:
     user-editable boilerplate and optional manual input.
     """
 
-    neg_path = os.path.join(os.path.dirname(__file__), "feature_lists", "negativity_nullifier.yaml")
+    neg_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "feature_lists", "negativity_nullifier.yaml")
     with open(neg_path, "r", encoding="utf-8") as f:
         boilerplate = yaml.safe_load(f).get("boilerplate", [])
 

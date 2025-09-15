@@ -8,7 +8,7 @@ class AestheticAlchemist:
     Loads aesthetic definitions from feature_lists/aesthetic_alchemist.yaml and creates weighted positive prompts.
     """
     
-    style_path = os.path.join(os.path.dirname(__file__), "feature_lists", "aesthetic_alchemist.yaml")
+    style_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "feature_lists", "aesthetic_alchemist.yaml")
     with open(style_path, "r", encoding="utf-8") as f:
         style_prompts = yaml.safe_load(f)
 

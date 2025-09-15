@@ -9,7 +9,7 @@ class PosePriestess:
     for each category. Users can add their own custom content via the extra text field.
     """
 
-    pose_path = os.path.join(os.path.dirname(__file__), "feature_lists", "pose_priestess.yaml")
+    pose_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "feature_lists", "pose_priestess.yaml")
     with open(pose_path, "r", encoding="utf-8") as f:
         pose_prompts = yaml.safe_load(f)
 

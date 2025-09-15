@@ -8,7 +8,7 @@ class QualityQueen:
     Loads quality definitions from feature_lists/quality_queen.yaml and creates quality prompts.
     """
 
-    quality_path = os.path.join(os.path.dirname(__file__), "feature_lists", "quality_queen.yaml")
+    quality_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "feature_lists", "quality_queen.yaml")
     with open(quality_path, "r", encoding="utf-8") as f:
         quality_data = yaml.safe_load(f)
 

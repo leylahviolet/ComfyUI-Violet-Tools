@@ -9,7 +9,7 @@ class SceneSeductress:
     feature_lists/scene_seductress.yaml with individual strength controls for each category.
     """
 
-    scene_path = os.path.join(os.path.dirname(__file__), "feature_lists", "scene_seductress.yaml")
+    scene_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "feature_lists", "scene_seductress.yaml")
     with open(scene_path, "r", encoding="utf-8") as f:
         scene_data = yaml.safe_load(f)
 

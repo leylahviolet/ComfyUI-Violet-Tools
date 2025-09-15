@@ -8,7 +8,7 @@ class GlamourGoddess:
     Pulls options from feature_lists/glamour_goddess.yaml with field-specific color lists.
     """
 
-    style_path = os.path.join(os.path.dirname(__file__), "feature_lists", "glamour_goddess.yaml")
+    style_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "feature_lists", "glamour_goddess.yaml")
     
     with open(style_path, "r", encoding="utf-8") as f:
         FEATURES = yaml.safe_load(f)
