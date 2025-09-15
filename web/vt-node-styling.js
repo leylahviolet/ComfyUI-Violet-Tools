@@ -12,7 +12,7 @@
         backgroundColor: '#1D0C29',        // Purple background color
         textColor: '#D780F6',              // Light purple text color
         logoOpacity: 0.8,                  // Logo transparency (0.0 - 1.0)
-        logoUrl: 'VT_logo.png',           // Try same directory first
+        logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
         enabled: true,                     // Master enable/disable
         debugLogging: false                // Enable debug console logging
     };
