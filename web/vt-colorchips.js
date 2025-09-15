@@ -18,7 +18,8 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         maxRows: 6,             // Maximum rows to show before scrolling
         enabled: true,          // Master enable/disable
         showTooltips: true,     // Show color name tooltips
-        animationDuration: 200  // Animation duration in ms
+        animationDuration: 200, // Animation duration in ms
+        popupEnhancement: false // Temporarily disabled until stable
     };
 
     // Color palette data - will be populated from palette.json
@@ -323,25 +324,26 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         // Override the display of the selected value
         const originalDraw = widget.draw;
         widget.draw = function(ctx, node, widget_width, y, H) {
-            // Call original widget draw
-            if (originalDraw) {
-                originalDraw.call(this, ctx, node, widget_width, y, H);
-            }
-            
-            // Draw color chip next to selected value
-            const currentColor = colors[this.value];
-            if (currentColor) {
-                // Draw a small color square next to the value
-                const chipSize = 12;
-                const chipX = widget_width - chipSize - 25; // Position near the right edge
-                const chipY = y + (H - chipSize) / 2; // Center vertically
-                
-                ctx.fillStyle = currentColor;
-                ctx.fillRect(chipX, chipY, chipSize, chipSize);
-                
-                ctx.strokeStyle = '#666';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(chipX, chipY, chipSize, chipSize);
+            try {
+                if (originalDraw) {
+                    originalDraw.call(this, ctx, node, widget_width, y, H);
+                }
+                const currentColor = colors[this.value];
+                if (currentColor) {
+                    const chipSize = 12;
+                    const chipX = widget_width - chipSize - 25;
+                    const chipY = y + (H - chipSize) / 2;
+                    ctx.fillStyle = currentColor;
+                    ctx.fillRect(chipX, chipY, chipSize, chipSize);
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(chipX, chipY, chipSize, chipSize);
+                }
+            } catch (e) {
+                // Fail safe: revert to original draw if ours breaks
+                console.warn('[VT] draw override failed, reverting.', e);
+                widget.draw = originalDraw;
+                if (originalDraw) originalDraw.call(this, ctx, node, widget_width, y, H);
             }
         };
 
@@ -381,6 +383,17 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         
         let enhancedCount = 0;
         
+        // Sanitize any legacy emoji-prefixed values (migration safeguard)
+        node.widgets.forEach(w => {
+            if (w?.options?.values && Array.isArray(w.options.values)) {
+                const cleaned = w.options.values.map(v => typeof v === 'string' ? v.replace(/^[\u{1F7E5}-\u{1F7EB}⬛⬜🟫🔳]\s*/u, '').trim() : v);
+                if (cleaned.some((c,i)=>c!==w.options.values[i])) {
+                    w.options.values = cleaned;
+                    console.log('[VT] Sanitized legacy emoji values for widget', w.name);
+                }
+            }
+        });
+
         node.widgets.forEach(widget => {
             if (enhanceWidget(widget, node)) {
                 enhancedCount++;
@@ -421,7 +434,9 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
                             // This is a fallback for cases where the node hook doesn't work
                         });
                         // Detect combo popup list (has filter input + list of options)
-                        decoratePopupIfColorList(node);
+                        if (CONFIG.popupEnhancement) {
+                            decoratePopupIfColorList(node);
+                        }
                     }
                 });
             });
@@ -435,6 +450,7 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
 
     // Decorate option popup entries with inline color chips
     function decoratePopupIfColorList(rootNode) {
+        if (!CONFIG.popupEnhancement) return; // disabled for stability
         if (!flatColorMap || Object.keys(flatColorMap).length === 0) return;
         // Heuristic: find list items inside a dropdown container
         const optionNodes = rootNode.querySelectorAll('div, li, span');
