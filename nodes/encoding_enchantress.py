@@ -54,8 +54,9 @@ class EncodingEnchantress:
             }
         }
 
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "CHARACTER_DATA", "STRING")
-    RETURN_NAMES = ("positive", "negative", "pos_text", "neg_text", "character", "tokens")
+    # Output order updated: positive, negative, tokens, character, pos, neg
+    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "CHARACTER_DATA", "STRING", "STRING")
+    RETURN_NAMES = ("positive", "negative", "tokens", "character", "pos", "neg")
     FUNCTION = "condition"
     CATEGORY = "Violet Tools 💅"
 
@@ -406,7 +407,7 @@ class EncodingEnchantress:
             nullifier (str): Negative prompt string
             
         Returns:
-            tuple: (positive_conditioning, negative_conditioning, positive_text, negative_text)
+            tuple: (positive, negative, tokens, character, pos, neg)
         """
         
         # If character_apply is true, pull segments straight from character when missing
@@ -518,7 +519,8 @@ class EncodingEnchantress:
         
         token_report_text = self._make_token_report(clip, token_items, token_report)
 
-        return (positive_combined, negative_combined, pos_text, combined_negative, character_output, token_report_text)
+        # New return order matches updated RETURN_NAMES
+        return (positive_combined, negative_combined, token_report_text, character_output, pos_text, combined_negative)
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,
