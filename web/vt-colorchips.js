@@ -386,25 +386,33 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
                     try {
                         if (!this.widgets) return;
                         // Iterate widgets to find color ones
-                        let y = LiteGraph.NODE_TITLE_HEIGHT || 30;
+                        // Mirror LiteGraph widget layout logic for accurate vertical alignment
+                        const titleH = LiteGraph.NODE_TITLE_HEIGHT || 30;
+                        const baseSpacing = 4; // typical spacing between widgets in LiteGraph
+                        let y = (this.widgets_start_y !== undefined ? this.widgets_start_y : (titleH + baseSpacing));
                         for (let i = 0; i < this.widgets.length; i++) {
                             const w = this.widgets[i];
-                            const size = w.computeSize ? w.computeSize(this.size[0]) : [this.size[0], LiteGraph.NODE_WIDGET_HEIGHT || 20];
-                            const h = Array.isArray(size) ? size[1] : size;
+                            let h;
+                            try {
+                                if (w.computeSize) {
+                                    const sz = w.computeSize(this.size[0]);
+                                    h = Array.isArray(sz) ? sz[1] : sz;
+                                }
+                            } catch {}
+                            if (!h || h < 10) h = (LiteGraph.NODE_WIDGET_HEIGHT || 20);
                             if (w._colorChips && w.value && w._colorChips[w.value]) {
                                 const color = w._colorChips[w.value];
                                 const chipSize = 12;
-                                // Align chip inside the row: right padding ~10, leave 4px gap from right border triangle
                                 const rightPadding = 12;
                                 const chipX = this.size[0] - rightPadding - chipSize;
-                                const chipY = y + (h - chipSize)/2;
+                                const chipY = y + (h - chipSize) * 0.5;
                                 ctx.fillStyle = color;
                                 ctx.fillRect(chipX, chipY, chipSize, chipSize);
                                 ctx.strokeStyle = '#222';
                                 ctx.lineWidth = 1;
                                 ctx.strokeRect(chipX, chipY, chipSize, chipSize);
                             }
-                            y += h;
+                            y += h + baseSpacing;
                         }
                     } catch(e) {
                         // If drawing fails, don't break node rendering
