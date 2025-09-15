@@ -294,11 +294,12 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             }
             
             // Add height for color chips (2 rows of chips)
-            const chipSize = 12;
-            const padding = 2;
-            const chipsPerRow = Math.floor((baseSize[0] - 10) / (chipSize + padding));
+            const chipSize = 16;  // Increased from 12
+            const padding = 4;    // Increased from 2
+            const verticalSpacing = 8; // Extra spacing above chips
+            const chipsPerRow = Math.floor((baseSize[0] - 20) / (chipSize + padding)); // More margin
             const rows = Math.min(2, Math.ceil(colorArray.length / Math.max(1, chipsPerRow)));
-            const extraHeight = rows * (chipSize + padding) + padding;
+            const extraHeight = verticalSpacing + rows * (chipSize + padding) + padding;
             
             return [baseSize[0], baseSize[1] + extraHeight];
         };
@@ -315,18 +316,18 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             
             // Handle color chip clicks
             if (event.type === "pointerdown") {
-                const chipSize = 12;
-                const padding = 2;
-                const chipsPerRow = Math.floor((node.size[0] - 10) / (chipSize + padding));
+                const chipSize = 16;  // Match the drawing size
+                const padding = 4;    // Match the drawing padding
+                const chipsPerRow = Math.floor((node.size[0] - 20) / (chipSize + padding)); // Match the drawing calculation
                 
                 // Calculate chip area position relative to widget
-                const chipStartY = this.size[1] - (chipSize + padding) * 2; // Bottom of widget area
+                const chipStartY = this.size[1] - (chipSize + padding) * 2 - 8; // Account for vertical spacing
                 
                 for (let i = 0; i < colorArray.length; i++) {
                     const row = Math.floor(i / chipsPerRow);
                     const col = i % chipsPerRow;
                     
-                    const chipX = 5 + col * (chipSize + padding);
+                    const chipX = 10 + col * (chipSize + padding); // Match the drawing margin
                     const chipY = chipStartY + row * (chipSize + padding);
                     
                     // Check if click is within this chip
@@ -403,9 +404,9 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         if (!colors) return;
         
         const colorArray = Object.entries(colors);
-        const chipSize = 12;
-        const padding = 2;
-        const chipsPerRow = Math.floor((node.size[0] - 10) / (chipSize + padding));
+        const chipSize = 16;    // Match the size calculation
+        const padding = 4;      // Match the padding calculation
+        const chipsPerRow = Math.floor((node.size[0] - 20) / (chipSize + padding)); // More margin
         
         // Find widget position in node
         let widgetY = 30; // Start after title
@@ -414,9 +415,9 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             widgetY += node.widgets[i].computeSize ? node.widgets[i].computeSize()[1] : 20;
         }
         
-        // Position chips below the widget
-        const chipStartX = 5;
-        const chipStartY = widgetY + (widget.computeSize ? widget.computeSize()[1] : 20) - 30;
+        // Position chips below the widget with better spacing
+        const chipStartX = 10;  // More left margin
+        const chipStartY = widgetY + (widget.computeSize ? widget.computeSize()[1] : 20) - 35; // More space from widget
         
         // Draw color chips
         for (let i = 0; i < Math.min(colorArray.length, chipsPerRow * 2); i++) {
