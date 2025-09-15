@@ -465,8 +465,8 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         }
     };
 
-    // Expose test function to global window for debugging
-    window.testChips = testChips;
+    // Expose test function to global window for debugging (after object is defined)
+    window.testChips = window.VioletToolsColorChips.testChips;
     
     // Simple check function to verify extension is loaded
     window.vtColorChipsLoaded = function() {
