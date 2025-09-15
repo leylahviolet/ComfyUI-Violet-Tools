@@ -19,3 +19,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.github/*.md
+AGENTS.md
+.vscode/
+.idea/
