@@ -121,9 +121,9 @@
         if (enhancedWidgets.has(widget)) return false;
         if (widget.type !== 'combo') return false;
         
-        // Check if this is a Violet Tools node
-        const nodeClass = node.constructor?.name;
-        if (!nodeClass || !nodeClass.match(/^(GlamourGoddess|BodyBard|AestheticAlchemist|QualityQueen|SceneSeductress|PosePriestess|EncodingEnchantress|NegativityNullifier|CharacterCreator|CharacterCache)$/)) {
+        // Check if this is a Violet Tools node using node.type instead of constructor.name
+        const nodeType = node.type;
+        if (!nodeType || !nodeType.match(/^(GlamourGoddess|BodyBard|AestheticAlchemist|QualityQueen|SceneSeductress|PosePriestess|EncodingEnchantress|NegativityNullifier|CharacterCreator|CharacterCache)$/)) {
             return false;
         }
         

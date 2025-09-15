@@ -68,11 +68,11 @@
         // Set node background color using LiteGraph properties
         node.bgcolor = CONFIG.backgroundColor;
         
-        // Don't override text color - let ComfyUI use its default
-        // node.color = CONFIG.textColor; // Removed
+        // Set a darker color for the title bar (node.color is used for title bar background)
+        node.color = '#0F0517'; // Much darker purple for title bar readability
         
         // Set border color for better visibility
-        node.boxcolor = CONFIG.textColor || '#666666';
+        node.boxcolor = '#666666';
         
         // Custom draw function to add logo
         const originalOnDrawBackground = node.onDrawBackground;
