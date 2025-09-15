@@ -863,7 +863,7 @@
       "light": "#F4C2A1",
       "rosy": "#FDBEAA",
       "peachy": "#FFCBA4",
-      "olive": "#C7B377",
+  "olive": "#CCAB8B",
       "golden": "#BD9D00",
       "caramel": "#E9B982",
       "amber": "#B08210",
@@ -892,9 +892,9 @@
       "brown": "#8B4513",
       "light brown": "#CD853F",
       "dark brown": "#654321",
-      "ebony": "#555D50",
+      "ebony": "#331C16",
       "light ebony": "#7D7B77",
-      "dark ebony": "#3C3B37"
+      "dark ebony": "#1F110D"
     },
     "pubic_hair_color": {
       "blonde": "#FAD5A5",
