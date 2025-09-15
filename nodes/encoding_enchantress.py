@@ -57,7 +57,7 @@ class EncodingEnchantress:
     RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "CHARACTER_DATA", "STRING")
     RETURN_NAMES = ("positive", "negative", "pos_text", "neg_text", "character", "tokens")
     FUNCTION = "condition"
-    CATEGORY = "Violet Tools 💅/Character"
+    CATEGORY = "Violet Tools 💅"
 
     def encode_with_strength(self, clip, text, strength):
         """
