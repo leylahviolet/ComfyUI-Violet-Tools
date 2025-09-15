@@ -105,8 +105,8 @@
 
                 // Raise the logo upward: anchor nearer the title bar, leaving only minimal padTop
                 const logoX = (this.size[0] - w) / 2;
-                // Top-align: place logo flush beneath title padding
-                let logoY = padTop;
+                // Flush to very top (ignore padTop)
+                let logoY = 0;
 
                 ctx.globalAlpha = CONFIG.logoOpacity;
                 ctx.drawImage(logoImage, logoX, logoY, w, h);
