@@ -97,6 +97,23 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         .vt-chip-search::placeholder {
             color: #888;
         }
+
+        /* Inline dropdown entry chip */
+        .vt-inline-color-chip {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #444;
+            border-radius: 2px;
+            margin-right: 6px;
+            box-sizing: border-box;
+            vertical-align: middle;
+        }
+        .vt-inline-color-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
     `;
 
     // Inject CSS styles
@@ -118,6 +135,7 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             if (response.ok) {
                 colorPalette = await response.json();
                 console.log('Violet Tools: Color palette loaded successfully');
+                buildFlatColorMap();
                 return;
             }
         } catch (error) {
@@ -133,6 +151,24 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
             }
         };
         console.log('Violet Tools: Using fallback color palette');
+        buildFlatColorMap();
+    }
+
+    // Flat name->hex map for quick lookup across all fields (some color sets use objects vs arrays)
+    let flatColorMap = {};
+    function buildFlatColorMap() {
+        flatColorMap = {};
+        if (!colorPalette || !colorPalette.colorFields) return;
+        for (const [field, collection] of Object.entries(colorPalette.colorFields)) {
+            if (Array.isArray(collection)) {
+                // if array, we can't infer names; skip (palette likely incomplete)
+                continue;
+            }
+            for (const [name, hex] of Object.entries(collection)) {
+                if (typeof hex === 'string') flatColorMap[name] = hex;
+            }
+        }
+        console.log(`[VT] Built flat color map with ${Object.keys(flatColorMap).length} entries`);
     }
 
     // Check if a widget should have color chips
@@ -279,21 +315,10 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
 
         // Store the colors for later use
         widget._colorChips = colors;
-
-        // Override the widget's option display
-        const originalOptionsValues = widget.options?.values;
-        if (originalOptionsValues) {
-            // Create enhanced options with color chips
-            widget.options.values = originalOptionsValues.map(optionValue => {
-                const hexColor = colors[optionValue];
-                if (hexColor) {
-                    // Add color chip emoji/unicode block based on color
-                    const colorChip = getColorChip(hexColor);
-                    return `${colorChip} ${optionValue}`;
-                }
-                return optionValue; // No color for this option
-            });
-        }
+        // DO NOT mutate widget.options.values (breaks selection / hides widget)
+        // Instead we'll enhance the popup DOM list when it opens via MutationObserver.
+        // Placeholder flag so we only attach one popup enhancer per widget.
+        widget._vtPopupEnhanced = false;
 
         // Override the display of the selected value
         const originalDraw = widget.draw;
@@ -395,6 +420,8 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
                             // Try to find the associated widget and enhance it
                             // This is a fallback for cases where the node hook doesn't work
                         });
+                        // Detect combo popup list (has filter input + list of options)
+                        decoratePopupIfColorList(node);
                     }
                 });
             });
@@ -403,6 +430,48 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         observer.observe(document.body, {
             childList: true,
             subtree: true
+        });
+    }
+
+    // Decorate option popup entries with inline color chips
+    function decoratePopupIfColorList(rootNode) {
+        if (!flatColorMap || Object.keys(flatColorMap).length === 0) return;
+        // Heuristic: find list items inside a dropdown container
+        const optionNodes = rootNode.querySelectorAll('div, li, span');
+        optionNodes.forEach(el => {
+            if (el._vtColorized) return; // already processed
+            // Match text content to a known color name (exact match ignoring case)
+            const rawText = (el.textContent || '').trim();
+            const key = Object.keys(flatColorMap).find(k => k.toLowerCase() === rawText.toLowerCase());
+            if (!key) return;
+            const hex = flatColorMap[key];
+            if (!hex) return;
+            // Skip if we already have a chip inside
+            if (el.querySelector('.vt-inline-color-chip')) {
+                el._vtColorized = true;
+                return;
+            }
+            // Wrap content
+            const chip = document.createElement('span');
+            chip.className = 'vt-inline-color-chip';
+            chip.style.background = hex;
+            // Adjust contrast border for very light colors
+            try {
+                const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+                const luminance = 0.299*r + 0.587*g + 0.114*b;
+                chip.style.borderColor = luminance > 200 ? '#666' : '#222';
+            } catch {}
+            // Create flex container if not already
+            const container = document.createElement('span');
+            container.className = 'vt-inline-color-row';
+            const label = document.createElement('span');
+            label.textContent = rawText;
+            container.appendChild(chip);
+            container.appendChild(label);
+            // Clear existing text and insert
+            while (el.firstChild) el.removeChild(el.firstChild);
+            el.appendChild(container);
+            el._vtColorized = true;
         });
     }
 
