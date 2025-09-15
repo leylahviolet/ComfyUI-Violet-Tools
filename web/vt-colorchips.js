@@ -404,8 +404,16 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
                             const color = w._colorChips[w.value];
                             const chipSize = Math.min(h - 6, 14);
                             const arrowReserve = 14; // approximate triangle area
-                            const chipX = this.size[0] - arrowReserve - chipSize;
-                            const chipY = y + (h - chipSize) / 2;
+                            // Base position (right-aligned inside widget row)
+                            let chipX = this.size[0] - arrowReserve - chipSize;
+                            let chipY = y + (h - chipSize) / 2;
+                            // Apply requested stylistic offsets: move right by 80% width, up by 50% height
+                            chipX += chipSize * 0.8;
+                            chipY -= chipSize * 0.5;
+                            // Prevent drawing too far beyond node (allow slight overflow for style)
+                            const maxRight = this.size[0] - 2;
+                            if (chipX + chipSize > maxRight) chipX = maxRight - chipSize;
+                            if (chipY < y - chipSize * 0.6) chipY = y - chipSize * 0.6; // soft clamp
                             ctx.fillStyle = color;
                             ctx.fillRect(chipX, chipY, chipSize, chipSize);
                             ctx.strokeStyle = '#222';
