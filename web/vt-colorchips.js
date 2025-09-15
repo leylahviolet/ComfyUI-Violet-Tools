@@ -104,11 +104,40 @@
     // Load color palette data
     async function loadColorPalette() {
         try {
-            // Use relative path from the extension's web directory
-            const response = await fetch('extensions/ComfyUI-Violet-Tools/palette.json');
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            colorPalette = await response.json();
-            console.log('Violet Tools: Color palette loaded successfully');
+            // Try different path approaches for ComfyUI extension files
+            let response;
+            
+            // First try: same directory (since both files are in web/)
+            try {
+                response = await fetch('palette.json');
+                if (response.ok) {
+                    colorPalette = await response.json();
+                    console.log('Violet Tools: Color palette loaded successfully');
+                    return;
+                }
+            } catch (e) {}
+            
+            // Second try: relative to current location
+            try {
+                response = await fetch('./palette.json');
+                if (response.ok) {
+                    colorPalette = await response.json();
+                    console.log('Violet Tools: Color palette loaded successfully');
+                    return;
+                }
+            } catch (e) {}
+            
+            // Third try: ComfyUI extensions path
+            try {
+                response = await fetch('/extensions/ComfyUI-Violet-Tools/web/palette.json');
+                if (response.ok) {
+                    colorPalette = await response.json();
+                    console.log('Violet Tools: Color palette loaded successfully');
+                    return;
+                }
+            } catch (e) {}
+            
+            throw new Error('Unable to find palette.json');
         } catch (error) {
             console.warn('Violet Tools: Failed to load color palette:', error);
             colorPalette = null;
