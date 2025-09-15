@@ -275,23 +275,50 @@ console.log('🚀 [VT-COLORCHIPS] Script execution started...');
         const chipContainer = createColorChipContainer(widget, fieldName);
         if (!chipContainer) return false;
         
-        // Find the widget element in the DOM
-        const widgetElement = widget.element;
-        console.log(`[DEBUG] Widget ${fieldName}:`, {
-            hasElement: !!widgetElement,
-            element: widgetElement,
-            hasParent: !!(widgetElement && widgetElement.parentNode),
-            parentNode: widgetElement ? widgetElement.parentNode : null
-        });
-        
-        if (!widgetElement || !widgetElement.parentNode) {
-            console.warn(`[DEBUG] Cannot find DOM element for widget ${fieldName}`);
+        // Find the widget element in the DOM using ComfyUI's approach
+        // In ComfyUI, we need to find the widget in the node's DOM structure
+        const nodeElement = document.querySelector(`[data-node-id="${node.id}"]`) || 
+                           document.querySelector(`[id="${node.id}"]`) ||
+                           Array.from(document.querySelectorAll('.comfy-node')).find(el => {
+                               const titleEl = el.querySelector('.comfy-node-title');
+                               return titleEl && titleEl.textContent.includes(node.type);
+                           });
+
+        if (!nodeElement) {
+            console.warn(`[DEBUG] Cannot find node element for ${node.type}`);
             return false;
         }
 
+        // Look for widget elements within the node
+        const widgetElements = nodeElement.querySelectorAll('select, input[type="text"], input[type="number"]');
+        let targetWidgetElement = null;
+
+        // Try to find the specific widget element by matching options or attributes
+        for (const el of widgetElements) {
+            if (el.tagName === 'SELECT') {
+                // For combo widgets, check if the options match
+                const options = Array.from(el.options).map(opt => opt.value);
+                if (widget.options && Array.isArray(widget.options.values)) {
+                    const widgetOptions = widget.options.values;
+                    if (options.length === widgetOptions.length && 
+                        options.some(opt => widgetOptions.includes(opt))) {
+                        targetWidgetElement = el;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!targetWidgetElement) {
+            console.warn(`[DEBUG] Cannot find widget element for ${fieldName} in node ${node.type}`);
+            return false;
+        }
+
+        console.log(`[DEBUG] Found widget element for ${fieldName}:`, targetWidgetElement);
+
         // Insert chip container after the widget
         console.log(`[DEBUG] Inserting chip container for ${fieldName}...`);
-        widgetElement.parentNode.insertBefore(chipContainer, widgetElement.nextSibling);
+        targetWidgetElement.parentNode.insertBefore(chipContainer, targetWidgetElement.nextSibling);
         console.log(`[DEBUG] Chip container inserted for ${fieldName}`);        // Mark as enhanced
         enhancedWidgets.add(widget);
         
