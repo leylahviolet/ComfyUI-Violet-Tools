@@ -41,7 +41,16 @@
         logoOpacity: 0.9,                  // Logo transparency
     logoUrl: LOGO_CANDIDATES[0],
         enabled: true,                     // Master enable/disable
-        debugLogging: false                // Disable debug logging now that it's working
+        debugLogging: false,               // Disable debug logging now that it's working
+        // Optional widget row theming (disabled by default to avoid unexpected cross-extension interactions)
+        widgetStyle: {
+            enabled: false,            // Flip to true (or via updateConfig) to activate
+            bg: '#262029',             // Widget background
+            border: '#4a3d58',         // Border / outline base
+            outlineHover: '#7b5bd1',   // Hover/active outline accent
+            text: '#E9E2F2',           // Primary text color
+            textSecondary: '#B7ADCA'   // Secondary text (numbers, units)
+        }
     };
 
     // List of all Violet Tools node class names
@@ -193,6 +202,46 @@
         }
     }
 
+    // Install widget style wrapper (idempotent)
+    function installWidgetSkins() {
+        if (!window.LiteGraph || !LiteGraph.LGraphCanvas) return;
+        const proto = LiteGraph.LGraphCanvas.prototype;
+        if (proto._vtOriginalDrawNodeWidgets) return; // already wrapped
+        proto._vtOriginalDrawNodeWidgets = proto.drawNodeWidgets;
+        proto.drawNodeWidgets = function(node, ctx, posY, skipReadOnly) {
+            const ws = CONFIG.widgetStyle;
+            const eligible = ws && ws.enabled && node && isVioletToolsNode(node);
+            if (!eligible) {
+                return proto._vtOriginalDrawNodeWidgets.call(this, node, ctx, posY, skipReadOnly);
+            }
+            // Snapshot original LiteGraph color constants
+            const originals = {
+                WIDGET_BGCOLOR: LiteGraph.WIDGET_BGCOLOR,
+                WIDGET_OUTLINE_COLOR: LiteGraph.WIDGET_OUTLINE_COLOR,
+                WIDGET_TEXT_COLOR: LiteGraph.WIDGET_TEXT_COLOR,
+                WIDGET_SECONDARY_TEXT_COLOR: LiteGraph.WIDGET_SECONDARY_TEXT_COLOR,
+                WIDGET_BORDER_COLOR: LiteGraph.WIDGET_BORDER_COLOR
+            };
+            // Apply themed values
+            LiteGraph.WIDGET_BGCOLOR = ws.bg;
+            LiteGraph.WIDGET_BORDER_COLOR = ws.border;
+            LiteGraph.WIDGET_OUTLINE_COLOR = ws.outlineHover;
+            LiteGraph.WIDGET_TEXT_COLOR = ws.text;
+            LiteGraph.WIDGET_SECONDARY_TEXT_COLOR = ws.textSecondary;
+            try {
+                return proto._vtOriginalDrawNodeWidgets.call(this, node, ctx, posY, skipReadOnly);
+            } finally {
+                // Restore originals so non‑Violet nodes + other extensions remain unaffected
+                LiteGraph.WIDGET_BGCOLOR = originals.WIDGET_BGCOLOR;
+                LiteGraph.WIDGET_OUTLINE_COLOR = originals.WIDGET_OUTLINE_COLOR;
+                LiteGraph.WIDGET_TEXT_COLOR = originals.WIDGET_TEXT_COLOR;
+                LiteGraph.WIDGET_SECONDARY_TEXT_COLOR = originals.WIDGET_SECONDARY_TEXT_COLOR;
+                LiteGraph.WIDGET_BORDER_COLOR = originals.WIDGET_BORDER_COLOR;
+            }
+        };
+        if (CONFIG.debugLogging) console.log('Violet Tools: Widget skin hook installed');
+    }
+
     // Monitor for new nodes
     function observeNodes() {
         if (!window.app || !window.app.graph) return;
@@ -226,6 +275,8 @@
         setTimeout(() => {
             styleAllNodes();
         }, 1000);
+        // Install widget skin wrapper after LiteGraph likely loaded
+        installWidgetSkins();
         
         // Start observing for new nodes
         observeNodes();
@@ -242,6 +293,11 @@
 
     // Update configuration
     function updateConfig(newConfig) {
+        // Support nested widgetStyle merge instead of wholesale replace
+        if (newConfig.widgetStyle && typeof newConfig.widgetStyle === 'object') {
+            Object.assign(CONFIG.widgetStyle, newConfig.widgetStyle);
+            delete newConfig.widgetStyle; // prevent overwrite below
+        }
         Object.assign(CONFIG, newConfig);
         
         if (CONFIG.debugLogging) {
@@ -257,6 +313,7 @@
         // Re-style all nodes
         setTimeout(() => {
             styleAllNodes();
+            installWidgetSkins(); // ensure wrapper present if enabling later
         }, 500);
     }
 
@@ -315,6 +372,7 @@
             }
             
             console.log('\n=== Test complete ===');
+            console.log('\nWidget style active:', CONFIG.widgetStyle.enabled, '-> toggle with VioletToolsNodeStylingV2.updateConfig({ widgetStyle: { enabled: true } })');
         }
     };
 
