@@ -44,12 +44,21 @@
         debugLogging: false,               // Disable debug logging now that it's working
         // Optional widget row theming (disabled by default to avoid unexpected cross-extension interactions)
         widgetStyle: {
-            enabled: false,            // Flip to true (or via updateConfig) to activate
-            bg: '#262029',             // Widget background
-            border: '#4a3d58',         // Border / outline base
-            outlineHover: '#7b5bd1',   // Hover/active outline accent
-            text: '#E9E2F2',           // Primary text color
-            textSecondary: '#B7ADCA'   // Secondary text (numbers, units)
+            enabled: true,            // Flip to true (or via updateConfig) to activate
+            bg: '#1e0c2b',             // Widget background
+            border: '#2e0f4bff',         // Border / outline base
+            outlineHover: '#665762ff',   // Hover/active outline accent
+            text: '#e3cbeeff',           // Primary text color
+            textSecondary: '#e3cbeeff',  // Secondary text (numbers, units)
+            multiline: {                // Extended block / textarea-like widgets
+                enabled: true,          // Separate toggle (inherits parent enabled)
+                bg: '#241030',          // Slightly different depth for multi-line areas
+                border: '#3a1458',      // Border for block widgets
+                radius: 6,              // Corner radius for drawn rect
+                paddingX: 6,
+                paddingY: 4,
+                glow: 'rgba(170,120,255,0.25)' // Optional inner glow overlay
+            }
         }
     };
 
@@ -229,6 +238,68 @@
             LiteGraph.WIDGET_TEXT_COLOR = ws.text;
             LiteGraph.WIDGET_SECONDARY_TEXT_COLOR = ws.textSecondary;
             try {
+                // If multiline styling enabled, pre-pass to paint backgrounds for qualifying widgets.
+                if (ws.multiline && ws.multiline.enabled && node && node.widgets && ctx) {
+                    try {
+                        // We approximate widget vertical layout similar to LiteGraph's internal logic.
+                        const startY = posY;
+                        let y = startY;
+                        const spacing = 4; // default widget spacing
+                        const nodeWidth = node.size ? node.size[0] : 140;
+                        for (let i = 0; i < node.widgets.length; i++) {
+                            const w = node.widgets[i];
+                            let h = 0;
+                            try {
+                                if (w.computeSize) {
+                                    const sz = w.computeSize(nodeWidth);
+                                    h = Array.isArray(sz) ? sz[1] : sz;
+                                }
+                            } catch {}
+                            if (!h || h < 20) h = 20; // baseline min
+                            // Heuristic: treat very tall widgets (>=50px) or widgets explicitly flagged as multiline
+                            const isMultiline = h >= 50 || /text|prompt|multi/i.test(w.name || '') || w.type === 'text' && h > 30;
+                            if (isMultiline) {
+                                const ml = ws.multiline;
+                                const padX = ml.paddingX;
+                                const padY = ml.paddingY;
+                                const radius = ml.radius;
+                                const rectX = 4 + padX * 0.5; // small left inset
+                                const rectY = y - 2; // small vertical inset above
+                                const rectW = nodeWidth - 8 - padX; // symmetric inset
+                                const rectH = h + padY * 2 - 2; // include bottom padding
+                                ctx.save();
+                                ctx.beginPath();
+                                if (radius > 0) {
+                                    const r = Math.min(radius, rectH * 0.5, rectW * 0.5);
+                                    ctx.moveTo(rectX + r, rectY);
+                                    ctx.lineTo(rectX + rectW - r, rectY);
+                                    ctx.quadraticCurveTo(rectX + rectW, rectY, rectX + rectW, rectY + r);
+                                    ctx.lineTo(rectX + rectW, rectY + rectH - r);
+                                    ctx.quadraticCurveTo(rectX + rectW, rectY + rectH, rectX + rectW - r, rectY + rectH);
+                                    ctx.lineTo(rectX + r, rectY + rectH);
+                                    ctx.quadraticCurveTo(rectX, rectY + rectH, rectX, rectY + rectH - r);
+                                    ctx.lineTo(rectX, rectY + r);
+                                    ctx.quadraticCurveTo(rectX, rectY, rectX + r, rectY);
+                                } else {
+                                    ctx.rect(rectX, rectY, rectW, rectH);
+                                }
+                                ctx.fillStyle = ml.bg;
+                                ctx.fill();
+                                ctx.lineWidth = 1.5;
+                                ctx.strokeStyle = ml.border;
+                                ctx.stroke();
+                                if (ml.glow) {
+                                    ctx.globalCompositeOperation = 'lighter';
+                                    ctx.fillStyle = ml.glow;
+                                    ctx.fill();
+                                    ctx.globalCompositeOperation = 'source-over';
+                                }
+                                ctx.restore();
+                            }
+                            y += h + spacing;
+                        }
+                    } catch(e) { /* ignore drawing errors */ }
+                }
                 return proto._vtOriginalDrawNodeWidgets.call(this, node, ctx, posY, skipReadOnly);
             } finally {
                 // Restore originals so non‑Violet nodes + other extensions remain unaffected
