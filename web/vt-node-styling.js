@@ -42,24 +42,6 @@
     logoUrl: LOGO_CANDIDATES[0],
         enabled: true,                     // Master enable/disable
         debugLogging: false,               // Disable debug logging now that it's working
-        // Optional widget row theming (disabled by default to avoid unexpected cross-extension interactions)
-        widgetStyle: {
-            enabled: true,            // Flip to true (or via updateConfig) to activate
-            bg: '#1e0c2b',             // Widget background
-            border: '#2e0f4bff',         // Border / outline base
-            outlineHover: '#665762ff',   // Hover/active outline accent
-            text: '#e3cbeeff',           // Primary text color
-            textSecondary: '#e3cbeeff',  // Secondary text (numbers, units)
-            multiline: {                // Extended block / textarea-like widgets
-                enabled: true,          // Separate toggle (inherits parent enabled)
-                bg: '#241030',          // Slightly different depth for multi-line areas
-                border: '#3a1458',      // Border for block widgets
-                radius: 6,              // Corner radius for drawn rect
-                paddingX: 6,
-                paddingY: 4,
-                glow: 'rgba(170,120,255,0.25)' // Optional inner glow overlay
-            }
-        }
     };
 
     // List of all Violet Tools node class names
