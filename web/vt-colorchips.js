@@ -21,6 +21,21 @@
         debugLogging: false     // Silence non-essential logs by default
     };
 
+    // Derive base path for this extension's served assets similar to vt-node-styling
+    function deriveBasePath() {
+        if (window.VioletToolsBasePath) return window.VioletToolsBasePath; // manual override
+        try {
+            const scripts = Array.from(document.getElementsByTagName('script'));
+            let hit = scripts.find(s => /vt-colorchips\.js/i.test(s.src)) || scripts.find(s => /vt-node-styling\.js/i.test(s.src));
+            if (hit && hit.src) {
+                const m = hit.src.match(/\/extensions\/[^/]+\//i);
+                if (m) return m[0].endsWith('/') ? m[0] : m[0] + '/';
+            }
+        } catch(e) {}
+        return '/extensions/comfyui-violet-tools/';
+    }
+    const BASE_PATH = deriveBasePath();
+
     // Color palette data - will be populated from palette.json
     let colorPalette = null;
     
@@ -131,15 +146,27 @@
     async function loadColorPalette() {
         try {
             // Simplified palette loading - try the most likely path first
-            const response = await fetch('/extensions/comfyui-violet-tools/palette.json');
-            if (response.ok) {
-                colorPalette = await response.json();
-                if (CONFIG.debugLogging) {
-                    console.log('Violet Tools: Color palette loaded successfully');
+            const baseRaw = BASE_PATH.replace(/\/$/, '');
+            const folder = baseRaw.split('/').pop();
+            const root = baseRaw.slice(0, baseRaw.length - folder.length);
+            const variants = [folder, folder.toLowerCase(), folder.toUpperCase()];
+            const tried = [];
+            for (const v of Array.from(new Set(variants))) {
+                const url = `${root}${v}/palette.json`;
+                tried.push(url);
+                try {
+                    const response = await fetch(url, { cache: 'no-cache' });
+                    if (response.ok) {
+                        colorPalette = await response.json();
+                        if (CONFIG.debugLogging) console.log('Violet Tools: Palette loaded at', url);
+                        buildFlatColorMap();
+                        return;
+                    }
+                } catch (inner) {
+                    if (CONFIG.debugLogging) console.log('Violet Tools: Palette fetch failed at', url, inner);
                 }
-                buildFlatColorMap();
-                return;
             }
+            if (CONFIG.debugLogging) console.warn('Violet Tools: All palette paths failed', tried);
         } catch (error) {
             console.warn('Violet Tools: Failed to load color palette:', error);
         }
