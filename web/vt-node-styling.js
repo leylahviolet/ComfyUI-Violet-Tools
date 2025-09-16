@@ -5,11 +5,41 @@
     'use strict';
 
     // Configuration
+    // Attempt to derive the extension mount path dynamically. ComfyUI serves custom node web assets
+    // under /extensions/<folder-name>/ when WEB_DIRECTORY is set. Folder name may vary by case.
+    function deriveBasePath() {
+        // Manual override (set before script loads): window.VioletToolsBasePath = '/extensions/YourPath/'
+        if (window.VioletToolsBasePath) return window.VioletToolsBasePath;
+        try {
+            const scripts = Array.from(document.getElementsByTagName('script'));
+            const hit = scripts.find(s => /vt-node-styling\.js/i.test(s.src)) || scripts.find(s => /vt-colorchips\.js/i.test(s.src));
+            if (hit && hit.src) {
+                const m = hit.src.match(/\/extensions\/[^/]+\//i);
+                if (m) return m[0].endsWith('/') ? m[0] : m[0] + '/';
+            }
+        } catch(e) {}
+        return '/extensions/comfyui-violet-tools/';
+    }
+
+    const BASE_PATH = deriveBasePath();
+
+    function buildLogoCandidates() {
+        // Generate case variants for robustness
+        const raw = BASE_PATH.replace(/\/$/, '');
+        const folder = raw.split('/').pop();
+        const root = raw.slice(0, raw.length - folder.length);
+        const variants = [folder, folder.toLowerCase(), folder.toUpperCase()];
+        const unique = Array.from(new Set(variants));
+        return unique.map(v => `${root}${v}/VT_logo.png`);
+    }
+
+    const LOGO_CANDIDATES = buildLogoCandidates();
+
     const CONFIG = {
         backgroundColor: '#1D0C29',        // Purple background color
         textColor: null,                   // Use default text color (removed custom purple)
         logoOpacity: 0.9,                  // Logo transparency
-        logoUrl: '/extensions/comfyui-violet-tools/VT_logo.png',
+    logoUrl: LOGO_CANDIDATES[0],
         enabled: true,                     // Master enable/disable
         debugLogging: false                // Disable debug logging now that it's working
     };
@@ -34,22 +64,29 @@
 
     // Load the logo image
     function loadLogo() {
-        if (!logoImage) {
+        if (logoImage) return logoImage;
+        let idx = 0;
+        function tryNext() {
+            if (idx >= LOGO_CANDIDATES.length) {
+                if (CONFIG.debugLogging) console.warn('Violet Tools: All logo paths failed', LOGO_CANDIDATES);
+                logoImage = null;
+                return;
+            }
+            const url = LOGO_CANDIDATES[idx++];
             logoImage = new Image();
             logoImage.crossOrigin = 'anonymous';
             logoImage.onload = function() {
-                if (CONFIG.debugLogging) {
-                    console.log('Violet Tools: Logo loaded successfully');
-                }
+                CONFIG.logoUrl = url;
+                if (CONFIG.debugLogging) console.log('Violet Tools: Logo loaded at', url);
             };
             logoImage.onerror = function() {
-                if (CONFIG.debugLogging) {
-                    console.log('Violet Tools: Failed to load logo');
-                }
+                if (CONFIG.debugLogging) console.log('Violet Tools: Logo failed at', url, '— trying next');
                 logoImage = null;
+                tryNext();
             };
-            logoImage.src = CONFIG.logoUrl;
+            logoImage.src = url;
         }
+        tryNext();
         return logoImage;
     }
 
