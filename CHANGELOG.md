@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.4.0] - 2025-09-15
 
+## [1.4.1] - 2025-09-15
+
+### 💄 Style
+
+- **Color Chips Lean Refactor**: Trimmed `vt-colorchips.js` by removing deprecated emoji rendering, legacy popup chip grid, search + tooltip UI, unused sanitation pass, DOM inspection helpers, and redundant enhancement tracking.
+
+### 🔧 Internal (Chips)
+
+- Simplified config surface (only `enabled`, `popupEnhancement`, `debugLogging`).
+- Maintained inline dropdown color chip decoration and canvas foreground chip rendering (no workflow impact).
+- Reduced script size (−430+ LOC) for faster parse and lower maintenance overhead.
+
 ### ✨ Improvements
 
 - **Color Chips Refinement**: Consolidated to a single production `vt-colorchips.js` file; removed legacy `-debug` and `-simple` variants.
