@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.4.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.4.1-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
