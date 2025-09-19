@@ -1,6 +1,22 @@
+facial_hair:
+  clean: clean-shaven
+  stubble: light stubble
+  heavy stubble: heavy stubble
+  short beard: short beard
+  full beard: full beard
+  goatee: goatee
+  chinstrap: chinstrap beard
+  mutton chops: mutton chops
+  mustache: mustache
+  handlebar: handlebar mustache
+  soul patch: soul patch
+  designer stubble: designer stubble
 hair_length:
   buzzcut: buzzcut hair
+  very short: very-short hair
   short: short hair
+  short sides: short-sides long-top hair
+  long top: long-top hair
   medium: medium-length hair
   chin-length: chin-length hair
   shoulder-length: shoulder-length hair
@@ -17,6 +33,10 @@ hair_texture:
   curly: curly hair
   coily: coily hair
   frizzy: frizzy hair
+  coarse: coarse hair
+  thin: thin hair
+  slick: slick hair
+  wiry: wiry hair
 hairstyle:
   loose: loose hairstyle
   sleek: sleek hairstyle
@@ -50,6 +70,21 @@ hairstyle:
   afro: afro hairstyle
   dreadlocks: dreadlocks hairstyle
   cornrows: cornrows hairstyle
+  crew cut: crew-cut hairstyle
+  ivy league: ivy-league haircut
+  short crop: short crop hairstyle
+  fade: fade haircut
+  skin fade: skin-fade haircut
+  slicked back: slicked-back hairstyle
+  side part: side-part hairstyle
+  textured crop: textured crop hairstyle
+  caesar: caesar cut hairstyle
+  high and tight: high-and-tight haircut
+  pompadour: pompadour hairstyle
+  mullet: mullet hairstyle
+  man bun: man bun hairstyle
+  long swept back: long swept-back hair
+  shag: shag haircut
 hair_color:
   white: white hair
   silver: silver hair
@@ -728,6 +763,9 @@ brow_color:
   gray: gray eyebrows
   black: black eyebrows
   charcoal: charcoal eyebrows
+  brown: brown eyebrows
+  light brown: light brown eyebrows
+  dark brown: dark brown eyebrows
   red: red eyebrows
   light red: light red eyebrows
   dark red: dark red eyebrows
