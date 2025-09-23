@@ -116,10 +116,6 @@ class PosePriestess:
             pose_parts.append(extra.strip())
 
         pose = ", ".join(filter(None, pose_parts))
-        
-        # Add BREAK for prompt segmentation
-        if pose.strip():
-            pose = pose.strip() + ", BREAK"
 
         return (pose,)
 

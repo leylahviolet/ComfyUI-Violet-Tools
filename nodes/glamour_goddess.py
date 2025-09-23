@@ -109,10 +109,6 @@ class GlamourGoddess:
                 parts.append(extra)
 
         glamour = ", ".join(parts)
-        
-        # Add BREAK for prompt segmentation
-        if glamour:
-            glamour += ", BREAK"
             
         return (glamour,)
 

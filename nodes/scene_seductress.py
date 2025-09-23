@@ -185,10 +185,6 @@ class SceneSeductress:
             parts.append(extra.strip())
 
         scene = ", ".join(filter(None, parts))
-        
-        # Add BREAK for prompt segmentation
-        if scene:
-            scene += ", BREAK"
 
         return (scene,)
 

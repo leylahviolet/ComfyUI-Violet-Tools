@@ -92,10 +92,6 @@ class BodyBard:
                 parts.append(extra)
 
         body = ", ".join(parts)
-        
-        # Add BREAK for prompt segmentation
-        if body:
-            body += ", BREAK"
             
         return (body,)
 

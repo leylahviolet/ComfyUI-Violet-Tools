@@ -92,10 +92,6 @@ class QualityQueen:
             parts.append(extra.strip())
 
         quality = ", ".join(parts).strip()
-        
-        # Add BREAK for prompt segmentation
-        if quality:
-            quality += ", BREAK"
 
         return (quality,)
 

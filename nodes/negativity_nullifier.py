@@ -50,10 +50,6 @@ class NegativityNullifier:
             parts.append(extra.strip())
 
         nullifier = ", ".join(parts).strip()
-        
-        # Add BREAK for prompt segmentation
-        if nullifier:
-            nullifier += ", BREAK"
             
         return (nullifier,)
 
