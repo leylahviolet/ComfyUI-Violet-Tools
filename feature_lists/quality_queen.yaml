@@ -4,10 +4,10 @@ boilerplate:
   - "very aesthetic"
   - "detailed eyes"
   - "ultra-detailed"
-  - "high resolution"
+  - "absurdres"
 
 styles:
-  Photorealistic: "photorealistic, ultra-detailed, lighting realism, subsurface scattering skin, detailed skin, depth of field, moody atmosphere, backlit, cinematic background, bokeh, rule of thirds"
+  Photorealistic: "photorealistic, lighting realism, subsurface scattering skin, detailed skin, depth of field, moody atmosphere, backlit, cinematic background, bokeh, rule of thirds"
   Portrait: "professional portrait, soft lighting, detailed facial features, shallow depth of field, studio quality, perfect skin texture, warm highlights"
   Cinematic: "cinematic lighting, film grain, dramatic shadows, detailed skin, depth of field, bokeh, movie still quality, professional color grading"
   Anime: "anime style, clean lines, cel shading, stylized, vibrant colors, dramatic lighting, perfect anime proportions"

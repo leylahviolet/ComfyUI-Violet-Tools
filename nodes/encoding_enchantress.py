@@ -24,6 +24,7 @@ class EncodingEnchantress:
             "required": {
                 "clip": ("CLIP",),
                 "mode": (["closeup", "portrait", "compete combine", "smooth blend"], {"default": "smooth blend"}),
+                "prompt_processor": (["None", "Essence Algorithm", "Essentia Ex Machina", "Automatic"], {"default": "None", "tooltip": "Optional tag consolidation and LLM optimization"}),
                 "body_strength": ("FLOAT", {
                     "default": 1.0, 
                     "min": 0.0, 
@@ -49,6 +50,7 @@ class EncodingEnchantress:
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
+                "essence": ("ESSENCE_EXTRACTOR", {}),
                 "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Generate prompts directly from character without intermediate nodes"})
             }
@@ -406,9 +408,9 @@ class EncodingEnchantress:
         
         return ""
 
-    def condition(self, clip, mode, body_strength, vibe_strength, negative_strength, token_report,
+    def condition(self, clip, mode, prompt_processor, body_strength, vibe_strength, negative_strength, token_report,
                   quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier="",
-                  character=None, character_apply=False):
+                  essence=None, character=None, character_apply=False):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -474,10 +476,77 @@ class EncodingEnchantress:
             if not nullifier and "negative" in cd:
                 nullifier = cd["negative"].get("text", "")
 
-        # Combine all text for reference after injections
+        # Save originals for token savings calculations
+        original_segments = {
+            "quality": quality, "scene": scene, "glamour": glamour,
+            "body": body, "aesthetic": aesthetic, "pose": pose,
+            "negative": nullifier,
+        }
+
+        # Combine all text for reference (pre-processing)
         pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+
+        # Optional prompt processing pipeline
+        processor_choice = prompt_processor or "None"
+        if processor_choice != "None" and not essence:
+            processor_choice = "None"  # no handle connected, force None
+
+        # Token counts before processing
+        def _count_tokens(text: str) -> int:
+            if not text:
+                return 0
+            try:
+                tokens = clip.tokenize(text)
+                merged = self._merge_streams_by_max(tokens)
+                return sum(merged)
+            except Exception:
+                return 0
+
+        pre_counts = {k: _count_tokens(v) for k, v in original_segments.items()}
+
+        if processor_choice != "None":
+            try:
+                base_dir = essence.get("resources_dir") if isinstance(essence, dict) else None
+                sfw_mode = bool(essence.get("sfw_mode")) if isinstance(essence, dict) else False
+                if base_dir:
+                    import importlib.util
+                    consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
+                    spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
+                    if not spec or not spec.loader:
+                        raise ImportError(f"Unable to load consolidator at {consolidator_path}")
+                    pc = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(pc)  # type: ignore
+
+                    cfg = pc.ConsolidationConfig(base_dir, sfw_mode=sfw_mode)
+                    model_dir = os.path.join(base_dir, "essentia-ex-machina-int8")
+
+                    def process_one(text: str) -> str:
+                        if not text:
+                            return ""
+                        if processor_choice == "Essence Algorithm":
+                            return pc.consolidate_algorithmic(text, cfg)
+                        elif processor_choice == "Essentia Ex Machina":
+                            return pc.consolidate_with_llm(text, cfg, model_dir)
+                        else:  # Automatic
+                            algo = pc.consolidate_algorithmic(text, cfg)
+                            if pc.decide_automatic(text, algo):
+                                return pc.consolidate_with_llm(algo, cfg, model_dir)
+                            return algo
+
+                    # Apply to positive segments only; negative untouched here
+                    quality = process_one(quality)
+                    scene = process_one(scene)
+                    glamour = process_one(glamour)
+                    body = process_one(body)
+                    aesthetic = process_one(aesthetic)
+                    pose = process_one(pose)
+
+                    # Recompute combined text
+                    pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+            except Exception as e:
+                print(f"[Encoding Enchantress] Essence processing error: {e}")
         
-        # Check for cowboy shot framing and add "cowboy" to negative if needed
+    # Check for cowboy shot framing and add "cowboy" to negative if needed
         cowboy_negative = self._check_for_cowboys(scene)
         combined_negative = self._combine_text(nullifier, cowboy_negative)
         
@@ -563,6 +632,24 @@ class EncodingEnchantress:
         ]
         
         token_report_text = self._make_token_report(clip, token_items, token_report)
+
+        # Optional token savings suffix when processor active
+        if processor_choice != "None" and token_report:
+            post_segments = {
+                "quality": quality, "scene": scene, "glamour": glamour,
+                "body": body, "aesthetic": aesthetic, "pose": pose,
+                "negative": nullifier,
+            }
+            post_counts = {k: _count_tokens(v) for k, v in post_segments.items()}
+            savings_lines = ["— Token savings (approx):"]
+            total_pre = total_post = 0
+            for k in ("quality","scene","glamour","body","aesthetic","pose"):
+                a = pre_counts.get(k, 0); b = post_counts.get(k, 0)
+                total_pre += a; total_post += b
+                if a or b:
+                    savings_lines.append(f"{k}: {a} → {b} (-{max(a-b,0)})")
+            savings_lines.append(f"total: {total_pre} → {total_post} (-{max(total_pre-total_post,0)})")
+            token_report_text = token_report_text + "\n\n" + "\n".join(savings_lines)
 
         # New return order matches updated RETURN_NAMES
         return (positive_combined, negative_combined, token_report_text, character_output, pos_text, combined_negative)
