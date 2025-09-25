@@ -538,8 +538,12 @@ class EncodingEnchantress:
                 auto_install = bool(essence.get("auto_install_requirements", False)) if isinstance(essence, dict) else False
                 selected_model_path = essence.get("model_path") if isinstance(essence, dict) else None
                 if base_dir:
-                    # Ensure consolidator deps exist (rapidfuzz) if user opted in
-                    self._ensure_requirements(["rapidfuzz"], allow_auto_install=auto_install)
+                    # Ensure consolidator deps exist; include LLM deps if needed
+                    reqs = ["rapidfuzz"]
+                    if processor_choice in ("Essentia Ex Machina", "Automatic"):
+                        # Best-effort install of optional LLM path deps
+                        reqs.extend(["jinja2", "onnxruntime", "onnxruntime_genai"])
+                    self._ensure_requirements(reqs, allow_auto_install=auto_install)
                     import importlib.util
                     consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
                     spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
