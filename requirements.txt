@@ -4,7 +4,10 @@
 PyYAML>=6.0
 rapidfuzz>=3.0
 toml>=0.10
-# Align ORT with GenAI (API 22+). If you use CUDA GPU, install onnxruntime-gpu==1.22.x instead.
-onnxruntime>=1.22
-onnxruntime-genai>=0.9
+# ORT + GenAI are version-coupled. CPU users can install onnxruntime>=1.21; GPU users should install onnxruntime-gpu at a matching version.
+# Example compatible sets:
+# - onnxruntime-gpu==1.21.1 + onnxruntime-genai==0.5.0 (API 21)
+# - onnxruntime(-gpu)==1.22.x + onnxruntime-genai>=0.9 (API 22)
+onnxruntime>=1.21
+onnxruntime-genai>=0.5
 Jinja2>=3.1
