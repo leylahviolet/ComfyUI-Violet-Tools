@@ -4,3 +4,6 @@
 PyYAML>=6.0
 rapidfuzz>=3.0
 toml>=0.10
+onnxruntime>=1.17
+onnxruntime-genai>=0.5
+Jinja2>=3.1

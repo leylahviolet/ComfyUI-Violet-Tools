@@ -8,6 +8,7 @@ from .nodes.aesthetic_alchemist import AestheticAlchemist
 from .nodes.pose_priestess import PosePriestess
 from .nodes.encoding_enchantress import EncodingEnchantress
 from .nodes.negativity_nullifier import NegativityNullifier
+from .nodes.essence_extractor import EssenceExtractor
 from .nodes.character_creator import CharacterCreator
 from .nodes.character_cache import CharacterCache
 
@@ -23,6 +24,7 @@ NODE_CLASS_MAPPINGS = {
     "AestheticAlchemist": AestheticAlchemist,
     "PosePriestess": PosePriestess,
     "NegativityNullifier": NegativityNullifier,
+    "EssenceExtractor": EssenceExtractor,
     "CharacterCreator": CharacterCreator,
     "CharacterCache": CharacterCache
 }
@@ -36,6 +38,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AestheticAlchemist": "💋 Aesthetic Alchemist",
     "PosePriestess": "🤩 Pose Priestess",
     "NegativityNullifier": "🚫 Negativity Nullifier",
+    "EssenceExtractor": "🧪 Essence Extractor",
     "CharacterCreator": "💖 Character Creator",
     "CharacterCache": "🗃️ Character Cache"
 }
