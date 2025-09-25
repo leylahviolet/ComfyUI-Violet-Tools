@@ -2,6 +2,36 @@ import os
 import toml
 
 
+# Resolve base resources directory for Essence Extractor (fixed location inside this package)
+PKG_ROOT = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.normpath(os.path.join(PKG_ROOT, "node_resources", "essence-extractor"))
+
+
+def _scan_models(base_dir: str):
+    """Scan for ONNX models under the base_dir and return (names, mapping)."""
+    names = []
+    mapping = {}
+    seen = {}
+    for root, _dirs, files in os.walk(base_dir):
+        for fn in files:
+            if fn.lower().endswith(".onnx"):
+                name = fn  # show file name only
+                # ensure uniqueness if multiple with same file name
+                if name in seen:
+                    seen[name] += 1
+                    disp = f"{name} ({seen[name]})"
+                else:
+                    seen[name] = 1
+                    disp = name
+                abs_path = os.path.join(root, fn)
+                names.append(disp)
+                mapping[disp] = abs_path
+    if not names:
+        names = ["<no .onnx models found>"]
+        mapping[names[0]] = ""
+    return names, mapping
+
+
 class EssenceExtractor:
     """
     Lightweight handle node exposing configuration and paths required for the
@@ -13,17 +43,15 @@ class EssenceExtractor:
 
     @classmethod
     def INPUT_TYPES(cls):
-        # Show relative defaults in UI; resolve to absolute in build()
-        rel_base = os.path.join(".", "node_resources", "essence-extractor")
-        rel_config = os.path.join(rel_base, "config.toml")
+        # Build model dropdown at import time (YAML-like static behavior)
+        model_names, _ = _scan_models(BASE_DIR)
         return {
             "required": {
-                "resources_dir": ("STRING", {"default": rel_base, "multiline": False, "tooltip": "Folder containing prompt_consolidator.py and data/"}),
-                "config_path": ("STRING", {"default": rel_config, "multiline": False, "tooltip": "Path to config.toml inside the resources folder"}),
-                "use_local_model": ("BOOLEAN", {"default": True, "tooltip": "Use bundled ONNX model if available"}),
+                "model": (model_names, {"default": model_names[0], "tooltip": "Select an Essentia Ex Machina model (.onnx) found in the bundled resources"}),
             },
             "optional": {
                 "sfw_mode": ("BOOLEAN", {"default": False, "tooltip": "Apply SFW covering rules when consolidating"}),
+                "auto_install_requirements": ("BOOLEAN", {"default": True, "tooltip": "If missing, auto-install required Python packages (rapidfuzz, toml, PyYAML) into the current ComfyUI environment."}),
             },
         }
 
@@ -32,16 +60,11 @@ class EssenceExtractor:
     FUNCTION = "build"
     CATEGORY = "Violet Tools 💅/Prompt"
 
-    def build(self, resources_dir, config_path, use_local_model, sfw_mode=False):
-        # Resolve relative paths against this package root so users can keep inputs tidy
-        pkg_root = os.path.dirname(os.path.dirname(__file__))
-        def _resolve(p: str) -> str:
-            if not p:
-                return p
-            return os.path.normpath(p if os.path.isabs(p) else os.path.join(pkg_root, p))
-
-        resources_dir_abs = _resolve(resources_dir)
-        config_path_abs = _resolve(config_path)
+    def build(self, model, sfw_mode=False, auto_install_requirements=True):
+        # Resolve selected model name to absolute path
+        _, mapping = _scan_models(BASE_DIR)
+        model_path = mapping.get(model, "")
+        config_path_abs = os.path.join(BASE_DIR, "config.toml")
 
         cfg = {}
         if os.path.isfile(config_path_abs):
@@ -54,9 +77,11 @@ class EssenceExtractor:
                 cfg = {}
 
         payload = {
-            "resources_dir": resources_dir_abs,
+            "resources_dir": BASE_DIR,
             "config": cfg,
-            "use_local_model": bool(use_local_model),
+            "model_name": model,
+            "model_path": model_path,
+            "auto_install_requirements": bool(auto_install_requirements),
             "sfw_mode": bool(sfw_mode),
         }
         return (payload,)

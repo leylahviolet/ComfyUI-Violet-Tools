@@ -1,4 +1,3 @@
-import yaml
 import os
 
 class EncodingEnchantress:
@@ -17,6 +16,28 @@ class EncodingEnchantress:
     - Character system integration: Direct prompt injection from saved character profiles
     - SDXL support: Handles both 'g' and 'l' token streams with max-per-chunk merging for accurate reporting
     """
+
+    def _ensure_requirements(self, packages, allow_auto_install=True):
+        """Best-effort: import each package; if missing and allowed, attempt pip install."""
+        if not allow_auto_install:
+            return
+        import importlib
+        missing = []
+        for pkg in packages:
+            try:
+                importlib.import_module(pkg)
+            except ImportError:
+                missing.append(pkg)
+        if not missing:
+            return
+        try:
+            import sys, subprocess
+            cmd = [sys.executable, "-m", "pip", "install", *missing]
+            subprocess.run(cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except (OSError, RuntimeError):
+            # Silent failure; we'll surface ImportErrors later if they persist
+            return
+    
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -342,6 +363,12 @@ class EncodingEnchantress:
             list: List of framing-related terms to filter out (case-insensitive)
         """
         try:
+            # Lazy import yaml so the node loads even if PyYAML isn't installed
+            try:
+                import yaml  # type: ignore
+            except ImportError as exc:
+                raise FileNotFoundError("PyYAML not available") from exc
+
             # Get the path to the YAML file
             current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             yaml_path = os.path.join(current_dir, "feature_lists", "scene_seductress.yaml")
@@ -373,7 +400,7 @@ class EncodingEnchantress:
             
             return framing_terms
             
-        except (FileNotFoundError, yaml.YAMLError, KeyError) as e:
+        except (FileNotFoundError, KeyError, OSError, TypeError) as e:
             # Fallback to hardcoded list if YAML loading fails
             print(f"Warning: Could not load framing terms from YAML ({e}), using fallback list")
             return [
@@ -499,7 +526,7 @@ class EncodingEnchantress:
                 tokens = clip.tokenize(text)
                 merged = self._merge_streams_by_max(tokens)
                 return sum(merged)
-            except Exception:
+            except (AttributeError, KeyError, IndexError, TypeError, RuntimeError):
                 return 0
 
         pre_counts = {k: _count_tokens(v) for k, v in original_segments.items()}
@@ -508,7 +535,11 @@ class EncodingEnchantress:
             try:
                 base_dir = essence.get("resources_dir") if isinstance(essence, dict) else None
                 sfw_mode = bool(essence.get("sfw_mode")) if isinstance(essence, dict) else False
+                auto_install = bool(essence.get("auto_install_requirements", False)) if isinstance(essence, dict) else False
+                selected_model_path = essence.get("model_path") if isinstance(essence, dict) else None
                 if base_dir:
+                    # Ensure consolidator deps exist (rapidfuzz) if user opted in
+                    self._ensure_requirements(["rapidfuzz"], allow_auto_install=auto_install)
                     import importlib.util
                     consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
                     spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
@@ -518,7 +549,7 @@ class EncodingEnchantress:
                     spec.loader.exec_module(pc)  # type: ignore
 
                     cfg = pc.ConsolidationConfig(base_dir, sfw_mode=sfw_mode)
-                    model_dir = os.path.join(base_dir, "essentia-ex-machina-int8")
+                    model_dir = os.path.dirname(selected_model_path) if selected_model_path else os.path.join(base_dir, "essentia-ex-machina-int8")
 
                     def process_one(text: str) -> str:
                         if not text:
@@ -543,7 +574,9 @@ class EncodingEnchantress:
 
                     # Recompute combined text
                     pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
-            except Exception as e:
+            except ImportError as e:
+                print(f"[Encoding Enchantress] Essence processing ImportError: {e}. Did you install dependencies from requirements.txt?")
+            except (AttributeError, FileNotFoundError, OSError, RuntimeError, TypeError, ValueError) as e:
                 print(f"[Encoding Enchantress] Essence processing error: {e}")
         
     # Check for cowboy shot framing and add "cowboy" to negative if needed
