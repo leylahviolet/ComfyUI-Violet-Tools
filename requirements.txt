@@ -2,3 +2,5 @@
 # Core dependencies for aesthetic-focused custom nodes
 
 PyYAML>=6.0
+rapidfuzz>=3.0
+toml>=0.10
