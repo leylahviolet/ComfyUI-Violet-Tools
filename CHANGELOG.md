@@ -22,7 +22,6 @@
 
 - Kept all public names, return orders, and categories stable to avoid breaking saved workflows. The bundling is an additive internal contract; plain strings still work for backward compatibility.
 
-
 All notable changes to ComfyUI Violet Tools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

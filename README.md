@@ -143,8 +143,6 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
 Tip: Use multiple Character Creator runs (different character names) to build a reusable cast. Use random character selection in Character Cache for varied inspiration.
 
-## 🪄 Wildcard Extras
-
 ### Quick Start
 
 1. **Download the workflow**: [Violet Tools Basic Workflow](examples/workflows/violet-tools-basic-workflow.png)
@@ -248,7 +246,6 @@ What gets logged when enabled:
 - Flat color map build size
 - Per-node color widget enhancement counts
 - Legacy value sanitation notices
-
 
 These helpers set `config.debugLogging = true/false` for both the node styling and color chips modules if present. They are safe to call multiple times.
 
