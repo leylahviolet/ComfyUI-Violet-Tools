@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### 🔧 Paths
+
+- Characters now save to ComfyUI/user/default/comfyui-violet-tools/characters with a legacy read-only fallback of ComfyUI/output/characters. This aligns storage with common ComfyUI conventions and preserves existing workflows.
+
 ## [1.5.0] - 2025-09-26
 
 ### ✨ Improvements (1.5.0)

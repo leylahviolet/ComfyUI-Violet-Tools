@@ -74,11 +74,11 @@ Save, re-load, and apply consistent character traits across workflows:
 
 See Quick Start below for a minimal character workflow.
 
-## � Wildcard Extras
+## 🪄 Wildcard Extras
 
 All prompt nodes include an "extra" multiline field that supports lightweight wildcard syntax: write alternatives inside braces and separate with pipes, for example {soft light|rim lighting|studio glow}. One option is chosen per block on each run, and nested blocks are resolved safely. This is available on: Quality Queen, Scene Seductress, Glamour Goddess, Body Bard, Aesthetic Alchemist, Pose Priestess, and Negativity Nullifier.
 
-## �🎨 Color Chips UI Enhancement (Updated in 1.4.x)
+## 🎨 Color Chips UI Enhancement (Updated in 1.4.x)
 
 Revolutionary visual color selection interface that transforms tedious dropdown navigation into an intuitive, visual experience:
 
@@ -143,7 +143,7 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
 Tip: Use multiple Character Creator runs (different character names) to build a reusable cast. Use random character selection in Character Cache for varied inspiration.
 
-## 🎨 Example Workflow
+## 🪄 Wildcard Extras
 
 ### Quick Start
 
@@ -211,7 +211,14 @@ ComfyUI-Violet-Tools/
   ├── quality_queen.yaml       # Quality tags and styles
   └── scene_seductress.yaml    # Scene and environment options
 
-Character files you create are stored alongside your ComfyUI output directory. They are plain JSON—feel free to version-control curated characters.
+Character files are plain JSON—feel free to version-control curated characters.
+
+### Character File Location (Updated)
+
+- Default save path: ComfyUI/user/default/comfyui-violet-tools/characters
+- Legacy read-only fallback: ComfyUI/output/characters
+
+Existing characters are detected automatically; no manual migration required.
 ```
 
 ## Configuration
@@ -264,12 +271,6 @@ Contributions are welcome! Feel free to:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- **[GZees](https://civitai.com/user/GZees)** - Special thanks for creating the exceptional [iLustMix v5.5](https://civitai.com/models/1110783?modelVersionId=1670263) model I used to generate the sample images. GZees' outstanding model produces beautiful, consistent results that perfectly demonstrate the capabilities of Violet Tools. I highly recommend checking out their incredible work and giving their models a try!
-- **[klaabu](https://civitai.com/user/klaabu)** - Gratitude for the excellent [Illustrious Realism Slider](https://civitai.com/models/1486904?modelVersionId=1681903) LoRA used in the sample generation. This fantastic tool adds beautiful realism control and enhances the quality of the demonstrations. Their LoRA work is top-notch and worth exploring!
-- Built for the ComfyUI community
 
 ---
 
