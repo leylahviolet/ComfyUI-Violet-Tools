@@ -66,7 +66,17 @@ class CharacterCreator:
         if not character:
             return ("💖 Connect Encoding Enchantress character output to save",)
         
+        # Preserve display name, but sanitize filename for Windows safety
         name = character_name.strip()
+        def _sanitize_filename(s: str) -> str:
+            # Replace invalid Windows filename characters and trim
+            invalid = '<>:"/\\|?*'
+            trans = str.maketrans({c: '_' for c in invalid})
+            s2 = s.translate(trans)
+            s2 = ' '.join(s2.split())  # collapse whitespace
+            s2 = s2.strip('. ')  # remove trailing dots/spaces
+            return s2 or "character"
+        file_stem = _sanitize_filename(name)
         
         # Use the character data directly from Encoding Enchantress
         character_data = {
@@ -81,7 +91,7 @@ class CharacterCreator:
             if not os.path.exists(folder):
                 os.makedirs(folder, exist_ok=True)
 
-            file_path = os.path.join(folder, f"{name}.json")
+            file_path = os.path.join(folder, f"{file_stem}.json")
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(character_data, f, indent=2, ensure_ascii=False)
             

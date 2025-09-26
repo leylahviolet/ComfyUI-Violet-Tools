@@ -14,7 +14,7 @@ class CharacterCache:
 
     @classmethod
     def get_characters_folder(cls):
-        """Preferred load path with legacy fallback.
+        """Preferred load path with legacy fallback (single path helper).
 
         New: ComfyUI/user/default/comfyui-violet-tools/characters
         Legacy: ComfyUI/output/characters
@@ -32,24 +32,44 @@ class CharacterCache:
             preferred = os.path.join(str(base_user), "default", "comfyui-violet-tools", "characters")
             if os.path.exists(preferred):
                 return preferred
-            # Legacy fallback under output
             legacy = os.path.join(folder_paths.get_output_directory(), "characters")
             if os.path.exists(legacy):
                 return legacy
-            return preferred  # default to preferred if neither exists
+            return preferred
         except (ImportError, AttributeError, OSError, TypeError):
             # Fallback to current working directory under user-like path
             return os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")
 
     @classmethod
     def list_characters(cls):
-        folder = cls.get_characters_folder()
-        if not os.path.exists(folder):
-            return []
+        """Return sorted unique character names found in both new and legacy folders."""
+        names = set()
+        paths = []
+        # Preferred and legacy paths
         try:
-            return sorted([f[:-5] for f in os.listdir(folder) if f.endswith('.json')])
-        except OSError:
-            return []
+            import importlib
+            folder_paths = importlib.import_module("folder_paths")  # type: ignore
+            user_dir = getattr(folder_paths, "get_user_directory", None)
+            if callable(user_dir):
+                base_user = user_dir()
+            else:
+                out_dir = folder_paths.get_output_directory()
+                base_user = os.path.join(os.path.dirname(str(out_dir)), "user")
+            preferred = os.path.join(str(base_user), "default", "comfyui-violet-tools", "characters")
+            legacy = os.path.join(folder_paths.get_output_directory(), "characters")
+            paths = [preferred, legacy]
+        except (ImportError, AttributeError, OSError, TypeError):
+            paths = [os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")]
+
+        for p in paths:
+            if os.path.exists(p):
+                try:
+                    for f in os.listdir(p):
+                        if f.endswith('.json'):
+                            names.add(f[:-5])
+                except OSError:
+                    continue
+        return sorted(names)
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -91,7 +111,34 @@ class CharacterCache:
         if selected_name not in chars:
             return ({}, "", f"❌ Character '{selected_name}' not found. Try refreshing.")
 
-        path = os.path.join(self.get_characters_folder(), f"{selected_name}.json")
+        # Resolve path: check preferred first, then legacy
+        paths_to_check = []
+        try:
+            import importlib
+            folder_paths = importlib.import_module("folder_paths")  # type: ignore
+            user_dir = getattr(folder_paths, "get_user_directory", None)
+            if callable(user_dir):
+                base_user = user_dir()
+            else:
+                out_dir = folder_paths.get_output_directory()
+                base_user = os.path.join(os.path.dirname(str(out_dir)), "user")
+            preferred = os.path.join(str(base_user), "default", "comfyui-violet-tools", "characters")
+            legacy = os.path.join(folder_paths.get_output_directory(), "characters")
+            paths_to_check = [preferred, legacy]
+        except (ImportError, AttributeError, OSError, TypeError):
+            paths_to_check = [os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")]
+
+        path = None
+        loaded_from = None
+        for base in paths_to_check:
+            candidate = os.path.join(base, f"{selected_name}.json")
+            if os.path.exists(candidate):
+                path = candidate
+                loaded_from = base
+                break
+        if path is None:
+            folder = self.get_characters_folder()
+            return ({}, "", f"❌ Character '{selected_name}' not found in expected folders. Last checked: {folder}")
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -105,7 +152,8 @@ class CharacterCache:
             # Create detailed profile for status message
             profile_lines = []
             if character != "random":
-                profile_lines.append(f"✅ Loaded '{name}':")
+                where = f" from {loaded_from}" if loaded_from else ""
+                profile_lines.append(f"✅ Loaded '{name}'{where}:")
             else:
                 profile_lines.append(f"🎲 Random: '{name}':")
             
