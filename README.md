@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.4.1-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.5.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -13,6 +13,7 @@ Advanced text encoding and prompt processing node for enhanced prompt interpreta
 - Four encoding modes: closeup, portrait, smooth blend, and compete combine
 - Individual strength controls for different prompt elements
 - Character system integration for direct prompt injection
+- Bundled inputs support: all prompt nodes now output a single (text, meta) bundle; Enchantress unwraps these transparently and persists meta to character JSON
 - **Token Report System**: Detailed analysis of token usage per Violet Tools node
   - Shows 77-token chunk breakdown for each prompt component
   - SDXL support with merged stream analysis
@@ -60,7 +61,7 @@ Pose and positioning control node with separate categories for different content
 
 Negative prompt management system with smart defaults and customizable exclusions.
 
-### 🪪 Character System (NEW in 1.3.x)
+### 🪪 Character System
 
 Save, re-load, and apply consistent character traits across workflows:
 
@@ -73,7 +74,11 @@ Save, re-load, and apply consistent character traits across workflows:
 
 See Quick Start below for a minimal character workflow.
 
-## 🎨 Color Chips UI Enhancement (Updated in 1.4.0)
+## � Wildcard Extras
+
+All prompt nodes include an "extra" multiline field that supports lightweight wildcard syntax: write alternatives inside braces and separate with pipes, for example {soft light|rim lighting|studio glow}. One option is chosen per block on each run, and nested blocks are resolved safely. This is available on: Quality Queen, Scene Seductress, Glamour Goddess, Body Bard, Aesthetic Alchemist, Pose Priestess, and Negativity Nullifier.
+
+## �🎨 Color Chips UI Enhancement (Updated in 1.4.x)
 
 Revolutionary visual color selection interface that transforms tedious dropdown navigation into an intuitive, visual experience:
 
@@ -198,13 +203,13 @@ ComfyUI-Violet-Tools/
 │   ├── quality_queen.py       # Quality enhancement and boilerplate
 │   └── scene_seductress.py    # Scene and environment control
 └── feature_lists/             # YAML configuration files
-    ├── aesthetics.yaml        # Aesthetic style definitions
-    ├── body_features.yaml     # Body feature options
-    ├── glamour_goddess.yaml   # Hair and makeup options
-    ├── negative_defaults.yaml # Default negative prompts
-    ├── poses.yaml             # Pose and position options
-    ├── qualities.yaml         # Quality tags and styles
-    └── scene_seductress.yaml  # Scene and environment options
+  ├── aesthetic_alchemist.yaml # Aesthetic style definitions
+  ├── body_bard.yaml           # Body feature options
+  ├── glamour_goddess.yaml     # Hair and makeup options
+  ├── negativity_nullifier.yaml# Default negative prompts
+  ├── pose_priestess.yaml      # Pose and position options
+  ├── quality_queen.yaml       # Quality tags and styles
+  └── scene_seductress.yaml    # Scene and environment options
 
 Character files you create are stored alongside your ComfyUI output directory. They are plain JSON—feel free to version-control curated characters.
 ```
@@ -244,6 +249,7 @@ These helpers set `config.debugLogging = true/false` for both the node styling a
 
 - ComfyUI
 - PyYAML (usually included with ComfyUI)
+- rapidfuzz (for algorithmic consolidator)
 - Python 3.8+
 
 ## Contributing

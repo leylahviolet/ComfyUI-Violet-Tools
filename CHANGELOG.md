@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.5.0] - 2025-09-26
+
+### ✨ Improvements (1.5.0)
+
+- Unified output bundling from all prompt nodes: each node now emits a single value that includes both the rendered text and its structured selections (dropdown choices, fem/masc toggles, strengths, extra). This keeps the UI clean—no extra ports—while enabling robust character persistence.
+- Encoding Enchantress now transparently unwraps bundled inputs and merges structured fields into the character JSON next to the existing "text" entry for each domain.
+- Added wildcard parsing to every node’s "extra" field with label hint "extra, wildcards". Supports {a|b|c} syntax and resolves once per run.
+
+### 🐛 Fixes (1.5.0)
+
+- Resolved warning in Aesthetic Alchemist when inputs were set to None by updating `IS_CHANGED(**_kwargs)` to accept keyword args.
+
+### 🔧 Internal (1.5.0)
+
+- Kept all public names, return orders, and categories stable to avoid breaking saved workflows. The bundling is an additive internal contract; plain strings still work for backward compatibility.
+
+
 All notable changes to ComfyUI Violet Tools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

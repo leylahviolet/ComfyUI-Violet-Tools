@@ -45,7 +45,7 @@ class EncodingEnchantress:
             "required": {
                 "clip": ("CLIP",),
                 "mode": (["closeup", "portrait", "compete combine", "smooth blend"], {"default": "smooth blend"}),
-                "prompt_processor": (["None", "Essence Algorithm", "Essentia Ex Machina", "Automatic"], {"default": "None", "tooltip": "Optional tag consolidation and LLM optimization"}),
+                # Toggle to optimize prompts using the Essence Algorithm (no LLM)
                 "body_strength": ("FLOAT", {
                     "default": 1.0, 
                     "min": 0.0, 
@@ -61,6 +61,7 @@ class EncodingEnchantress:
                     "tooltip": "Strength for quality + aesthetic prompts (not used in smooth blend)"
                 }),
                 "negative_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 3.0, "step": 0.01}),
+                "optimize_prompt": ("BOOLEAN", {"default": False, "tooltip": "Optimize tags using the Essence Algorithm"}),
                 "token_report": ("BOOLEAN", {"default": False, "tooltip": "Generate detailed token usage report for each prompt"}),
             },
             "optional": {
@@ -71,7 +72,6 @@ class EncodingEnchantress:
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                "essence": ("ESSENCE_EXTRACTOR", {}),
                 "character": ("CHARACTER_DATA", {}),
                 "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Generate prompts directly from character without intermediate nodes"})
             }
@@ -435,9 +435,15 @@ class EncodingEnchantress:
         
         return ""
 
-    def condition(self, clip, mode, prompt_processor, body_strength, vibe_strength, negative_strength, token_report,
-                  quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier="",
-                  essence=None, character=None, character_apply=False):
+    def condition(self, clip, mode, body_strength, vibe_strength, negative_strength, optimize_prompt, token_report,
+                  quality="",
+                  scene="",
+                  glamour="",
+                  body="",
+                  aesthetic="",
+                  pose="",
+                  nullifier="",
+                  character=None, character_apply=False):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -503,20 +509,43 @@ class EncodingEnchantress:
             if not nullifier and "negative" in cd:
                 nullifier = cd["negative"].get("text", "")
 
-        # Save originals for token savings calculations
+        # Accept either plain string or (text, meta) bundle and unwrap EARLY
+        def _unwrap_bundle(val):
+            if isinstance(val, (list, tuple)) and len(val) == 2 and isinstance(val[1], dict):
+                return val[0], val[1]
+            return val, None
+
+        quality, quality_meta = _unwrap_bundle(quality)
+        scene, scene_meta = _unwrap_bundle(scene)
+        glamour, glamour_meta = _unwrap_bundle(glamour)
+        body, body_meta = _unwrap_bundle(body)
+        aesthetic, aesthetic_meta = _unwrap_bundle(aesthetic)
+        pose, pose_meta = _unwrap_bundle(pose)
+        nullifier, negative_meta = _unwrap_bundle(nullifier)
+
+        # Normalize to strings for downstream processing
+        def _ensure_str(v):
+            return v if isinstance(v, str) else ("" if v is None else str(v))
+        quality = _ensure_str(quality)
+        scene = _ensure_str(scene)
+        glamour = _ensure_str(glamour)
+        body = _ensure_str(body)
+        aesthetic = _ensure_str(aesthetic)
+        pose = _ensure_str(pose)
+        nullifier = _ensure_str(nullifier)
+
+        # Save originals for token savings calculations (strings only)
         original_segments = {
-            "quality": quality, "scene": scene, "glamour": glamour,
-            "body": body, "aesthetic": aesthetic, "pose": pose,
-            "negative": nullifier,
+            "quality": quality or "", "scene": scene or "", "glamour": glamour or "",
+            "body": body or "", "aesthetic": aesthetic or "", "pose": pose or "",
+            "negative": nullifier or "",
         }
 
         # Combine all text for reference (pre-processing)
         pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
 
-        # Optional prompt processing pipeline
-        processor_choice = prompt_processor or "None"
-        if processor_choice != "None" and not essence:
-            processor_choice = "None"  # no handle connected, force None
+        # Optional prompt processing pipeline (Essence Algorithm only)
+        processor_choice = "Essence Algorithm" if optimize_prompt else "None"
 
         # Token counts before processing
         def _count_tokens(text: str) -> int:
@@ -533,57 +562,50 @@ class EncodingEnchantress:
 
         if processor_choice != "None":
             try:
-                base_dir = essence.get("resources_dir") if isinstance(essence, dict) else None
-                sfw_mode = bool(essence.get("sfw_mode")) if isinstance(essence, dict) else False
-                auto_install = bool(essence.get("auto_install_requirements", False)) if isinstance(essence, dict) else False
-                selected_model_path = essence.get("model_path") if isinstance(essence, dict) else None
-                if base_dir:
-                    # Ensure consolidator deps exist; include LLM deps if needed
-                    reqs = ["rapidfuzz"]
-                    if processor_choice in ("Essentia Ex Machina", "Automatic"):
-                        # Best-effort install of optional LLM path deps
-                        reqs.extend(["jinja2", "onnxruntime", "onnxruntime_genai"])
-                    self._ensure_requirements(reqs, allow_auto_install=auto_install)
-                    import importlib.util
-                    consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
-                    spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
-                    if not spec or not spec.loader:
-                        raise ImportError(f"Unable to load consolidator at {consolidator_path}")
+                # Use bundled algorithm-only consolidator
+                # Ensure dependency for fuzzy matching exists
+                self._ensure_requirements(["rapidfuzz"], allow_auto_install=False)
+                import importlib.util, sys
+                pkg_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                base_dir = os.path.join(pkg_root, "node_resources")
+                consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
+                spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
+                if not spec or not spec.loader:
+                    raise ImportError(f"Unable to load consolidator at {consolidator_path}")
+                # Reuse a single loaded module to preserve global caches and avoid repeated logs
+                if spec.name in sys.modules:
+                    pc = sys.modules[spec.name]
+                else:
                     pc = importlib.util.module_from_spec(spec)
+                    sys.modules[spec.name] = pc
                     spec.loader.exec_module(pc)  # type: ignore
 
-                    cfg = pc.ConsolidationConfig(base_dir, sfw_mode=sfw_mode)
-                    model_dir = os.path.dirname(selected_model_path) if selected_model_path else os.path.join(base_dir, "essentia-ex-machina-int8")
+                cfg = pc.ConsolidationConfig(base_dir, sfw_mode=False)
 
-                    def process_one(text: str) -> str:
-                        if not text:
-                            return ""
-                        if processor_choice == "Essence Algorithm":
-                            return pc.consolidate_algorithmic(text, cfg)
-                        elif processor_choice == "Essentia Ex Machina":
-                            return pc.consolidate_with_llm(text, cfg, model_dir)
-                        else:  # Automatic
-                            algo = pc.consolidate_algorithmic(text, cfg)
-                            if pc.decide_automatic(text, algo):
-                                return pc.consolidate_with_llm(algo, cfg, model_dir)
-                            return algo
+                def process_one(text: str) -> str:
+                    if not text:
+                        return ""
+                    if processor_choice == "Essence Algorithm":
+                        return pc.consolidate_algorithmic(text, cfg)
+                    else:  # None
+                        return text
 
-                    # Apply to positive segments only; negative untouched here
-                    quality = process_one(quality)
-                    scene = process_one(scene)
-                    glamour = process_one(glamour)
-                    body = process_one(body)
-                    aesthetic = process_one(aesthetic)
-                    pose = process_one(pose)
+                # Apply to positive segments only; negative untouched here
+                quality = process_one(quality)
+                scene = process_one(scene)
+                glamour = process_one(glamour)
+                body = process_one(body)
+                aesthetic = process_one(aesthetic)
+                pose = process_one(pose)
 
-                    # Recompute combined text
-                    pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+                # Recompute combined text
+                pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
             except ImportError as e:
-                print(f"[Encoding Enchantress] Essence processing ImportError: {e}. Did you install dependencies from requirements.txt?")
+                print(f"[Encoding Enchantress] Essence processing ImportError: {e}.")
             except (AttributeError, FileNotFoundError, OSError, RuntimeError, TypeError, ValueError) as e:
                 print(f"[Encoding Enchantress] Essence processing error: {e}")
         
-    # Check for cowboy shot framing and add "cowboy" to negative if needed
+        # Check for cowboy shot framing and add "cowboy" to negative if needed
         cowboy_negative = self._check_for_cowboys(scene)
         combined_negative = self._combine_text(nullifier, cowboy_negative)
         
@@ -644,16 +666,25 @@ class EncodingEnchantress:
             enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0) if pos_text else None
             positive_combined = enc_all_positive if enc_all_positive else [[]]
 
-        # Create character data structure for saving
+        def _merge_meta(text_value, meta_value):
+            base = {"text": text_value} if text_value else {}
+            if isinstance(meta_value, dict):
+                # If node provided a plain dict, merge its keys
+                base.update({k: v for k, v in meta_value.items() if k != "text"})
+            elif isinstance(meta_value, (list, tuple)) and len(meta_value) >= 1 and isinstance(meta_value[0], dict):
+                # Defensive: handle unusual wrappers (shouldn't occur)
+                base.update(meta_value[0])
+            return base
+
         character_output = {
             "data": {
-                "quality": {"text": quality} if quality else {},
-                "scene": {"text": scene} if scene else {},
-                "glamour": {"text": glamour} if glamour else {},
-                "body": {"text": body} if body else {},
-                "aesthetic": {"text": aesthetic} if aesthetic else {},
-                "pose": {"text": pose} if pose else {},
-                "negative": {"text": nullifier} if nullifier else {}
+                "quality": _merge_meta(quality, quality_meta),
+                "scene": _merge_meta(scene, scene_meta),
+                "glamour": _merge_meta(glamour, glamour_meta),
+                "body": _merge_meta(body, body_meta),
+                "aesthetic": _merge_meta(aesthetic, aesthetic_meta),
+                "pose": _merge_meta(pose, pose_meta),
+                "negative": _merge_meta(nullifier, negative_meta),
             }
         }
 
@@ -671,11 +702,17 @@ class EncodingEnchantress:
         token_report_text = self._make_token_report(clip, token_items, token_report)
 
         # Optional token savings suffix when processor active
-        if processor_choice != "None" and token_report:
+        if optimize_prompt and token_report:
+            def _only_text(val):
+                # Always return a string
+                if isinstance(val, (list, tuple)) and len(val) == 2 and isinstance(val[1], dict):
+                    t = val[0]
+                    return t if isinstance(t, str) else ""
+                return val if isinstance(val, str) else ""
             post_segments = {
-                "quality": quality, "scene": scene, "glamour": glamour,
-                "body": body, "aesthetic": aesthetic, "pose": pose,
-                "negative": nullifier,
+                "quality": _only_text(quality), "scene": _only_text(scene), "glamour": _only_text(glamour),
+                "body": _only_text(body), "aesthetic": _only_text(aesthetic), "pose": _only_text(pose),
+                "negative": _only_text(nullifier),
             }
             post_counts = {k: _count_tokens(v) for k, v in post_segments.items()}
             savings_lines = ["— Token savings (approx):"]

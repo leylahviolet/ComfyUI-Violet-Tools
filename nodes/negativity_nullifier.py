@@ -16,7 +16,7 @@ class NegativityNullifier:
         return {
             "required": {
                 "include_boilerplate": ("BOOLEAN", {"default": True}),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             },
             "optional": {
                 "character": ("CHARACTER_DATA", {}),
@@ -30,7 +30,7 @@ class NegativityNullifier:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         import time
         return time.time()
 
@@ -47,11 +47,32 @@ class NegativityNullifier:
             parts.extend(self.boilerplate)
 
         if extra and extra.strip():
-            parts.append(extra.strip())
+            def _resolve_wildcards(text: str) -> str:
+                if not text or "{" not in text:
+                    return text.strip() if text else text
+                import re, random
+                pattern = re.compile(r"\{([^{}]+)\}")
+                def repl(m):
+                    opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                    return random.choice(opts) if opts else ""
+                prev = None
+                out = text
+                while out != prev:
+                    prev = out
+                    out = pattern.sub(repl, out)
+                return out.strip()
+
+            parts.append(_resolve_wildcards(extra))
 
         nullifier = ", ".join(parts).strip()
-            
-        return (nullifier,)
+
+        meta = {
+            "include_boilerplate": include_boilerplate,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        bundle = (nullifier, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "NegativityNullifier": NegativityNullifier,

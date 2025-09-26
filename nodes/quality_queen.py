@@ -30,7 +30,7 @@ class QualityQueen:
                     ["None", "Random"] + list(cls.styles.keys()),
                     { "default": "Random" }
                 ),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             },
             "optional": {
                 "character": ("CHARACTER_DATA", {}),
@@ -44,7 +44,7 @@ class QualityQueen:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         
@@ -64,17 +64,7 @@ class QualityQueen:
                     style = qd.get("style")
                 if qd.get("extra"):
                     extra = qd.get("extra")
-        """
-        Generate quality prompts with boilerplate tags, optional style, and extra instructions.
-        
-        Args:
-            include_boilerplate (bool): Whether to include boilerplate quality tags
-            style (str): Style selection or "Random"/"None"
-            extra (str): Additional quality instructions from user
-            
-        Returns:
-            str: Quality prompt string
-        """
+        # Build quality prompt from boilerplate, optional style, and extra instructions
         parts = []
 
         if include_boilerplate:
@@ -87,13 +77,36 @@ class QualityQueen:
             style_text = self.styles[selected_style]
             parts.append(style_text)
 
-        # Add extra text if provided
+        # Add extra text if provided with wildcard resolution
+        def _resolve_wildcards(text: str) -> str:
+            if not text or "{" not in text:
+                return text.strip() if text else text
+            import re
+            pattern = re.compile(r"\{([^{}]+)\}")
+            def repl(m):
+                opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                return random.choice(opts) if opts else ""
+            prev = None
+            out = text
+            while out != prev:
+                prev = out
+                out = pattern.sub(repl, out)
+            return out.strip()
+
         if extra and extra.strip():
-            parts.append(extra.strip())
+            parts.append(_resolve_wildcards(extra))
 
         quality = ", ".join(parts).strip()
 
-        return (quality,)
+        # Build metadata capturing resolved selections for persistence
+        meta = {
+            "include_boilerplate": include_boilerplate,
+            "style": selected_style,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        bundle = (quality, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "QualityQueen": QualityQueen,

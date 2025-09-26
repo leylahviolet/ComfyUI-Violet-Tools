@@ -9,18 +9,22 @@ class CharacterCreator:
     Connects to outputs from other Violet Tools nodes and saves them as a named character.
     Much simpler - just provide the character name and connect your configured nodes!
     
-    Loading is handled by �️ Character Cache.
+    Loading is handled by 🗃️ Character Cache.
     """
 
     @classmethod
     def get_characters_folder(cls):
         # Try to save in ComfyUI's output directory, fallback to current directory
         try:
-            import folder_paths
-            return os.path.join(folder_paths.get_output_directory(), "characters")
-        except ImportError:
-            # Fallback to a characters folder in current working directory
-            return os.path.join(os.getcwd(), "characters")
+            import importlib.util, importlib
+            spec = importlib.util.find_spec("folder_paths")
+            if spec is not None:
+                folder_paths = importlib.import_module("folder_paths")  # type: ignore
+                return os.path.join(folder_paths.get_output_directory(), "characters")
+        except (ImportError, OSError):
+            pass
+        # Fallback to a characters folder in current working directory
+        return os.path.join(os.getcwd(), "characters")
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -55,7 +59,7 @@ class CharacterCreator:
         character_data = {
             "name": name,
             "created": time.strftime("%Y-%m-%d %H:%M:%S"),
-            "violet_tools_version": "1.3.2",
+            "violet_tools_version": "1.5.0",
             "data": character.get("data", {}) if isinstance(character, dict) else {}
         }
         
@@ -72,9 +76,6 @@ class CharacterCreator:
             
         except OSError as e:
             return (f"❌ Error saving character: {e}",)
-
-NODE_CLASS_MAPPINGS = {"CharacterCreator": CharacterCreator}
-NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCreator": "💖 Character Creator"}
 
 NODE_CLASS_MAPPINGS = {"CharacterCreator": CharacterCreator}
 NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCreator": "💖 Character Creator"}

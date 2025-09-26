@@ -13,6 +13,19 @@ class AestheticAlchemist:
         style_prompts = yaml.safe_load(f)
 
     @classmethod
+    def extract_style_names(cls):
+        """Return list of style names based on YAML schema.
+
+        Supports two schemas:
+        - New: top-level has fem/masc dicts with identical style keys.
+        - Legacy: top-level keys are style names (values may be string or dict with fem/masc).
+        """
+        data = cls.style_prompts or {}
+        if isinstance(data, dict) and "fem" in data and "masc" in data and isinstance(data.get("fem"), dict):
+            return list(data["fem"].keys())
+        return list(data.keys())
+
+    @classmethod
     def INPUT_TYPES(cls):
         """
         Define the input parameters for the ComfyUI node interface.
@@ -20,14 +33,17 @@ class AestheticAlchemist:
         Returns:
             dict: Node input configuration with aesthetic selections and strength controls
         """
-        aesthetics = ["None", "Random"] + list(cls.style_prompts.keys())
+        aesthetics = ["None", "Random"] + cls.extract_style_names()
         return {
             "required": {
                 "aesthetic_1": (aesthetics, {"default": aesthetics[1]}),
+                # Two-option selector to show fem/masc directly (instead of true/false)
+                "aesthetic_1_fem": (["fem", "masc"], {"default": "fem", "label": "", "tooltip": "Choose list for aesthetic_1"}),
                 "aesthetic_1_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "aesthetic_2": (aesthetics, {"default": aesthetics[2]}),
+                "aesthetic_2_fem": (["fem", "masc"], {"default": "fem", "label": "", "tooltip": "Choose list for aesthetic_2"}),
                 "aesthetic_2_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             },
             "optional": {
                 "character": ("CHARACTER_DATA", {}),
@@ -41,7 +57,7 @@ class AestheticAlchemist:
     CATEGORY = "Violet Tools 💅/Prompt"
     
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         
@@ -54,76 +70,94 @@ class AestheticAlchemist:
         import time
         return time.time()
 
-    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_strength, aesthetic_2_strength, extra, character=None, character_apply=False):
+    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_fem, aesthetic_2_fem, aesthetic_1_strength, aesthetic_2_strength, extra, character=None, character_apply=False):
         if character_apply and character and isinstance(character, dict):
             ad = character.get("data", {}).get("aesthetic", {})
             if ad:
                 aesthetic_1 = ad.get("aesthetic_1", aesthetic_1)
+                aesthetic_1_fem = ad.get("aesthetic_1_fem", aesthetic_1_fem)
                 aesthetic_1_strength = ad.get("aesthetic_1_strength", aesthetic_1_strength)
                 aesthetic_2 = ad.get("aesthetic_2", aesthetic_2)
+                aesthetic_2_fem = ad.get("aesthetic_2_fem", aesthetic_2_fem)
                 aesthetic_2_strength = ad.get("aesthetic_2_strength", aesthetic_2_strength)
                 if ad.get("extra"):
                     extra = ad.get("extra")
-        """
-        Generate aesthetic prompts by optionally blending selected styles.
-        
-        Handles random aesthetic selection, applies strength weighting to style elements,
-        and combines positive prompts based on aesthetic definitions.
-        
-        Args:
-            aesthetic_1 (str): First aesthetic selection or "Random"/"None"
-            aesthetic_1_strength (float): Strength multiplier for first aesthetic (0.0-2.0)
-            aesthetic_2 (str): Second aesthetic selection or "Random"/"None"
-            aesthetic_2_strength (float): Strength multiplier for second aesthetic (0.0-2.0)
-            extra (string): Additional aesthetic instructions from user
-              Returns:
-            str: Aesthetic prompt string
-        """
-        # Grab all real styles
-        available_styles = list(self.style_prompts.keys())
 
-        # Handle randomization logic
+        # Use same style list for logic as we present in the dropdown
+        available_styles = self.__class__.extract_style_names()
+
+        # Random selection handling
         selected_1 = aesthetic_1
         selected_2 = aesthetic_2
-
-        if aesthetic_1 == "Random":
+        if aesthetic_1 == "Random" and available_styles:
             selected_1 = random.choice(available_styles)
-
-        if aesthetic_2 == "Random":
+        if aesthetic_2 == "Random" and available_styles:
             filtered = [s for s in available_styles if s != selected_1]
             selected_2 = random.choice(filtered) if filtered else selected_1
 
-        def weighted_text(style, weight):
-            """
-            Format aesthetic text with optional weight parentheses for prompt weighting.
-            
-            Args:
-                style (str): Aesthetic style name
-                weight (float): Strength multiplier
-                
-            Returns:
-                str: Formatted aesthetic text with or without weight syntax
-            """
-            base = self.style_prompts.get(style, "")
+        def _resolve_wildcards(text: str) -> str:
+            """Resolve {opt1|opt2|...} wildcards by choosing one option per block."""
+            if not text or "{" not in text:
+                return text
+            import re
+            pattern = re.compile(r"\{([^{}]+)\}")
+            def repl(m):
+                opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                return random.choice(opts) if opts else ""
+            prev = None
+            out = text
+            while out != prev:
+                prev = out
+                out = pattern.sub(repl, out)
+            return out
+
+        def _is_fem(val) -> bool:
+            if isinstance(val, bool):
+                return val
+            if isinstance(val, str):
+                return val.strip().lower() == "fem"
+            return True
+
+        def weighted_text(style: str, weight: float, use_fem: bool) -> str:
+            # Support both new and legacy YAML schemas
+            data = self.style_prompts
+            if isinstance(data, dict) and "fem" in data and "masc" in data and isinstance(data.get("fem"), dict):
+                pool = data["fem" if use_fem else "masc"]
+                base_entry = pool.get(style, "")
+            else:
+                base_entry = data.get(style, "")
+                if isinstance(base_entry, dict):
+                    base_entry = base_entry.get("fem" if use_fem else "masc", "")
+            base = _resolve_wildcards(base_entry)
             if not base:
                 return ""
             return f"({base}:{round(weight, 2)})" if weight < 0.99 else base
 
         styles = []
         if selected_1 != "None" and aesthetic_1_strength > 0.0:
-            styles.append((selected_1, aesthetic_1_strength))
+            styles.append((selected_1, aesthetic_1_strength, _is_fem(aesthetic_1_fem)))
         if selected_2 != "None" and aesthetic_2_strength > 0.0:
-            styles.append((selected_2, aesthetic_2_strength))
+            styles.append((selected_2, aesthetic_2_strength, _is_fem(aesthetic_2_fem)))
 
-        pos_parts = [weighted_text(style, weight) for style, weight in styles]
-
-        # Add extra text if provided
+        pos_parts = [weighted_text(style, weight, use_fem) for style, weight, use_fem in styles]
         if extra and extra.strip():
-            pos_parts.append(extra.strip())
+            pos_parts.append(_resolve_wildcards(extra))
 
         aesthetic = ", ".join(filter(None, pos_parts))
 
-        return (aesthetic,)
+        meta = {
+            "aesthetic_1": selected_1,
+            "aesthetic_1_fem": "fem" if _is_fem(aesthetic_1_fem) else "masc",
+            "aesthetic_1_strength": aesthetic_1_strength,
+            "aesthetic_2": selected_2,
+            "aesthetic_2_fem": "fem" if _is_fem(aesthetic_2_fem) else "masc",
+            "aesthetic_2_strength": aesthetic_2_strength,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        # Bundle text + meta in a single output value
+        bundle = (aesthetic, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "AestheticAlchemist": AestheticAlchemist,
