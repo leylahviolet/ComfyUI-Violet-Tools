@@ -7,6 +7,35 @@
     // Configuration
     // Attempt to derive the extension mount path dynamically. ComfyUI serves custom node web assets
     // under /extensions/<folder-name>/ when WEB_DIRECTORY is set. Folder name may vary by case.
+    // Character UI sync: apply backend-pushed widget values to nodes
+    function applyCharacterSync(event) {
+        try {
+            const payload = event && event.detail ? event.detail : event;
+            const updated = payload && payload.updated ? payload.updated : {};
+            if (!updated) return;
+
+            const nodes = app && app.graph && app.graph._nodes_by_id ? app.graph._nodes_by_id : {};
+            for (const nodeId in updated) {
+                const node = nodes[nodeId];
+                if (!node || !node.widgets || !Array.isArray(node.widgets)) continue;
+                const changes = updated[nodeId];
+                for (const key in changes) {
+                    const w = node.widgets.find(w => w && w.name === key);
+                    if (!w) continue;
+                    w.value = changes[key];
+                }
+            }
+        } catch (e) {
+            // silent
+        }
+    }
+
+    // Wire to server bus (same pattern as Inspire Pack)
+    try {
+        if (window && window.api && window.api.addEventListener) {
+            window.api.addEventListener('vt-character-sync', applyCharacterSync);
+        }
+    } catch (e) { /* noop */ }
     function deriveBasePath() {
         // Manual override (set before script loads): window.VioletToolsBasePath = '/extensions/YourPath/'
         if (window.VioletToolsBasePath) return window.VioletToolsBasePath;
