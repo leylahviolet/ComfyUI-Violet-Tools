@@ -14,13 +14,32 @@ class CharacterCache:
 
     @classmethod
     def get_characters_folder(cls):
-        # Try to use ComfyUI's output directory, fallback to current directory
+        """Preferred load path with legacy fallback.
+
+        New: ComfyUI/user/default/comfyui-violet-tools/characters
+        Legacy: ComfyUI/output/characters
+        """
         try:
-            import folder_paths
-            return os.path.join(folder_paths.get_output_directory(), "characters")
-        except ImportError:
-            # Fallback to a characters folder in current working directory
-            return os.path.join(os.getcwd(), "characters")
+            import importlib
+            folder_paths = importlib.import_module("folder_paths")  # type: ignore
+            # Preferred user path
+            user_dir = getattr(folder_paths, "get_user_directory", None)
+            if callable(user_dir):
+                base_user = user_dir()
+            else:
+                out_dir = folder_paths.get_output_directory()
+                base_user = os.path.join(os.path.dirname(str(out_dir)), "user")
+            preferred = os.path.join(str(base_user), "default", "comfyui-violet-tools", "characters")
+            if os.path.exists(preferred):
+                return preferred
+            # Legacy fallback under output
+            legacy = os.path.join(folder_paths.get_output_directory(), "characters")
+            if os.path.exists(legacy):
+                return legacy
+            return preferred  # default to preferred if neither exists
+        except (ImportError, AttributeError, OSError, TypeError):
+            # Fallback to current working directory under user-like path
+            return os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")
 
     @classmethod
     def list_characters(cls):

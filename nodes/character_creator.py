@@ -14,17 +14,30 @@ class CharacterCreator:
 
     @classmethod
     def get_characters_folder(cls):
-        # Try to save in ComfyUI's output directory, fallback to current directory
+        """Resolve preferred character storage directory.
+
+        New location: ComfyUI/user/default/comfyui-violet-tools/characters
+        Legacy (read-only fallback): ComfyUI/output/characters
+        """
+        # Preferred path under ComfyUI/user
         try:
-            import importlib.util, importlib
-            spec = importlib.util.find_spec("folder_paths")
-            if spec is not None:
-                folder_paths = importlib.import_module("folder_paths")  # type: ignore
-                return os.path.join(folder_paths.get_output_directory(), "characters")
-        except (ImportError, OSError):
-            pass
-        # Fallback to a characters folder in current working directory
-        return os.path.join(os.getcwd(), "characters")
+            import importlib
+            folder_paths = importlib.import_module("folder_paths")  # type: ignore
+            # Try to use ComfyUI's user directory if available
+            user_dir = getattr(folder_paths, "get_user_directory", None)
+            if callable(user_dir):
+                base_user = user_dir()
+            else:
+                # Derive from output directory if user dir API is unavailable
+                out_dir = folder_paths.get_output_directory()
+                base_user = os.path.join(os.path.dirname(str(out_dir)), "user")
+            base_user_str = str(base_user)
+            preferred = os.path.join(base_user_str, "default", "comfyui-violet-tools", "characters")
+            return preferred
+        except (ImportError, AttributeError, OSError, TypeError):
+            # Fallback: put under current working directory in a user-like layout
+            cwd_user = os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")
+            return cwd_user
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -66,8 +79,8 @@ class CharacterCreator:
         try:
             folder = self.get_characters_folder()
             if not os.path.exists(folder):
-                os.makedirs(folder)
-            
+                os.makedirs(folder, exist_ok=True)
+
             file_path = os.path.join(folder, f"{name}.json")
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(character_data, f, indent=2, ensure_ascii=False)
