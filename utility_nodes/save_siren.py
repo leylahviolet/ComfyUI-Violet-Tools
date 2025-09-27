@@ -8,24 +8,22 @@ leaking full ComfyUI workflow graphs. Also emits the JSON for downstream nodes
 
 Inputs
 - image: IMAGE (required)
-- model_name: STRING
-- prompt: STRING (multiline)
-- negative_prompt: STRING (multiline)
-- width: INT
-- height: INT
-- cfg_scale: FLOAT
-- sampler: STRING
-- steps: INT
-- seed: INT
+- ckpt_name: STRING (socket only)
+- positive: STRING (multiline, socket only)
+- negative: STRING (multiline, socket only)
+- cfg_scale: FLOAT (socket only)
+- sampler: STRING (socket only)
+- steps: INT (socket only)
+- seed: INT (socket only)
 - is_adetailer: BOOLEAN
-- loras: STRING (JSON list of {lora, weight, civitai_model_id})
-- civitai_model_ids: STRING (JSON list of ints)
+- loras: STRING (JSON list of {lora, weight, civitai_model_id}) (socket only)
+- civitai_model_ids: STRING (JSON list of ints) (socket only)
 - save_image: BOOLEAN (default True)
 - human_readable_text_chunks: BOOLEAN (default True)
 
 Outputs
 - image: passthrough IMAGE
-- json: STRING (metadata JSON)
+- metadata: STRING (metadata JSON)
 
 Notes
 - Pillow (PIL) is expected to be available in ComfyUI runtime.
@@ -58,29 +56,63 @@ class SaveSiren:
         return {
             "required": {
                 "image": ("IMAGE", {"forceInput": True}),
-                "model_name": ("STRING", {"default": "", "multiline": False}),
-                "prompt": ("STRING", {"default": "", "multiline": True}),
-                "negative_prompt": ("STRING", {"default": "", "multiline": True}),
-                "width": ("INT", {"default": 0, "min": 0, "max": 8192}),
-                "height": ("INT", {"default": 0, "min": 0, "max": 8192}),
-                "cfg_scale": ("FLOAT", {"default": 7.0, "min": 0.0, "max": 50.0, "step": 0.1}),
-                "sampler": ("STRING", {"default": "", "multiline": False}),
-                "steps": ("INT", {"default": 0, "min": 0, "max": 10000}),
-                "seed": ("INT", {"default": 0, "min": 0, "max": 2**31-1}),
-                "is_adetailer": ("BOOLEAN", {"default": False}),
-                "loras": ("STRING", {"default": "[]", "multiline": True, "tooltip": "JSON list: [{\"lora\":\"name\", \"weight\":0.8, \"civitai_model_id\":123}]"}),
-                "civitai_model_ids": ("STRING", {"default": "[]", "multiline": False, "tooltip": "JSON list of integers"}),
                 "save_image": ("BOOLEAN", {"default": True, "tooltip": "Write compact metadata into PNG chunks"}),
                 "human_readable_text_chunks": ("BOOLEAN", {"default": True, "tooltip": "Also write Prompt/Steps/etc. text chunks"}),
+            },
+            "optional": {
+                # Socket-only parameters (no inline widgets); play nice with cg-use-everywhere
+                "ckpt_name": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": False}),
+                "positive": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": True}),
+                "negative": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": True}),
+                "cfg_scale": ("FLOAT", {"forceInput": True}),
+                "sampler": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": False}),
+                "steps": ("INT", {"forceInput": True}),
+                # Prevent ComfyUI seed widget: socket-only INT input, no default/min/max UI
+                "seed": ("INT", {"forceInput": True}),
+                "is_adetailer": ("BOOLEAN", {"forceInput": True}),
+                "loras": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": True, "tooltip": "JSON list: [{\"lora\":\"name\", \"weight\":0.8, \"civitai_model_id\":123}]"}),
+                "civitai_model_ids": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": False, "tooltip": "JSON list of integers"}),
             }
         }
 
     RETURN_TYPES = ("IMAGE", "STRING")
-    RETURN_NAMES = ("image", "json")
+    RETURN_NAMES = ("image", "metadata")
     FUNCTION = "save"
     CATEGORY = "Violet Tools 💅/Utility"
 
-    def _to_meta(self, **kwargs) -> Dict[str, Any]:
+    def _infer_dimensions(self, image) -> tuple[Optional[int], Optional[int]]:
+        # Try PIL path first
+        try:
+            from PIL import Image as PILImage  # type: ignore
+            if hasattr(image, 'to_pil'):
+                pil = image.to_pil()
+                if isinstance(pil, PILImage.Image):
+                    w, h = pil.size
+                    return int(w), int(h)
+            if isinstance(image, PILImage.Image):
+                w, h = image.size
+                return int(w), int(h)
+        except Exception:
+            pass
+        # Try numpy / tensor shapes
+        try:
+            import numpy as np  # type: ignore
+            arr = image
+            if isinstance(arr, (list, tuple)) and arr:
+                arr = arr[0]
+            if hasattr(arr, 'shape'):
+                shp = tuple(int(x) for x in arr.shape)
+                if len(shp) == 4:
+                    # Assume (B, H, W, C)
+                    return shp[2], shp[1]
+                if len(shp) == 3:
+                    # Assume (H, W, C)
+                    return shp[1], shp[0]
+        except Exception:
+            pass
+        return None, None
+
+    def _to_meta(self, image=None, **kwargs) -> Dict[str, Any]:
         if vt_mmm and hasattr(vt_mmm, 'build_meta'):
             try:
                 # Parse JSON fields
@@ -88,36 +120,37 @@ class SaveSiren:
                 civitai_ids = json.loads(kwargs.get('civitai_model_ids') or '[]')
             except json.JSONDecodeError:
                 loras, civitai_ids = [], []
+            # Auto-infer width/height from image if not explicitly provided
+            w, h = self._infer_dimensions(image)
             return vt_mmm.build_meta(
-                model_name=kwargs.get('model_name') or None,
-                prompt=kwargs.get('prompt') or None,
-                negative_prompt=kwargs.get('negative_prompt') or None,
-                width=int(kwargs.get('width') or 0) or None,
-                height=int(kwargs.get('height') or 0) or None,
+                model_name=kwargs.get('ckpt_name') or None,
+                prompt=kwargs.get('positive') or None,
+                negative_prompt=kwargs.get('negative') or None,
+                width=w,
+                height=h,
                 cfg_scale=(
-                    (lambda v: (float(str(v)) if str(v).strip() != "" else None))(kwargs.get('cfg_scale'))
+                    (lambda v: (float(str(v)) if (v is not None and str(v).strip() != "") else None))(kwargs.get('cfg_scale'))
                 ),
                 sampler=kwargs.get('sampler') or None,
-                steps=int(kwargs.get('steps') or 0) or None,
-                seed=int(kwargs.get('seed') or 0) or None,
-                is_adetailer=bool(kwargs.get('is_adetailer')) if kwargs.get('is_adetailer') is not None else None,
+                steps=(int(kwargs.get('steps')) if kwargs.get('steps') is not None else None),
+                seed=(int(kwargs.get('seed')) if kwargs.get('seed') is not None else None),
+                is_adetailer=(bool(kwargs.get('is_adetailer')) if kwargs.get('is_adetailer') is not None else None),
                 loras=loras or None,
                 civitai_model_ids=civitai_ids or None,
             )
         # Minimal fallback if helper missing
-        w = int(kwargs.get('width') or 0) or None
-        h = int(kwargs.get('height') or 0) or None
+        w, h = self._infer_dimensions(image)
         meta = {
-            "model_name": kwargs.get('model_name') or None,
-            "prompt": kwargs.get('prompt') or None,
-            "negative_prompt": kwargs.get('negative_prompt') or None,
+            "model_name": kwargs.get('ckpt_name') or None,
+            "prompt": kwargs.get('positive') or None,
+            "negative_prompt": kwargs.get('negative') or None,
             "width": w,
             "height": h,
-            "cfg_scale": kwargs.get('cfg_scale'),
+            "cfg_scale": (float(kwargs.get('cfg_scale')) if kwargs.get('cfg_scale') is not None else None),
             "sampler": kwargs.get('sampler') or None,
-            "steps": kwargs.get('steps'),
-            "seed": kwargs.get('seed'),
-            "is_adetailer": kwargs.get('is_adetailer'),
+            "steps": (int(kwargs.get('steps')) if kwargs.get('steps') is not None else None),
+            "seed": (int(kwargs.get('seed')) if kwargs.get('seed') is not None else None),
+            "is_adetailer": (bool(kwargs.get('is_adetailer')) if kwargs.get('is_adetailer') is not None else None),
         }
         if w and h:
             meta["size"] = f"{w}x{h}"
@@ -127,7 +160,7 @@ class SaveSiren:
     def _write_png_chunks(self, image, meta: Dict[str, Any], human_readable: bool):
         # Attempt non-destructive save into metadata if PIL is around and image has the correct backend
         try:
-            from PIL import Image as PILImage, PngImagePlugin  # type: ignore
+            from PIL import Image as PILImage  # type: ignore
         except Exception:
             return image  # PIL missing; skip
 
@@ -157,7 +190,8 @@ class SaveSiren:
             return image
 
         try:
-            _, pnginfo = vt_mmm.add_png_text_chunks(pil, meta, human_readable=human_readable) if (vt_mmm and hasattr(vt_mmm, 'add_png_text_chunks')) else (pil, None)
+            if vt_mmm and hasattr(vt_mmm, 'add_png_text_chunks'):
+                vt_mmm.add_png_text_chunks(pil, meta, human_readable=human_readable)
             # We won't write to disk here; this utility's role is to attach metadata for downstream save nodes.
             # Some downstream nodes (like Save Image Extended) can accept metadata dicts directly; we surface JSON instead.
         except Exception:
@@ -166,27 +200,24 @@ class SaveSiren:
 
     def save(self,
              image,
-             model_name: str,
-             prompt: str,
-             negative_prompt: str,
-             width: int,
-             height: int,
-             cfg_scale: float,
-             sampler: str,
-             steps: int,
-             seed: int,
-             is_adetailer: bool,
-             loras: str,
-             civitai_model_ids: str,
              save_image: bool,
-             human_readable_text_chunks: bool):
+             human_readable_text_chunks: bool,
+             ckpt_name: Optional[str] = None,
+             positive: Optional[str] = None,
+             negative: Optional[str] = None,
+             cfg_scale: Optional[float] = None,
+             sampler: Optional[str] = None,
+             steps: Optional[int] = None,
+             seed: Optional[int] = None,
+             is_adetailer: Optional[bool] = None,
+             loras: Optional[str] = None,
+             civitai_model_ids: Optional[str] = None):
         # Build compact metadata JSON
         meta = self._to_meta(
-            model_name=model_name,
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            width=width,
-            height=height,
+            image=image,
+            ckpt_name=ckpt_name,
+            positive=positive,
+            negative=negative,
             cfg_scale=cfg_scale,
             sampler=sampler,
             steps=steps,
