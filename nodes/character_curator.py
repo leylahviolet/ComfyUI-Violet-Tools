@@ -76,8 +76,8 @@ class CharacterCurator:
             options.extend(chars)
         return {
             "required": {
-                "load_character": (options, {"default": "None", "tooltip": "Select saved character or random"}),
                 "save_character": ("STRING", {"default": "", "multiline": False, "tooltip": "Enter a name to save current selections (wireless)"}),
+                "load_character": (options, {"default": "None", "tooltip": "Select saved character or random"}),
             }
         }
 

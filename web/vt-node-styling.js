@@ -224,12 +224,12 @@
         const seg = VT_SEGMENT_BY_TYPE[t] || VT_SEGMENT_BY_TYPE[node.comfyClass];
         if (!seg) return; // not VT
 
-        // Character Curator: add Load All + Save + Delete
+        // Character Curator: add Browse Names + Save + Load All + Delete (with custom ordering + spacer)
         if (t === 'CharacterCurator' || t === '💖 Character Curator') {
-            node.addWidget('button', 'Load Character to All', 'load', async () => {
-                await loadCharacterIntoAll();
+            const browseBtn = node.addWidget('button', 'Browse Names', 'browse', async () => {
+                try { showCharacterNameOverlay(node); } catch(e) {}
             });
-            node.addWidget('button', 'Save Character', 'save', async () => {
+            const saveBtn = node.addWidget('button', 'Save Character', 'save', async () => {
                 // CharacterCurator uses save_character; Creator uses character_name
                 let nm = '';
                 try {
@@ -240,12 +240,10 @@
                 } catch(e) {}
                 await wirelessSaveCharacter(nm);
             });
-            // Browse Names button with overlay dropdown
-            node.addWidget('button', 'Browse Names', 'browse', async () => {
-                try { showCharacterNameOverlay(node); } catch(e) {}
+            const loadAllBtn = node.addWidget('button', 'Load Character to All', 'load', async () => {
+                await loadCharacterIntoAll();
             });
-            // Delete button
-            node.addWidget('button', 'Delete Character', 'delete', async () => {
+            const deleteBtn = node.addWidget('button', 'Delete Character', 'delete', async () => {
                 let sel = '';
                 try {
                     if (Array.isArray(node.widgets)) {
@@ -254,23 +252,46 @@
                     }
                 } catch(e) {}
                 if (!sel || sel === 'None' || sel === 'random') { toast('Select a character to delete.', 'warn'); return; }
-                try {
-                    const res = await fetch(`/violet/character?name=${encodeURIComponent(sel)}`, { method: 'DELETE' });
-                    if (res.ok) {
-                        toast(`Deleted '${sel}'.`, 'success');
-                        // Try to switch selection to None
-                        try {
-                            const w = node.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
-                            if (w) w.value = 'None';
-                        } catch(e) {}
-                    } else {
-                        const txt = await res.text().catch(() => '');
-                        toast(`Delete failed: ${txt || res.status}`, 'warn');
+                showDeleteConfirmOverlay(node, sel, async () => {
+                    try {
+                        const res = await fetch(`/violet/character?name=${encodeURIComponent(sel)}`, { method: 'DELETE' });
+                        if (res.ok) {
+                            toast(`Deleted '${sel}'.`, 'success');
+                            try {
+                                const w = node.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                                if (w) w.value = 'None';
+                                if (node && node.graph && typeof node.setDirtyCanvas === 'function') node.setDirtyCanvas(true, true);
+                            } catch(e) {}
+                        } else {
+                            const txt = await res.text().catch(() => '');
+                            toast(`Delete failed: ${txt || res.status}`, 'warn');
+                        }
+                    } catch (e) {
+                        toast('Delete failed: network error', 'warn');
                     }
-                } catch (e) {
-                    toast('Delete failed: network error', 'warn');
-                }
+                });
             });
+
+            // Reorder widgets: [Browse], save_character, [Save], [spacer], load_character, [Load All], [Delete]
+            try {
+                const ws = Array.isArray(node.widgets) ? node.widgets.slice() : [];
+                const saveField = ws.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                const loadField = ws.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                const spacer = { name: '__vt_gap__', type: 'vt-spacer', computeSize: () => [node.size ? node.size[0] : 140, 14] };
+                const desired = [];
+                if (browseBtn) desired.push(browseBtn);
+                if (saveField) desired.push(saveField);
+                if (saveBtn) desired.push(saveBtn);
+                desired.push(spacer);
+                if (loadField) desired.push(loadField);
+                if (loadAllBtn) desired.push(loadAllBtn);
+                if (deleteBtn) desired.push(deleteBtn);
+                // Append any other widgets not included to preserve future proofing
+                for (const w of ws) {
+                    if (!desired.includes(w)) desired.push(w);
+                }
+                node.widgets = desired;
+            } catch(e) {}
             node.__vtCharacterButtons = true;
             return;
         }
@@ -760,6 +781,71 @@
             });
         });
         setTimeout(() => search.focus(), 0);
+    }
+
+    function showDeleteConfirmOverlay(node, name, onConfirm) {
+        const { overlay } = buildOverlay();
+        // Customize content
+        overlay.innerHTML = '';
+        const panel = document.createElement('div');
+        panel.style.position = 'absolute';
+        panel.style.top = '20%';
+        panel.style.left = '50%';
+        panel.style.transform = 'translateX(-50%)';
+        panel.style.width = 'min(460px, 90vw)';
+        panel.style.background = '#1f1430';
+        panel.style.border = '1px solid #6d28d9';
+        panel.style.borderRadius = '12px';
+        panel.style.boxShadow = '0 12px 40px rgba(0,0,0,0.35)';
+        panel.style.padding = '16px';
+        panel.style.fontFamily = 'Inter, system-ui, sans-serif';
+        panel.style.color = '#eee';
+
+        const title = document.createElement('div');
+        title.textContent = 'Delete Character';
+        title.style.fontSize = '16px';
+        title.style.fontWeight = '600';
+        title.style.marginBottom = '8px';
+
+        const msg = document.createElement('div');
+        msg.innerHTML = `Are you sure you want to delete <b>${name}</b>? This cannot be undone.`;
+        msg.style.opacity = '0.9';
+        msg.style.marginBottom = '14px';
+
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '10px';
+        row.style.justifyContent = 'flex-end';
+
+        const cancel = document.createElement('button');
+        cancel.textContent = 'Cancel';
+        cancel.style.padding = '8px 12px';
+        cancel.style.borderRadius = '8px';
+        cancel.style.border = '1px solid #7c3aed';
+        cancel.style.background = '#140a20';
+        cancel.style.color = '#eee';
+        cancel.style.cursor = 'pointer';
+        cancel.addEventListener('click', () => overlay.remove());
+
+        const confirm = document.createElement('button');
+        confirm.textContent = 'Delete';
+        confirm.style.padding = '8px 12px';
+        confirm.style.borderRadius = '8px';
+        confirm.style.border = '1px solid #ef4444';
+        confirm.style.background = '#7f1d1d';
+        confirm.style.color = '#fff';
+        confirm.style.cursor = 'pointer';
+        confirm.addEventListener('click', async () => {
+            try { await onConfirm(); } finally { overlay.remove(); }
+        });
+
+        row.appendChild(cancel);
+        row.appendChild(confirm);
+        panel.appendChild(title);
+        panel.appendChild(msg);
+        panel.appendChild(row);
+        overlay.appendChild(panel);
+        document.body.appendChild(overlay);
     }
 
     // Update configuration
