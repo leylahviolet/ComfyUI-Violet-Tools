@@ -8,7 +8,6 @@ from .nodes.aesthetic_alchemist import AestheticAlchemist
 from .nodes.pose_priestess import PosePriestess
 from .nodes.encoding_enchantress import EncodingEnchantress
 from .nodes.negativity_nullifier import NegativityNullifier
-from .nodes.character_inspector import CharacterInspector
 from .nodes.character_curator import CharacterCurator
 from .nodes.oracle_override import OracleOverride
 
@@ -44,7 +43,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AestheticAlchemist": "💋 Aesthetic Alchemist",
     "PosePriestess": "🤩 Pose Priestess",
     "NegativityNullifier": "🚫 Negativity Nullifier",
-    "CharacterCurator": "💖 Character Curator"
-    ,"CharacterInspector": "🪞 Character Inspector",
+    "CharacterCurator": "💖 Character Curator",
     "OracleOverride": "🔮 Oracle's Override"
 }

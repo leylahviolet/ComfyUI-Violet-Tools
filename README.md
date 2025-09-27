@@ -65,7 +65,6 @@ Negative prompt management system with smart defaults and customizable exclusion
 Save, load, and manage consistent character traits via UI — no canvas wiring required:
 
 - 💖 Character Curator: single node for Save, Load to All, and Delete actions (buttons in the node UI)
-- 🪞 Character Inspector: view character JSON for verification and debugging
 - Autocomplete + Browse overlay for quickly selecting or overwriting character names
 - REST endpoints power the UI: GET/POST/DELETE /violet/character
 - Saved as versioned JSON (silent migration preserved); stored under `ComfyUI/user/default/comfyui-violet-tools/characters`
@@ -134,7 +133,6 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 - Add `💖 Character Curator` to your canvas. Configure your Violet prompt nodes as usual.
 - Use the Curator's UI buttons — Load Character to All (load into all nodes), Save Character (persist current selections with autocomplete/browse), Delete Character (with confirmation overlay).
 - No `character` wiring or apply toggles required anywhere — it's all handled via UI and REST.
-- View any profile with `🪞 Character Inspector`.
 
 ### 🔮 Oracle's Override
 
@@ -192,7 +190,6 @@ ComfyUI-Violet-Tools/
 │   ├── aesthetic_alchemist.py # Style blending and aesthetic control
 │   ├── body_bard.py           # Body features and anatomical descriptions
 │   ├── character_curator.py   # Wireless save/load/delete character management
-│   ├── character_inspector.py # View character JSON
 │   ├── encoding_enchantress.py# Advanced text encoding
 │   ├── glamour_goddess.py     # Hair and makeup styling
 │   ├── negativity_nullifier.py# Negative prompt management
