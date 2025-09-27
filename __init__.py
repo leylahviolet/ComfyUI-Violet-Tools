@@ -8,12 +8,18 @@ from .nodes.aesthetic_alchemist import AestheticAlchemist
 from .nodes.pose_priestess import PosePriestess
 from .nodes.encoding_enchantress import EncodingEnchantress
 from .nodes.negativity_nullifier import NegativityNullifier
-from .nodes.character_creator import CharacterCreator
-from .nodes.character_cache import CharacterCache
 from .nodes.character_inspector import CharacterInspector
+from .nodes.character_curator import CharacterCurator
 
 # Enable web extensions
 WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
+
+# Side-effect import: registers /violet/character endpoint and on-prompt handler
+try:
+    from .lib import character_sync  # noqa: F401
+except (ImportError, RuntimeError):
+    # Non-fatal: if server isn't available in this context, skip silently
+    pass
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,
@@ -24,8 +30,7 @@ NODE_CLASS_MAPPINGS = {
     "AestheticAlchemist": AestheticAlchemist,
     "PosePriestess": PosePriestess,
     "NegativityNullifier": NegativityNullifier,
-    "CharacterCreator": CharacterCreator,
-    "CharacterCache": CharacterCache
+    "CharacterCurator": CharacterCurator
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -37,7 +42,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AestheticAlchemist": "💋 Aesthetic Alchemist",
     "PosePriestess": "🤩 Pose Priestess",
     "NegativityNullifier": "🚫 Negativity Nullifier",
-    "CharacterCreator": "💖 Character Creator",
-    "CharacterCache": "🗃️ Character Cache"
+    "CharacterCurator": "💖 Character Curator"
     ,"CharacterInspector": "🪞 Character Inspector"
 }

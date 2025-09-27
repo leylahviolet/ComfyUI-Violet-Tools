@@ -14,7 +14,7 @@
             const updated = payload && payload.updated ? payload.updated : {};
             if (!updated) return;
 
-            const nodes = app && app.graph && app.graph._nodes_by_id ? app.graph._nodes_by_id : {};
+            const nodes = window.app && window.app.graph && window.app.graph._nodes_by_id ? window.app.graph._nodes_by_id : {};
             for (const nodeId in updated) {
                 const node = nodes[nodeId];
                 if (!node || !node.widgets || !Array.isArray(node.widgets)) continue;
@@ -36,6 +36,253 @@
             window.api.addEventListener('vt-character-sync', applyCharacterSync);
         }
     } catch (e) { /* noop */ }
+
+    // -----------------------------
+    // UI Buttons: Load Character
+    // -----------------------------
+    const VT_SEGMENT_BY_TYPE = {
+        'AestheticAlchemist': 'aesthetic', '💋 Aesthetic Alchemist': 'aesthetic',
+        'QualityQueen': 'quality',         '👑 Quality Queen': 'quality',
+        'SceneSeductress': 'scene',        '🎭 Scene Seductress': 'scene',
+        'GlamourGoddess': 'glamour',       '✨ Glamour Goddess': 'glamour',
+        'BodyBard': 'body',                '💃 Body Bard': 'body',
+        'PosePriestess': 'pose',           '🤩 Pose Priestess': 'pose',
+        'NegativityNullifier': 'negative', '🚫 Negativity Nullifier': 'negative',
+        // Unified character selector (Curator replaces Cache/Creator)
+        'CharacterCurator': 'character',   '💖 Character Curator': 'character'
+    };
+
+    function getGraphNodes() {
+        return (window.app && window.app.graph && window.app.graph._nodes_by_id) ? window.app.graph._nodes_by_id : {};
+    }
+
+    function findCharacterSelectorNode() {
+        const nodes = getGraphNodes();
+        for (const id in nodes) {
+            const n = nodes[id];
+            const t = n && n.type;
+            if (t && (t === 'CharacterCurator' || t === '💖 Character Curator')) return n; // preferred
+            // Legacy fallback (if present in old sessions)
+            if (t && (t === 'CharacterCache' || t === '🗃️ Character Cache')) return n;
+        }
+        return null;
+    }
+
+    function getSelectedCharacterName() {
+        const sel = findCharacterSelectorNode();
+        if (!sel || !sel.widgets) return null;
+        // Curator stores selection in 'load_character'; legacy Cache used 'character'
+        const w = sel.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+        return w ? w.value : null;
+    }
+
+    async function fetchCharacterByName(name) {
+        try {
+            const res = await fetch(`/violet/character?name=${encodeURIComponent(name)}`, { cache: 'no-store' });
+            if (!res.ok) return null;
+            return await res.json();
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Tiny toast helper
+    function toast(msg, type = 'info') {
+        try {
+            const el = document.createElement('div');
+            el.textContent = msg;
+            el.style.position = 'fixed';
+            el.style.right = '16px';
+            el.style.bottom = '16px';
+            el.style.zIndex = 9999;
+            el.style.padding = '10px 14px';
+            el.style.borderRadius = '8px';
+            el.style.fontFamily = 'Inter, system-ui, sans-serif';
+            el.style.fontSize = '12px';
+            el.style.color = '#fff';
+            el.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)';
+            if (type === 'success') el.style.background = '#22c55e';
+            else if (type === 'warn') el.style.background = '#f59e0b';
+            else el.style.background = '#8b5cf6';
+            document.body.appendChild(el);
+            setTimeout(() => {
+                el.style.transition = 'opacity 300ms ease-in-out';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 320);
+            }, 1400);
+        } catch (e) { /* noop */ }
+    }
+
+    function applySegmentToNode(node, segment) {
+        if (!node || !Array.isArray(node.widgets) || !segment) return 0;
+        let count = 0;
+        for (const [k, v] of Object.entries(segment)) {
+            if (k === 'text') continue;
+            const w = node.widgets.find(w => w && w.name === k);
+            if (!w) continue;
+            w.value = v;
+            count++;
+        }
+        return count;
+    }
+
+    async function loadCharacterIntoNode(node) {
+        const segmentKey = VT_SEGMENT_BY_TYPE[node.type] || VT_SEGMENT_BY_TYPE[node.comfyClass];
+        if (!segmentKey || segmentKey === 'character') {
+            toast('This node does not support character loading.', 'warn');
+            return;
+        }
+
+        const name = getSelectedCharacterName();
+        if (!name || name === 'None' || name === 'random') {
+            toast('Select a character in Character Curator first.', 'warn');
+            return;
+        }
+
+        const payload = await fetchCharacterByName(name);
+        const seg = payload && payload.data ? payload.data[segmentKey] : null;
+        if (!seg) { toast('No saved selections for this node.', 'warn'); return; }
+        const n = applySegmentToNode(node, seg);
+        if (n > 0) toast(`Loaded ${n} selection${n>1?'s':''} from '${name}'.`, 'success');
+        else toast('No matching fields to apply.', 'warn');
+    }
+
+    async function loadCharacterIntoAll() {
+        const name = getSelectedCharacterName();
+    if (!name || name === 'None' || name === 'random') { toast('Select a character first.', 'warn'); return; }
+        const payload = await fetchCharacterByName(name);
+        if (!payload || !payload.data) { toast('Could not load character data.', 'warn'); return; }
+        const nodes = getGraphNodes();
+        let total = 0;
+        for (const id in nodes) {
+            const n = nodes[id];
+            const key = VT_SEGMENT_BY_TYPE[n && n.type] || VT_SEGMENT_BY_TYPE[n && n.comfyClass];
+            if (!key || key === 'character') continue;
+            const seg = payload.data[key];
+            if (!seg) continue;
+            total += applySegmentToNode(n, seg);
+        }
+        if (total > 0) toast(`Loaded ${total} field${total>1?'s':''} into all VT nodes.`, 'success');
+        else toast('No fields to apply across VT nodes.', 'warn');
+    }
+
+    // -----------------------------
+    // Wireless Save: Collect widgets → Character JSON
+    // -----------------------------
+    function collectSegmentFromNode(node) {
+        if (!node || !Array.isArray(node.widgets)) return null;
+        const out = {};
+        for (const w of node.widgets) {
+            if (!w || !w.name) continue;
+            const t = (w.type || '').toLowerCase();
+            if (t === 'button') continue; // skip our UI helpers
+            if (w.name === 'character' || w.name === 'character_apply') continue; // not content
+            out[w.name] = w.value;
+        }
+        return Object.keys(out).length ? out : null;
+    }
+
+    function collectCharacterData() {
+        const nodes = getGraphNodes();
+        const data = {};
+        for (const id in nodes) {
+            const n = nodes[id];
+            const key = VT_SEGMENT_BY_TYPE[n && n.type] || VT_SEGMENT_BY_TYPE[n && n.comfyClass];
+            // Skip non-VT nodes and the character selector (Curator)
+            if (!key || key === 'character') continue;
+            const seg = collectSegmentFromNode(n);
+            if (seg) data[key] = seg;
+        }
+        return data;
+    }
+
+    async function wirelessSaveCharacter(name) {
+        if (!name || !name.trim()) { toast('Enter a character name in Character Curator.', 'warn'); return; }
+        const data = collectCharacterData();
+        try {
+            const res = await fetch('/violet/character', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name.trim(), data })
+            });
+            if (res.ok) {
+                const j = await res.json().catch(() => ({}));
+                toast(`Saved character '${name}'.`, 'success');
+                return j;
+            }
+            const txt = await res.text().catch(() => '');
+            toast(`Save failed: ${txt || res.status}`, 'warn');
+        } catch (e) {
+            toast('Save failed: network error', 'warn');
+        }
+    }
+
+    function maybeAddButtons(node) {
+        if (!node || typeof node.addWidget !== 'function') return;
+        if (node.__vtCharacterButtons) return; // already added
+        const t = node.type;
+        const seg = VT_SEGMENT_BY_TYPE[t] || VT_SEGMENT_BY_TYPE[node.comfyClass];
+        if (!seg) return; // not VT
+
+        // Character Curator: add Load All + Save + Delete
+        if (t === 'CharacterCurator' || t === '💖 Character Curator') {
+            node.addWidget('button', 'Load Character to All', 'load', async () => {
+                await loadCharacterIntoAll();
+            });
+            node.addWidget('button', 'Save Character', 'save', async () => {
+                // CharacterCurator uses save_character; Creator uses character_name
+                let nm = '';
+                try {
+                    if (Array.isArray(node.widgets)) {
+                        const pref = node.widgets.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                        nm = pref && typeof pref.value === 'string' ? pref.value : '';
+                    }
+                } catch(e) {}
+                await wirelessSaveCharacter(nm);
+            });
+            // Browse Names button with overlay dropdown
+            node.addWidget('button', 'Browse Names', 'browse', async () => {
+                try { showCharacterNameOverlay(node); } catch(e) {}
+            });
+            // Delete button
+            node.addWidget('button', 'Delete Character', 'delete', async () => {
+                let sel = '';
+                try {
+                    if (Array.isArray(node.widgets)) {
+                        const w = node.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                        sel = w && typeof w.value === 'string' ? w.value : '';
+                    }
+                } catch(e) {}
+                if (!sel || sel === 'None' || sel === 'random') { toast('Select a character to delete.', 'warn'); return; }
+                try {
+                    const res = await fetch(`/violet/character?name=${encodeURIComponent(sel)}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        toast(`Deleted '${sel}'.`, 'success');
+                        // Try to switch selection to None
+                        try {
+                            const w = node.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                            if (w) w.value = 'None';
+                        } catch(e) {}
+                    } else {
+                        const txt = await res.text().catch(() => '');
+                        toast(`Delete failed: ${txt || res.status}`, 'warn');
+                    }
+                } catch (e) {
+                    toast('Delete failed: network error', 'warn');
+                }
+            });
+            node.__vtCharacterButtons = true;
+            return;
+        }
+
+        // Prompt nodes: add 'Load Character'
+        node.addWidget('button', 'Load Character', 'load', async () => {
+            await loadCharacterIntoNode(node);
+        });
+        node.__vtCharacterButtons = true;
+    }
+
+    // Hook installation is deferred until window.app is ready (handled in observeNodes/initialize)
     function deriveBasePath() {
         // Manual override (set before script loads): window.VioletToolsBasePath = '/extensions/YourPath/'
         if (window.VioletToolsBasePath) return window.VioletToolsBasePath;
@@ -83,8 +330,7 @@
         'PosePriestess',
         'EncodingEnchantress',
         'NegativityNullifier',
-        'CharacterCreator',
-        'CharacterCache'
+        'CharacterCurator'
     ];
 
     // Track styled nodes to avoid duplicate styling
@@ -215,6 +461,8 @@
             if (styleNode(node)) {
                 styledCount++;
             }
+            // Also ensure character load buttons are present
+            try { maybeAddButtons(node); } catch (e) {}
         });
         
         if (CONFIG.debugLogging && styledCount > 0) {
@@ -336,6 +584,9 @@
             // Style the node after a short delay to ensure it's fully initialized
             setTimeout(() => {
                 styleNode(node);
+                try { maybeAddButtons(node); } catch (e) {}
+                // Note: opening overlay on text field click is not reliably interceptable without deep hooks.
+                // We expose an explicit 'Browse Names' button for discoverability instead.
             }, 100);
             
             return result;
@@ -356,6 +607,13 @@
         // Style existing nodes after a delay
         setTimeout(() => {
             styleAllNodes();
+            // Add character load buttons to existing nodes
+            try {
+                const nodes = getGraphNodes();
+                for (const id in nodes) {
+                    try { maybeAddButtons(nodes[id]); } catch (e){}
+                }
+            } catch (e) {}
         }, 1000);
         // Install widget skin wrapper after LiteGraph likely loaded
         installWidgetSkins();
@@ -363,14 +621,145 @@
         // Start observing for new nodes
         observeNodes();
         
-        // Periodic re-styling (fallback)
+        // Periodic re-styling + button sweep (fallback)
         setInterval(() => {
             styleAllNodes();
+            try {
+                const nodes = getGraphNodes();
+                for (const id in nodes) {
+                    try { maybeAddButtons(nodes[id]); } catch (e){}
+                }
+            } catch (e) {}
         }, 10000);
         
         if (CONFIG.debugLogging) {
             console.log('Violet Tools: Node styling extension v2.0 initialized');
         }
+    }
+
+    // -----------------------------
+    // Character name overlay for Curator save_character field
+    // -----------------------------
+    async function fetchAllCharacterNames() {
+        try {
+            const res = await fetch('/violet/character?list=1', { cache: 'no-store' });
+            if (!res.ok) return [];
+            const j = await res.json().catch(() => ({}));
+            const names = Array.isArray(j.names) ? j.names : [];
+            return names;
+        } catch(e) { return []; }
+    }
+
+    function buildOverlay() {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.inset = '0';
+        overlay.style.background = 'rgba(0,0,0,0.3)';
+        overlay.style.zIndex = 10000;
+
+        const panel = document.createElement('div');
+        panel.style.position = 'absolute';
+        panel.style.top = '10%';
+        panel.style.left = '50%';
+        panel.style.transform = 'translateX(-50%)';
+        panel.style.width = 'min(520px, 90vw)';
+        panel.style.maxHeight = '70vh';
+        panel.style.overflow = 'auto';
+        panel.style.background = '#1f1430';
+        panel.style.border = '1px solid #6d28d9';
+        panel.style.borderRadius = '12px';
+        panel.style.boxShadow = '0 12px 40px rgba(0,0,0,0.35)';
+        panel.style.padding = '14px';
+        panel.style.fontFamily = 'Inter, system-ui, sans-serif';
+        panel.style.color = '#eee';
+
+        const title = document.createElement('div');
+        title.textContent = 'Browse Saved Characters';
+        title.style.fontSize = '16px';
+        title.style.fontWeight = '600';
+        title.style.marginBottom = '10px';
+
+        const search = document.createElement('input');
+        search.type = 'text';
+        search.placeholder = 'Filter by name…';
+        search.style.width = '100%';
+        search.style.boxSizing = 'border-box';
+        search.style.padding = '10px 12px';
+        search.style.borderRadius = '8px';
+        search.style.border = '1px solid #7c3aed';
+        search.style.background = '#140a20';
+        search.style.color = '#eee';
+
+        const list = document.createElement('div');
+        list.style.marginTop = '10px';
+        list.style.display = 'grid';
+        list.style.gridTemplateColumns = '1fr';
+        list.style.gap = '6px';
+
+        const empty = document.createElement('div');
+        empty.textContent = 'No saved characters yet.';
+        empty.style.opacity = '0.7';
+        empty.style.padding = '10px 6px';
+
+        panel.appendChild(title);
+        panel.appendChild(search);
+        panel.appendChild(list);
+        overlay.appendChild(panel);
+
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) overlay.remove();
+        });
+
+        return { overlay, list, search, showEmpty: () => { list.innerHTML = ''; list.appendChild(empty); } };
+    }
+
+    function renderNameList(listEl, names, onPick) {
+        listEl.innerHTML = '';
+        if (!names || names.length === 0) return;
+        for (const n of names) {
+            const item = document.createElement('div');
+            item.textContent = n;
+            item.style.padding = '8px 10px';
+            item.style.border = '1px solid #5b21b6';
+            item.style.borderRadius = '8px';
+            item.style.cursor = 'pointer';
+            item.style.background = '#140a20';
+            item.addEventListener('mouseenter', () => item.style.background = '#1a0f2a');
+            item.addEventListener('mouseleave', () => item.style.background = '#140a20');
+            item.addEventListener('click', () => onPick(n));
+            listEl.appendChild(item);
+        }
+    }
+
+    async function showCharacterNameOverlay(node) {
+        const { overlay, list, search, showEmpty } = buildOverlay();
+        document.body.appendChild(overlay);
+        const all = await fetchAllCharacterNames();
+        if (!all || all.length === 0) {
+            showEmpty();
+        } else {
+            renderNameList(list, all, (picked) => {
+                try {
+                    const w = node.widgets.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                    if (w) w.value = picked;
+                    if (node && node.graph && typeof node.setDirtyCanvas === 'function') node.setDirtyCanvas(true, true);
+                } catch(e) {}
+                overlay.remove();
+            });
+        }
+        search.addEventListener('input', () => {
+            const q = (search.value || '').toLowerCase();
+            const filtered = all.filter(n => n.toLowerCase().includes(q));
+            if (filtered.length === 0) showEmpty(); else renderNameList(list, filtered, (picked) => {
+                try {
+                    const w = node.widgets.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                    if (w) w.value = picked;
+                    if (node && node.graph && typeof node.setDirtyCanvas === 'function') node.setDirtyCanvas(true, true);
+                } catch(e) {}
+                overlay.remove();
+            });
+        });
+        setTimeout(() => search.focus(), 0);
     }
 
     // Update configuration

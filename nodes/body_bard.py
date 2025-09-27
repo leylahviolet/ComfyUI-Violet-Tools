@@ -18,26 +18,19 @@ class BodyBard:
             "required": {}
         }
         for key, options in cls.FEATURES.items():
-            # Handle key-value pairs without tooltips for now
             if isinstance(options, dict):
                 option_keys = list(options.keys())
-                
                 types["required"][key] = (
                     ["Unspecified", "Random"] + option_keys,
                     {"default": "Unspecified"}
                 )
             else:
-                # Handle any remaining list-style options
                 types["required"][key] = (
                     ["Unspecified", "Random"] + options,
                     {"default": "Unspecified"}
                 )
-        # Add extra multi-line field with wildcard hint label
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"})
-        types["optional"] = {
-            "character": ("CHARACTER_DATA", {}),
-            "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character body overrides"})
-        }
+        types["optional"] = {}
         return types
 
     RETURN_TYPES = ("BODY_STRING",)
@@ -70,15 +63,7 @@ class BodyBard:
                 # Fallback to the choice itself
                 return choice
 
-    def compose(self, character=None, character_apply=False, **kwargs):
-        if character_apply and character and isinstance(character, dict):
-            bd = character.get("data", {}).get("body", {})
-            if bd:
-                for key in self.FEATURES.keys():
-                    if key in bd:
-                        kwargs[key] = bd[key]
-                if bd.get("extra"):
-                    kwargs["extra"] = bd.get("extra")
+    def compose(self, **kwargs):
         parts = []
 
         for key in self.FEATURES:

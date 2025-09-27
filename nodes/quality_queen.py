@@ -31,10 +31,6 @@ class QualityQueen:
                     { "default": "Random" }
                 ),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character quality overrides"})
             }
         }
 
@@ -54,16 +50,7 @@ class QualityQueen:
         import time
         return time.time()
 
-    def generate(self, include_boilerplate, style, extra, character=None, character_apply=False):
-        # Character override
-        if character_apply and character and isinstance(character, dict):
-            qd = character.get("data", {}).get("quality", {})
-            if qd:
-                include_boilerplate = qd.get("include_boilerplate", include_boilerplate)
-                if qd.get("style") not in (None, "Random", "None", ""):
-                    style = qd.get("style")
-                if qd.get("extra"):
-                    extra = qd.get("extra")
+    def generate(self, include_boilerplate, style, extra):
         # Build quality prompt from boilerplate, optional style, and extra instructions
         parts = []
 

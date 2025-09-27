@@ -50,8 +50,8 @@ class CharacterCreator:
             }
         }
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("status",)
+    RETURN_TYPES = tuple()
+    RETURN_NAMES = tuple()
     FUNCTION = "save_character"
     CATEGORY = "Violet Tools 💅/Character"
 
@@ -61,10 +61,10 @@ class CharacterCreator:
 
     def save_character(self, character_name="", character=None):
         if not character_name or not character_name.strip():
-            return ("💖 Enter a character name to save",)
+            return tuple()
         
         if not character:
-            return ("💖 Connect Encoding Enchantress character output to save",)
+            return tuple()
         
         # Preserve display name, but sanitize filename for Windows safety
         name = character_name.strip()
@@ -95,10 +95,10 @@ class CharacterCreator:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(character_data, f, indent=2, ensure_ascii=False)
             
-            return (f"✅ Character '{name}' saved to {file_path}",)
+            return tuple()
             
         except OSError as e:
-            return (f"❌ Error saving character: {e}",)
+            return tuple()
 
 NODE_CLASS_MAPPINGS = {"CharacterCreator": CharacterCreator}
 NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCreator": "💖 Character Creator"}

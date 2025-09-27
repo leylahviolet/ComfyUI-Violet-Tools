@@ -44,10 +44,6 @@ class AestheticAlchemist:
                 "aesthetic_2_fem": (["fem", "masc"], {"default": "fem", "label": "", "tooltip": "Choose list for aesthetic_2"}),
                 "aesthetic_2_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character aesthetic overrides"})
             }
         }
 
@@ -70,18 +66,7 @@ class AestheticAlchemist:
         import time
         return time.time()
 
-    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_fem, aesthetic_2_fem, aesthetic_1_strength, aesthetic_2_strength, extra, character=None, character_apply=False):
-        if character_apply and character and isinstance(character, dict):
-            ad = character.get("data", {}).get("aesthetic", {})
-            if ad:
-                aesthetic_1 = ad.get("aesthetic_1", aesthetic_1)
-                aesthetic_1_fem = ad.get("aesthetic_1_fem", aesthetic_1_fem)
-                aesthetic_1_strength = ad.get("aesthetic_1_strength", aesthetic_1_strength)
-                aesthetic_2 = ad.get("aesthetic_2", aesthetic_2)
-                aesthetic_2_fem = ad.get("aesthetic_2_fem", aesthetic_2_fem)
-                aesthetic_2_strength = ad.get("aesthetic_2_strength", aesthetic_2_strength)
-                if ad.get("extra"):
-                    extra = ad.get("extra")
+    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_fem, aesthetic_2_fem, aesthetic_1_strength, aesthetic_2_strength, extra):
 
         # Use same style list for logic as we present in the dropdown
         available_styles = self.__class__.extract_style_names()

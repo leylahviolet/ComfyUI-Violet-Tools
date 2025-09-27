@@ -31,10 +31,6 @@ class PosePriestess:
                 "arm_gesture": (arm_gestures, { "default": arm_gestures[1] }),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character pose overrides"})
             }
         }
 
@@ -54,16 +50,7 @@ class PosePriestess:
         import time
         return time.time()
 
-    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra, character=None, character_apply=False):
-        if character_apply and character and isinstance(character, dict):
-            pd = character.get("data", {}).get("pose", {})
-            if pd:
-                general_pose = pd.get("general_pose", general_pose)
-                general_pose_strength = pd.get("general_pose_strength", general_pose_strength)
-                arm_gesture = pd.get("arm_gesture", arm_gesture)
-                arm_gesture_strength = pd.get("arm_gesture_strength", arm_gesture_strength)
-                if pd.get("extra"):
-                    extra = pd.get("extra")
+    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra):
         # Compose a pose prompt with optional weighting and extra
         general_poses = list(self.pose_prompts.get("general_poses", {}).keys())
         arm_gestures = list(self.pose_prompts.get("arm_gestures", {}).keys())

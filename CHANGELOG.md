@@ -6,6 +6,28 @@
 
 - Characters now save to ComfyUI/user/default/comfyui-violet-tools/characters with a legacy read-only fallback of ComfyUI/output/characters. This aligns storage with common ComfyUI conventions and preserves existing workflows.
 
+## [2.0.0] - 2025-09-27
+
+### ✨ Wireless Character Flow
+
+- Merged Character Creator + Character Cache into a single, wireless-only 💖 Character Curator node.
+- Removed all character wiring and apply toggles from prompt nodes; Curator handles save/load via UI only.
+- Frontend buttons on Curator: Load Character to All, Save Character, Delete Character.
+- Backend endpoints: GET/POST/DELETE /violet/character. GET now supports list mode via `?list=1` and also returns a name list when no `name` is provided.
+
+### 💄 UX — Autocomplete/Browse Names
+
+- Added a Browse Names overlay for the Curator’s `save_character` field:
+  - Click “Browse Names” to open a searchable overlay of saved character names.
+  - Type to filter and click to select a name to prefill for safe overwrite.
+  - Fully wireless — no canvas wiring required.
+
+### 🧰 Internals
+
+- Web: `vt-node-styling.js` injects Curator buttons and overlay UI.
+- Server: `lib/character_sync.py` adds name listing (`_list_character_names`) and bumps saved payload `violet_tools_version` to `2.0.0`.
+- Kept all existing string type identifiers and return orders stable for compatibility.
+
 ## [1.5.0] - 2025-09-26
 
 ### ✨ Improvements (1.5.0)

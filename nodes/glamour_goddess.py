@@ -41,10 +41,7 @@ class GlamourGoddess:
                 )
         # Add extra multi-line field with wildcard hint label
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"})
-        types["optional"] = {
-            "character": ("CHARACTER_DATA", {}),
-            "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character glamour overrides"})
-        }
+        types["optional"] = {}
         return types
 
     RETURN_TYPES = ("GLAMOUR_STRING",)
@@ -87,15 +84,7 @@ class GlamourGoddess:
                 # Fallback to the choice itself
                 return choice
 
-    def invoke(self, character=None, character_apply=False, **kwargs):
-        if character_apply and character and isinstance(character, dict):
-            gd = character.get("data", {}).get("glamour", {})
-            if gd:
-                for key in self.FEATURES.keys():
-                    if key in gd:
-                        kwargs[key] = gd[key]
-                if gd.get("extra"):
-                    kwargs["extra"] = gd.get("extra")
+    def invoke(self, **kwargs):
         parts = []
 
         for key in self.FEATURES:

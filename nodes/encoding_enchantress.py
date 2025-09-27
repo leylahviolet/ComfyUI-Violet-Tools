@@ -71,15 +71,13 @@ class EncodingEnchantress:
                 "body": ("BODY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Generate prompts directly from character without intermediate nodes"})
+                "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True})
             }
         }
 
-    # Output order updated: positive, negative, tokens, character, pos, neg
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "CHARACTER_DATA", "STRING", "STRING")
-    RETURN_NAMES = ("positive", "negative", "tokens", "character", "pos", "neg")
+    # Output order updated for 2.0: positive, negative, tokens, pos, neg
+    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "STRING")
+    RETURN_NAMES = ("positive", "negative", "tokens", "pos", "neg")
     FUNCTION = "condition"
     CATEGORY = "Violet Tools 💅"
 
@@ -442,8 +440,7 @@ class EncodingEnchantress:
                   body="",
                   aesthetic="",
                   pose="",
-                  nullifier="",
-                  character=None, character_apply=False):
+                  nullifier=""):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -490,24 +487,7 @@ class EncodingEnchantress:
             tuple: (positive, negative, tokens, character, pos, neg)
         """
         
-        # If character_apply is true, pull segments straight from character when missing
-        if character_apply and character and isinstance(character, dict):
-            cd = character.get("data", {})
-            # Only inject if the provided segment is blank (user didn't connect node) to avoid overwriting explicit inputs
-            if not quality and "quality" in cd:
-                quality = cd["quality"].get("text", "")
-            if not scene and "scene" in cd:
-                scene = cd["scene"].get("text", "")
-            if not glamour and "glamour" in cd:
-                glamour = cd["glamour"].get("text", "")
-            if not body and "body" in cd:
-                body = cd["body"].get("text", "")
-            if not aesthetic and "aesthetic" in cd:
-                aesthetic = cd["aesthetic"].get("text", "")
-            if not pose and "pose" in cd:
-                pose = cd["pose"].get("text", "")
-            if not nullifier and "negative" in cd:
-                nullifier = cd["negative"].get("text", "")
+        # Character injection removed in 2.0 (wireless-only flow)
 
         # Accept either plain string or (text, meta) bundle and unwrap EARLY
         def _unwrap_bundle(val):
@@ -515,13 +495,14 @@ class EncodingEnchantress:
                 return val[0], val[1]
             return val, None
 
-        quality, quality_meta = _unwrap_bundle(quality)
-        scene, scene_meta = _unwrap_bundle(scene)
-        glamour, glamour_meta = _unwrap_bundle(glamour)
-        body, body_meta = _unwrap_bundle(body)
-        aesthetic, aesthetic_meta = _unwrap_bundle(aesthetic)
-        pose, pose_meta = _unwrap_bundle(pose)
-        nullifier, negative_meta = _unwrap_bundle(nullifier)
+        # Unwrap possible (text, meta) bundles; we ignore meta in 2.0
+        quality, _ = _unwrap_bundle(quality)
+        scene, _ = _unwrap_bundle(scene)
+        glamour, _ = _unwrap_bundle(glamour)
+        body, _ = _unwrap_bundle(body)
+        aesthetic, _ = _unwrap_bundle(aesthetic)
+        pose, _ = _unwrap_bundle(pose)
+        nullifier, _ = _unwrap_bundle(nullifier)
 
         # Normalize to strings for downstream processing
         def _ensure_str(v):
@@ -666,27 +647,7 @@ class EncodingEnchantress:
             enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0) if pos_text else None
             positive_combined = enc_all_positive if enc_all_positive else [[]]
 
-        def _merge_meta(text_value, meta_value):
-            base = {"text": text_value} if text_value else {}
-            if isinstance(meta_value, dict):
-                # If node provided a plain dict, merge its keys
-                base.update({k: v for k, v in meta_value.items() if k != "text"})
-            elif isinstance(meta_value, (list, tuple)) and len(meta_value) >= 1 and isinstance(meta_value[0], dict):
-                # Defensive: handle unusual wrappers (shouldn't occur)
-                base.update(meta_value[0])
-            return base
-
-        character_output = {
-            "data": {
-                "quality": _merge_meta(quality, quality_meta),
-                "scene": _merge_meta(scene, scene_meta),
-                "glamour": _merge_meta(glamour, glamour_meta),
-                "body": _merge_meta(body, body_meta),
-                "aesthetic": _merge_meta(aesthetic, aesthetic_meta),
-                "pose": _merge_meta(pose, pose_meta),
-                "negative": _merge_meta(nullifier, negative_meta),
-            }
-        }
+        # No character output in 2.0
 
         # Generate token report
         token_items = [
@@ -725,8 +686,8 @@ class EncodingEnchantress:
             savings_lines.append(f"total: {total_pre} → {total_post} (-{max(total_pre-total_post,0)})")
             token_report_text = token_report_text + "\n\n" + "\n".join(savings_lines)
 
-        # New return order matches updated RETURN_NAMES
-        return (positive_combined, negative_combined, token_report_text, character_output, pos_text, combined_negative)
+        # 2.0 return order: positive, negative, tokens, pos, neg
+        return (positive_combined, negative_combined, token_report_text, pos_text, combined_negative)
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,

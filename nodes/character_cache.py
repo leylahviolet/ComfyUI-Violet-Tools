@@ -84,8 +84,8 @@ class CharacterCache:
             }
         }
 
-    RETURN_TYPES = ("CHARACTER_DATA", "STRING", "STRING")
-    RETURN_NAMES = ("character", "name", "status")
+    RETURN_TYPES = ("CHARACTER_DATA", "STRING")
+    RETURN_NAMES = ("character", "name")
     FUNCTION = "load_character"
     CATEGORY = "Violet Tools 💅/Character"
 
@@ -96,12 +96,12 @@ class CharacterCache:
 
     def load_character(self, character: str):
         if character == "None":
-            return ({}, "", "🗝️ Select a character to load")
+            return ({}, "")
 
         chars = self.list_characters()
         if not chars:
             folder = self.get_characters_folder()
-            return ({}, "", f"⚠️ No characters found. Save some with Character Creator first.\nLooking in: {folder}")
+            return ({}, "")
 
         # Random selection
         selected_name = character
@@ -109,7 +109,7 @@ class CharacterCache:
             selected_name = random.choice(chars)
 
         if selected_name not in chars:
-            return ({}, "", f"❌ Character '{selected_name}' not found. Try refreshing.")
+            return ({}, "")
 
         # Resolve path: check preferred first, then legacy
         paths_to_check = []
@@ -138,7 +138,7 @@ class CharacterCache:
                 break
         if path is None:
             folder = self.get_characters_folder()
-            return ({}, "", f"❌ Character '{selected_name}' not found in expected folders. Last checked: {folder}")
+            return ({}, "")
         try:
             with open(path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -197,12 +197,10 @@ class CharacterCache:
             if len(profile_lines) == 1:  # Only the header line
                 profile_lines.append("(No character data found)")
             
-            status = "\n".join(profile_lines)
-            
-            return (data, name, status)
+            return (data, name)
             
         except (OSError, json.JSONDecodeError) as e:
-            return ({}, "", f"❌ Error loading '{selected_name}': {e}")
+            return ({}, "")
 
 NODE_CLASS_MAPPINGS = {"CharacterCache": CharacterCache}
 NODE_DISPLAY_NAME_MAPPINGS = {"CharacterCache": "🗃️ Character Cache"}
