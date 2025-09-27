@@ -14,11 +14,7 @@ class CharacterCurator:
 
     @classmethod
     def get_characters_folder(cls):
-        """Preferred path with legacy fallback.
-
-        New: ComfyUI/user/default/comfyui-violet-tools/characters
-        Legacy: ComfyUI/output/characters
-        """
+        """Preferred path for character storage (no legacy fallback)."""
         try:
             import importlib
             folder_paths = importlib.import_module("folder_paths")  # type: ignore
@@ -29,11 +25,6 @@ class CharacterCurator:
                 out_dir = folder_paths.get_output_directory()
                 base_user = os.path.join(os.path.dirname(str(out_dir)), "user")
             preferred = os.path.join(str(base_user), "default", "comfyui-violet-tools", "characters")
-            if os.path.exists(preferred):
-                return preferred
-            legacy = os.path.join(folder_paths.get_output_directory(), "characters")
-            if os.path.exists(legacy):
-                return legacy
             return preferred
         except (ImportError, AttributeError, OSError, TypeError):
             return os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")
@@ -52,8 +43,7 @@ class CharacterCurator:
                 out_dir = folder_paths.get_output_directory()
                 base_user = os.path.join(os.path.dirname(str(out_dir)), "user")
             preferred = os.path.join(str(base_user), "default", "comfyui-violet-tools", "characters")
-            legacy = os.path.join(folder_paths.get_output_directory(), "characters")
-            paths = [preferred, legacy]
+            paths = [preferred]
         except (ImportError, AttributeError, OSError, TypeError):
             paths = [os.path.join(os.getcwd(), "user", "default", "comfyui-violet-tools", "characters")]
 
