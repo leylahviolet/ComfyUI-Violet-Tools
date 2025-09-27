@@ -30,11 +30,7 @@ class QualityQueen:
                     ["None", "Random"] + list(cls.styles.keys()),
                     { "default": "Random" }
                 ),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character quality overrides"})
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             }
         }
 
@@ -44,7 +40,7 @@ class QualityQueen:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         
@@ -54,27 +50,8 @@ class QualityQueen:
         import time
         return time.time()
 
-    def generate(self, include_boilerplate, style, extra, character=None, character_apply=False):
-        # Character override
-        if character_apply and character and isinstance(character, dict):
-            qd = character.get("data", {}).get("quality", {})
-            if qd:
-                include_boilerplate = qd.get("include_boilerplate", include_boilerplate)
-                if qd.get("style") not in (None, "Random", "None", ""):
-                    style = qd.get("style")
-                if qd.get("extra"):
-                    extra = qd.get("extra")
-        """
-        Generate quality prompts with boilerplate tags, optional style, and extra instructions.
-        
-        Args:
-            include_boilerplate (bool): Whether to include boilerplate quality tags
-            style (str): Style selection or "Random"/"None"
-            extra (str): Additional quality instructions from user
-            
-        Returns:
-            str: Quality prompt string
-        """
+    def generate(self, include_boilerplate, style, extra):
+        # Build quality prompt from boilerplate, optional style, and extra instructions
         parts = []
 
         if include_boilerplate:
@@ -87,17 +64,36 @@ class QualityQueen:
             style_text = self.styles[selected_style]
             parts.append(style_text)
 
-        # Add extra text if provided
+        # Add extra text if provided with wildcard resolution
+        def _resolve_wildcards(text: str) -> str:
+            if not text or "{" not in text:
+                return text.strip() if text else text
+            import re
+            pattern = re.compile(r"\{([^{}]+)\}")
+            def repl(m):
+                opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                return random.choice(opts) if opts else ""
+            prev = None
+            out = text
+            while out != prev:
+                prev = out
+                out = pattern.sub(repl, out)
+            return out.strip()
+
         if extra and extra.strip():
-            parts.append(extra.strip())
+            parts.append(_resolve_wildcards(extra))
 
         quality = ", ".join(parts).strip()
-        
-        # Add BREAK for prompt segmentation
-        if quality:
-            quality += ", BREAK"
 
-        return (quality,)
+        # Build metadata capturing resolved selections for persistence
+        meta = {
+            "include_boilerplate": include_boilerplate,
+            "style": selected_style,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        bundle = (quality, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "QualityQueen": QualityQueen,

@@ -43,11 +43,7 @@ class SceneSeductress:
                 "environment_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "lighting": (["None", "Random"] + list(cls.lighting.keys()), {"default": "Random"}),
                 "lighting_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character scene overrides"})
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             }
         }
         
@@ -57,7 +53,7 @@ class SceneSeductress:
     CATEGORY = "Violet Tools 💅/Prompt"
         
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         
@@ -71,49 +67,8 @@ class SceneSeductress:
         return time.time()
 
     def generate(self, framing, framing_strength, angle, angle_strength, emotion, emotion_strength, 
-                 time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra,
-                 character=None, character_apply=False):
-        if character_apply and character and isinstance(character, dict):
-            sd = character.get("data", {}).get("scene", {})
-            if sd:
-                framing = sd.get("framing", framing)
-                framing_strength = sd.get("framing_strength", framing_strength)
-                angle = sd.get("angle", angle)
-                angle_strength = sd.get("angle_strength", angle_strength)
-                emotion = sd.get("emotion", emotion)
-                emotion_strength = sd.get("emotion_strength", emotion_strength)
-                time_of_day = sd.get("time_of_day", time_of_day)
-                time_of_day_strength = sd.get("time_of_day_strength", time_of_day_strength)
-                environment = sd.get("environment", environment)
-                environment_strength = sd.get("environment_strength", environment_strength)
-                lighting = sd.get("lighting", lighting)
-                lighting_strength = sd.get("lighting_strength", lighting_strength)
-                if sd.get("extra"):
-                    extra = sd.get("extra")
-        """
-        Generate combined scene prompts with weighted blending from multiple scene categories.
-        
-        Handles random selection from framing, angle, emotion, time of day, environment, and lighting
-        categories, applies strength weighting to descriptions, and combines with comma separation.
-        
-        Args:
-            framing (str): Framing selection or "Random"/"None"
-            framing_strength (float): Strength multiplier for framing (0.0-2.0)
-            angle (str): Camera angle selection or "Random"/"None"
-            angle_strength (float): Strength multiplier for angle (0.0-2.0)
-            emotion (str): Emotion selection or "Random"/"None"
-            emotion_strength (float): Strength multiplier for emotion (0.0-2.0)
-            time_of_day (str): Time of day selection or "Random"/"None"
-            time_of_day_strength (float): Strength multiplier for time of day (0.0-2.0)
-            environment (str): Environment selection or "Random"/"None"
-            environment_strength (float): Strength multiplier for environment (0.0-2.0)
-            lighting (str): Lighting selection or "Random"/"None"
-            lighting_strength (float): Strength multiplier for lighting (0.0-2.0)
-            extra (str): Additional scene instructions from user
-              
-        Returns:
-            str: Scene prompt string
-        """
+                 time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra):
+        # Generate combined scene prompt from selected categories with weighting and optional extra
         # Get all scene lists
         frames = list(self.framing.keys())
         angles = list(self.angle.keys())
@@ -180,17 +135,45 @@ class SceneSeductress:
         if lighting_text:
             parts.append(lighting_text)
 
-        # Add extra text if provided
+        # Add extra text if provided with wildcard resolution
+        def _resolve_wildcards(text: str) -> str:
+            if not text or "{" not in text:
+                return text.strip() if text else text
+            import re
+            pattern = re.compile(r"\{([^{}]+)\}")
+            def repl(m):
+                opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                return random.choice(opts) if opts else ""
+            prev = None
+            out = text
+            while out != prev:
+                prev = out
+                out = pattern.sub(repl, out)
+            return out.strip()
+
         if extra and extra.strip():
-            parts.append(extra.strip())
+            parts.append(_resolve_wildcards(extra))
 
         scene = ", ".join(filter(None, parts))
-        
-        # Add BREAK for prompt segmentation
-        if scene:
-            scene += ", BREAK"
 
-        return (scene,)
+        meta = {
+            "framing": framing,
+            "framing_strength": framing_strength,
+            "angle": angle,
+            "angle_strength": angle_strength,
+            "emotion": emotion,
+            "emotion_strength": emotion_strength,
+            "time_of_day": time_of_day,
+            "time_of_day_strength": time_of_day_strength,
+            "environment": environment,
+            "environment_strength": environment_strength,
+            "lighting": lighting,
+            "lighting_strength": lighting_strength,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        bundle = (scene, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "SceneSeductress": SceneSeductress,

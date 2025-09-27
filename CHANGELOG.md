@@ -1,5 +1,66 @@
 # Changelog
 
+## [Unreleased]
+
+No unreleased changes.
+
+## [2.1.0] - 2025-09-26
+
+### 🔮 Oracle's Override (Refined)
+
+- Simplified to a single output: `override`.
+- New `chain` input lets you prepend text to the manual override; both `chain` and `override` are joined with ", " and support wildcards using `{a|b|c}` syntax (resolved repeatedly until stable).
+- Output is `null` unless `override_prompts` is true. When true, the combined string is emitted and used as the full positive prompt.
+- VT styling applied to the node for consistent visuals.
+
+### 🧬 Encoding Enchantress Integration
+
+- Accepts a single optional `override` input. If the value is not null (empty string allowed), it is used as the entire positive prompt, skipping mode grouping. If null, normal prompt assembly proceeds.
+- Token report includes the override section when used.
+
+### 🧹 Cleanup (Legacy Removal)
+
+- Fully removed legacy character nodes from the repository: `Character Creator` and `Character Cache`.
+- Backend character module is wireless-only now: removed prompt-time UI sync code; kept REST endpoints for Curator (GET/POST/DELETE `/violet/character`).
+
+## [2.0.0] - 2025-09-26
+
+### ✨ Wireless Character Flow
+
+- Merged Character Creator + Character Cache into a single, wireless-only 💖 Character Curator node.
+- Removed all character wiring and apply toggles from prompt nodes; Curator handles save/load via UI only.
+- Frontend buttons on Curator: Load Character to All, Save Character, Delete Character.
+- Backend endpoints: GET/POST/DELETE /violet/character. GET now supports list mode via `?list=1` and also returns a name list when no `name` is provided.
+
+### 💄 UX — Autocomplete/Browse Names
+
+- Added a Browse Names overlay for the Curator’s `save_character` field:
+  - Click “Browse Names” to open a searchable overlay of saved character names.
+  - Type to filter and click to select a name to prefill for safe overwrite.
+  - Fully wireless — no canvas wiring required.
+
+### 🧰 Internals
+
+- Web: `vt-node-styling.js` injects Curator buttons and overlay UI.
+- Server: `lib/character_sync.py` adds name listing (`_list_character_names`) and bumps saved payload `violet_tools_version` to `2.0.0`.
+- Kept all existing string type identifiers and return orders stable for compatibility.
+
+## [1.5.0] - 2025-09-26
+
+### ✨ Improvements (1.5.0)
+
+- Unified output bundling from all prompt nodes: each node now emits a single value that includes both the rendered text and its structured selections (dropdown choices, fem/masc toggles, strengths, extra). This keeps the UI clean—no extra ports—while enabling robust character persistence.
+- Encoding Enchantress now transparently unwraps bundled inputs and merges structured fields into the character JSON next to the existing "text" entry for each domain.
+- Added wildcard parsing to every node’s "extra" field with label hint "extra, wildcards". Supports {a|b|c} syntax and resolves once per run.
+
+### 🐛 Fixes (1.5.0)
+
+- Resolved warning in Aesthetic Alchemist when inputs were set to None by updating `IS_CHANGED(**_kwargs)` to accept keyword args.
+
+### 🔧 Internal (1.5.0)
+
+- Kept all public names, return orders, and categories stable to avoid breaking saved workflows. The bundling is an additive internal contract; plain strings still work for backward compatibility.
+
 All notable changes to ComfyUI Violet Tools will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

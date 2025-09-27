@@ -1,0 +1,5 @@
+# Generic drift tags to suppress unless present in input
+# Keep lowercase, underscores where canonical; 1 per line
+# These tend to drift outputs into vague concepts
+
+magic

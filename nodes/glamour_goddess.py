@@ -39,12 +39,9 @@ class GlamourGoddess:
                     ["Unspecified", "Random"] + options,
                     {"default": "Unspecified"}
                 )
-        
-        types["required"]["extra"] = ("STRING", {"multiline": True, "default": ""})
-        types["optional"] = {
-            "character": ("CHARACTER_DATA", {}),
-            "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character glamour overrides"})
-        }
+        # Add extra multi-line field with wildcard hint label
+        types["required"]["extra"] = ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"})
+        types["optional"] = {}
         return types
 
     RETURN_TYPES = ("GLAMOUR_STRING",)
@@ -53,7 +50,7 @@ class GlamourGoddess:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         import time
         return time.time()
 
@@ -87,15 +84,7 @@ class GlamourGoddess:
                 # Fallback to the choice itself
                 return choice
 
-    def invoke(self, character=None, character_apply=False, **kwargs):
-        if character_apply and character and isinstance(character, dict):
-            gd = character.get("data", {}).get("glamour", {})
-            if gd:
-                for key in self.FEATURES.keys():
-                    if key in gd:
-                        kwargs[key] = gd[key]
-                if gd.get("extra"):
-                    kwargs["extra"] = gd.get("extra")
+    def invoke(self, **kwargs):
         parts = []
 
         for key in self.FEATURES:
@@ -104,17 +93,34 @@ class GlamourGoddess:
                 parts.append(val.lower())
 
         if kwargs.get("extra"):
-            extra = kwargs["extra"].strip()
+            def _resolve_wildcards(text: str) -> str:
+                if not text or "{" not in text:
+                    return text.strip() if text else text
+                import re
+                pattern = re.compile(r"\{([^{}]+)\}")
+                def repl(m):
+                    opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                    return random.choice(opts) if opts else ""
+                prev = None
+                out = text
+                while out != prev:
+                    prev = out
+                    out = pattern.sub(repl, out)
+                return out.strip()
+
+            extra = _resolve_wildcards(kwargs["extra"]) if kwargs["extra"] else ""
             if extra:
                 parts.append(extra)
 
         glamour = ", ".join(parts)
-        
-        # Add BREAK for prompt segmentation
-        if glamour:
-            glamour += ", BREAK"
-            
-        return (glamour,)
+
+        meta = {}
+        for key in self.FEATURES:
+            meta[key] = kwargs.get(key, "Unspecified")
+        meta["extra"] = kwargs.get("extra", "").strip() if isinstance(kwargs.get("extra"), str) else kwargs.get("extra")
+
+        bundle = (glamour, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "GlamourGoddess": GlamourGoddess,

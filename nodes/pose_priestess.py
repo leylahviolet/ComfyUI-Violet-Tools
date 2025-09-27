@@ -30,11 +30,7 @@ class PosePriestess:
                 "general_pose_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "arm_gesture": (arm_gestures, { "default": arm_gestures[1] }),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character pose overrides"})
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             }
         }
 
@@ -44,7 +40,7 @@ class PosePriestess:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         """
         Force node refresh on every execution to ensure random selections update properly.
         
@@ -54,32 +50,8 @@ class PosePriestess:
         import time
         return time.time()
 
-    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra, character=None, character_apply=False):
-        if character_apply and character and isinstance(character, dict):
-            pd = character.get("data", {}).get("pose", {})
-            if pd:
-                general_pose = pd.get("general_pose", general_pose)
-                general_pose_strength = pd.get("general_pose_strength", general_pose_strength)
-                arm_gesture = pd.get("arm_gesture", arm_gesture)
-                arm_gesture_strength = pd.get("arm_gesture_strength", arm_gesture_strength)
-                if pd.get("extra"):
-                    extra = pd.get("extra")
-        """
-        Generate combined pose prompts with weighted blending from general poses and arm gestures.
-        
-        Handles random pose selection, applies strength weighting to descriptions, and combines 
-        with comma separation. Users can add custom content via the extra field.
-        
-        Args:
-            general_pose (str): General pose selection or "Random"/"None"
-            general_pose_strength (float): Strength multiplier for general pose (0.0-2.0)
-            arm_gesture (str): Arm gesture selection or "Random"/"None"
-            arm_gesture_strength (float): Strength multiplier for arm gesture (0.0-2.0)
-            extra (str): Additional pose instructions from user
-              
-        Returns:
-            str: Pose prompt string
-        """
+    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra):
+        # Compose a pose prompt with optional weighting and extra
         general_poses = list(self.pose_prompts.get("general_poses", {}).keys())
         arm_gestures = list(self.pose_prompts.get("arm_gestures", {}).keys())
 
@@ -111,17 +83,37 @@ class PosePriestess:
 
         pose_parts = [format_pose(p, w, c) for p, w, c in poses]
 
-        # Add extra text if provided
+        # Add extra text if provided with wildcard resolution
+        def _resolve_wildcards(text: str) -> str:
+            if not text or "{" not in text:
+                return text.strip() if text else text
+            import re
+            pattern = re.compile(r"\{([^{}]+)\}")
+            def repl(m):
+                opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                return random.choice(opts) if opts else ""
+            prev = None
+            out = text
+            while out != prev:
+                prev = out
+                out = pattern.sub(repl, out)
+            return out.strip()
+
         if extra and extra.strip():
-            pose_parts.append(extra.strip())
+            pose_parts.append(_resolve_wildcards(extra))
 
         pose = ", ".join(filter(None, pose_parts))
-        
-        # Add BREAK for prompt segmentation
-        if pose.strip():
-            pose = pose.strip() + ", BREAK"
 
-        return (pose,)
+        meta = {
+            "general_pose": general_pose,
+            "general_pose_strength": general_pose_strength,
+            "arm_gesture": arm_gesture,
+            "arm_gesture_strength": arm_gesture_strength,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        bundle = (pose, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "PosePriestess": PosePriestess,

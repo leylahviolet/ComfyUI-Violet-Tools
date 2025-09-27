@@ -18,26 +18,19 @@ class BodyBard:
             "required": {}
         }
         for key, options in cls.FEATURES.items():
-            # Handle key-value pairs without tooltips for now
             if isinstance(options, dict):
                 option_keys = list(options.keys())
-                
                 types["required"][key] = (
                     ["Unspecified", "Random"] + option_keys,
                     {"default": "Unspecified"}
                 )
             else:
-                # Handle any remaining list-style options
                 types["required"][key] = (
                     ["Unspecified", "Random"] + options,
                     {"default": "Unspecified"}
                 )
-        
-        types["required"]["extra"] = ("STRING", {"multiline": True, "default": ""})
-        types["optional"] = {
-            "character": ("CHARACTER_DATA", {}),
-            "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character body overrides"})
-        }
+        types["required"]["extra"] = ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"})
+        types["optional"] = {}
         return types
 
     RETURN_TYPES = ("BODY_STRING",)
@@ -46,7 +39,7 @@ class BodyBard:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         import time
         return time.time()
 
@@ -70,15 +63,7 @@ class BodyBard:
                 # Fallback to the choice itself
                 return choice
 
-    def compose(self, character=None, character_apply=False, **kwargs):
-        if character_apply and character and isinstance(character, dict):
-            bd = character.get("data", {}).get("body", {})
-            if bd:
-                for key in self.FEATURES.keys():
-                    if key in bd:
-                        kwargs[key] = bd[key]
-                if bd.get("extra"):
-                    kwargs["extra"] = bd.get("extra")
+    def compose(self, **kwargs):
         parts = []
 
         for key in self.FEATURES:
@@ -87,17 +72,35 @@ class BodyBard:
                 parts.append(value.lower())
 
         if kwargs.get("extra"):
-            extra = kwargs["extra"].strip()
+            def _resolve_wildcards(text: str) -> str:
+                if not text or "{" not in text:
+                    return text.strip() if text else text
+                import re
+                pattern = re.compile(r"\{([^{}]+)\}")
+                def repl(m):
+                    opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                    return random.choice(opts) if opts else ""
+                prev = None
+                out = text
+                while out != prev:
+                    prev = out
+                    out = pattern.sub(repl, out)
+                return out.strip()
+
+            extra = _resolve_wildcards(kwargs["extra"]) if kwargs["extra"] else ""
             if extra:
                 parts.append(extra)
 
         body = ", ".join(parts)
-        
-        # Add BREAK for prompt segmentation
-        if body:
-            body += ", BREAK"
-            
-        return (body,)
+
+        # Capture raw selections for persistence
+        meta = {}
+        for key in self.FEATURES:
+            meta[key] = kwargs.get(key, "Unspecified")
+        meta["extra"] = kwargs.get("extra", "").strip() if isinstance(kwargs.get("extra"), str) else kwargs.get("extra")
+
+        bundle = (body, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "BodyBard": BodyBard,

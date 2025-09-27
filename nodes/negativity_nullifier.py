@@ -16,11 +16,7 @@ class NegativityNullifier:
         return {
             "required": {
                 "include_boilerplate": ("BOOLEAN", {"default": True}),
-                "extra": ("STRING", {"multiline": True, "default": ""}),
-            },
-            "optional": {
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Apply loaded character negative overrides"})
+                "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
             }
         }
 
@@ -30,32 +26,43 @@ class NegativityNullifier:
     CATEGORY = "Violet Tools 💅/Prompt"
 
     @staticmethod
-    def IS_CHANGED(**kwargs):
+    def IS_CHANGED(**_kwargs):
         import time
         return time.time()
 
-    def purify(self, include_boilerplate, extra, character=None, character_apply=False):
-        if character_apply and character and isinstance(character, dict):
-            nd = character.get("data", {}).get("negative", {})
-            if nd:
-                include_boilerplate = nd.get("include_boilerplate", include_boilerplate)
-                if nd.get("extra"):
-                    extra = nd.get("extra")
+    def purify(self, include_boilerplate, extra):
         parts = []
 
         if include_boilerplate and self.boilerplate:
             parts.extend(self.boilerplate)
 
         if extra and extra.strip():
-            parts.append(extra.strip())
+            def _resolve_wildcards(text: str) -> str:
+                if not text or "{" not in text:
+                    return text.strip() if text else text
+                import re, random
+                pattern = re.compile(r"\{([^{}]+)\}")
+                def repl(m):
+                    opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                    return random.choice(opts) if opts else ""
+                prev = None
+                out = text
+                while out != prev:
+                    prev = out
+                    out = pattern.sub(repl, out)
+                return out.strip()
+
+            parts.append(_resolve_wildcards(extra))
 
         nullifier = ", ".join(parts).strip()
-        
-        # Add BREAK for prompt segmentation
-        if nullifier:
-            nullifier += ", BREAK"
-            
-        return (nullifier,)
+
+        meta = {
+            "include_boilerplate": include_boilerplate,
+            "extra": extra.strip() if isinstance(extra, str) else extra,
+        }
+
+        bundle = (nullifier, meta)
+        return (bundle,)
 
 NODE_CLASS_MAPPINGS = {
     "NegativityNullifier": NegativityNullifier,

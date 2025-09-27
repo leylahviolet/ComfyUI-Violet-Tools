@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-1.4.1-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -12,7 +12,7 @@ Advanced text encoding and prompt processing node for enhanced prompt interpreta
 
 - Four encoding modes: closeup, portrait, smooth blend, and compete combine
 - Individual strength controls for different prompt elements
-- Character system integration for direct prompt injection
+- Optional manual override: accepts a single override string from 🔮 Oracle's Override; when present, it becomes the entire positive prompt
 - **Token Report System**: Detailed analysis of token usage per Violet Tools node
   - Shows 77-token chunk breakdown for each prompt component
   - SDXL support with merged stream analysis
@@ -60,20 +60,25 @@ Pose and positioning control node with separate categories for different content
 
 Negative prompt management system with smart defaults and customizable exclusions.
 
-### 🪪 Character System (NEW in 1.3.x)
+### 🪪 Character System (Wireless)
 
-Save, re-load, and apply consistent character traits across workflows:
+Save, load, and manage consistent character traits via UI — no canvas wiring required:
 
-- 💖 Character Creator saves structured character data (auto-versioned JSON)
-- 🗃️ Character Cache loads, randomly selects characters with auto-refresh
-- Silent schema migration keeps old character files up to date
-- All major Violet nodes accept `character` to override style/body/pose/aesthetic fields
-- Encoding Enchantress can passthrough merged character-driven prompt segments
-- Deterministic when selecting specific characters; optional randomness when exploring
+- 💖 Character Curator: single node for Save, Load to All, and Delete actions (buttons in the node UI)
+- 🪞 Character Inspector: view character JSON for verification and debugging
+- Autocomplete + Browse overlay for quickly selecting or overwriting character names
+- REST endpoints power the UI: GET/POST/DELETE /violet/character
+- Saved as versioned JSON (silent migration preserved); stored under `ComfyUI/user/default/comfyui-violet-tools/characters`
 
-See Quick Start below for a minimal character workflow.
+Note: Legacy Character Creator/Cache nodes have been removed in 2.x. Existing characters continue to work.
 
-## 🎨 Color Chips UI Enhancement (Updated in 1.4.0)
+## 🪄 Wildcard Extras
+
+All prompt nodes include an "extra" multiline field that supports lightweight wildcard syntax: write alternatives inside braces and separate with pipes, for example {soft light|rim lighting|studio glow}. One option is chosen per block on each run, and nested blocks are resolved safely. This is available on: Quality Queen, Scene Seductress, Glamour Goddess, Body Bard, Aesthetic Alchemist, Pose Priestess, and Negativity Nullifier.
+
+Additionally, 🔮 Oracle's Override supports wildcards in both its `chain` and `override` fields, resolved repeatedly until stable so nested and cascaded choices work as expected.
+
+## 🎨 Color Chips UI Enhancement (Updated in 1.4.x)
 
 Revolutionary visual color selection interface that transforms tedious dropdown navigation into an intuitive, visual experience:
 
@@ -112,39 +117,36 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
 ## Installation
 
-1. Clone this repository into your ComfyUI custom nodes directory:
+1. Clone the repository into your ComfyUI `custom_nodes` directory:
 
-1. Clone the repository into your ComfyUI custom_nodes directory:
-
-   ```bash
-   cd ComfyUI/custom_nodes
-   git clone https://github.com/leylahkrell/ComfyUI-Violet-Tools.git
-   ```
+  ```bash
+  cd ComfyUI/custom_nodes
+  git clone https://github.com/leylahviolet/ComfyUI-Violet-Tools.git
+  ```
 
 1. Restart ComfyUI to load the new nodes.
 1. The nodes will appear in the "Violet Tools 💅" category in your node menu.
 
 ## Usage
 
-## ⚡ Character Workflow Quick Start (1.3.x)
+## ⚡ Character Workflow Quick Start (2.x, Wireless)
 
-1. Add `💖 Character Creator` downstream of your configured Violet nodes (e.g. Aesthetic Alchemist, Body Bard, Glamour Goddess, Pose Priestess, Quality Queen). Connect Encoding Enchantress's character output and provide a character name. Run once to save.
-2. A JSON character file is created (auto-versioned with `violet_tools_version`).
-3. Add `🗃️ Character Cache` to a new or existing workflow. Select a saved character from the dropdown (auto-refreshes) or use "random" to explore.
-4. Connect `Character Cache`'s `CHARACTER_DATA` output into any Violet nodes that support character overrides (all major style/pose/body/quality/aesthetic nodes, plus Encoding Enchantress).
-5. Set each node's `character_apply` (or equivalent toggle) to enable override merging.
-6. Generate: character traits merge with your current parameters. Update character fields manually or regenerate partial nodes; rerun Character Creator to update.
-7. Old character files load seamlessly—silent migration normalizes them automatically.
+- Add `💖 Character Curator` to your canvas. Configure your Violet prompt nodes as usual.
+- Use the Curator's UI buttons — Load Character to All (load into all nodes), Save Character (persist current selections with autocomplete/browse), Delete Character (with confirmation overlay).
+- No `character` wiring or apply toggles required anywhere — it's all handled via UI and REST.
+- View any profile with `🪞 Character Inspector`.
 
-Tip: Use multiple Character Creator runs (different character names) to build a reusable cast. Use random character selection in Character Cache for varied inspiration.
+### 🔮 Oracle's Override
 
-## 🎨 Example Workflow
+- Freeform multiline positive prompt override. When enabled, replaces the entire positive prompt used by 🧬 Encoding Enchantress.
+- Optional `chain` input prepends text to the override; joined with ", ".
+- Wildcards supported in both fields using `{a|b|c}` syntax; nested choices resolve safely.
 
 ### Quick Start
 
-1. **Download the workflow**: [Violet Tools Basic Workflow](examples/workflows/violet-tools-basic-workflow.png)
-2. **Drag and drop** the PNG file directly into ComfyUI to load the complete workflow
-3. **Alternative**: Import the [JSON file](examples/workflows/violet-tools-basic-workflow.json) manually
+1. Download a workflow PNG: Basic — [violet-tools-basic-workflow.png](examples/workflows/violet-tools-basic-workflow.png) or Recommended (2.x) — [violet-tools-2-workflow.png](examples/workflows/violet-tools-2-workflow.png)
+2. Drag and drop the PNG file directly into ComfyUI to load the complete workflow
+3. Alternative: Import the JSON instead: Basic — [violet-tools-basic-workflow.json](examples/workflows/violet-tools-basic-workflow.json) or Recommended (2.x) — [violet-tools-2-workflow.json](examples/workflows/violet-tools-2-workflow.json)
 
 ### Encoding Enchantress Mode Comparison
 
@@ -189,24 +191,30 @@ ComfyUI-Violet-Tools/
 ├── nodes/                     # All node implementations
 │   ├── aesthetic_alchemist.py # Style blending and aesthetic control
 │   ├── body_bard.py           # Body features and anatomical descriptions
-│   ├── character_cache.py     # Character loading and management
-│   ├── character_creator.py   # Character saving and preservation
+│   ├── character_curator.py   # Wireless save/load/delete character management
+│   ├── character_inspector.py # View character JSON
 │   ├── encoding_enchantress.py# Advanced text encoding
 │   ├── glamour_goddess.py     # Hair and makeup styling
 │   ├── negativity_nullifier.py# Negative prompt management
+│   ├── oracle_override.py     # Manual positive prompt override and chaining
 │   ├── pose_priestess.py      # Pose and positioning control
 │   ├── quality_queen.py       # Quality enhancement and boilerplate
 │   └── scene_seductress.py    # Scene and environment control
 └── feature_lists/             # YAML configuration files
-    ├── aesthetics.yaml        # Aesthetic style definitions
-    ├── body_features.yaml     # Body feature options
-    ├── glamour_goddess.yaml   # Hair and makeup options
-    ├── negative_defaults.yaml # Default negative prompts
-    ├── poses.yaml             # Pose and position options
-    ├── qualities.yaml         # Quality tags and styles
-    └── scene_seductress.yaml  # Scene and environment options
+  ├── aesthetic_alchemist.yaml # Aesthetic style definitions
+  ├── body_bard.yaml           # Body feature options
+  ├── glamour_goddess.yaml     # Hair and makeup options
+  ├── negativity_nullifier.yaml# Default negative prompts
+  ├── pose_priestess.yaml      # Pose and position options
+  ├── quality_queen.yaml       # Quality tags and styles
+  └── scene_seductress.yaml    # Scene and environment options
 
-Character files you create are stored alongside your ComfyUI output directory. They are plain JSON—feel free to version-control curated characters.
+Character files are plain JSON—feel free to version-control curated characters.
+
+### Character File Location (Updated)
+
+- Default save path: ComfyUI/user/default/comfyui-violet-tools/characters
+- Legacy fallback removed: listing/loading/deleting are strictly under the new user path.
 ```
 
 ## Configuration
@@ -237,13 +245,13 @@ What gets logged when enabled:
 - Per-node color widget enhancement counts
 - Legacy value sanitation notices
 
-
 These helpers set `config.debugLogging = true/false` for both the node styling and color chips modules if present. They are safe to call multiple times.
 
 ## Requirements
 
 - ComfyUI
 - PyYAML (usually included with ComfyUI)
+- rapidfuzz (for algorithmic consolidator)
 - Python 3.8+
 
 ## Contributing
@@ -258,12 +266,6 @@ Contributions are welcome! Feel free to:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- **[GZees](https://civitai.com/user/GZees)** - Special thanks for creating the exceptional [iLustMix v5.5](https://civitai.com/models/1110783?modelVersionId=1670263) model I used to generate the sample images. GZees' outstanding model produces beautiful, consistent results that perfectly demonstrate the capabilities of Violet Tools. I highly recommend checking out their incredible work and giving their models a try!
-- **[klaabu](https://civitai.com/user/klaabu)** - Gratitude for the excellent [Illustrious Realism Slider](https://civitai.com/models/1486904?modelVersionId=1681903) LoRA used in the sample generation. This fantastic tool adds beautiful realism control and enhances the quality of the demonstrations. Their LoRA work is top-notch and worth exploring!
-- Built for the ComfyUI community
 
 ---
 

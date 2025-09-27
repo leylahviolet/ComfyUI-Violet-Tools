@@ -1,0 +1,20 @@
+{
+  "color_modifiers": [
+    "black", "white", "gray", "grey", "silver", "gold",
+    "brown", "blonde", "auburn", "ginger",
+    "red", "orange", "yellow", "green", "blue", "cyan", "teal",
+    "purple", "magenta", "pink", "violet",
+    "light", "dark", "pale", "deep"
+  ],
+  "size_modifiers": [
+    "tiny", "small", "medium", "large", "huge", "massive", "gigantic",
+    "thick", "wide", "narrow", "slim",
+    "plush", "soft"
+  ],
+  "style_modifiers": [
+    "wavy", "curly", "straight", "spiky", "messy", "shaggy"
+  ],
+  "intensifiers": [
+    "very", "extremely", "super", "ultra"
+  ]
+}

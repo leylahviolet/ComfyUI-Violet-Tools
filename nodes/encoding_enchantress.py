@@ -1,4 +1,3 @@
-import yaml
 import os
 
 class EncodingEnchantress:
@@ -18,12 +17,35 @@ class EncodingEnchantress:
     - SDXL support: Handles both 'g' and 'l' token streams with max-per-chunk merging for accurate reporting
     """
 
+    def _ensure_requirements(self, packages, allow_auto_install=True):
+        """Best-effort: import each package; if missing and allowed, attempt pip install."""
+        if not allow_auto_install:
+            return
+        import importlib
+        missing = []
+        for pkg in packages:
+            try:
+                importlib.import_module(pkg)
+            except ImportError:
+                missing.append(pkg)
+        if not missing:
+            return
+        try:
+            import sys, subprocess
+            cmd = [sys.executable, "-m", "pip", "install", *missing]
+            subprocess.run(cmd, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except (OSError, RuntimeError):
+            # Silent failure; we'll surface ImportErrors later if they persist
+            return
+    
+
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "clip": ("CLIP",),
                 "mode": (["closeup", "portrait", "compete combine", "smooth blend"], {"default": "smooth blend"}),
+                # Toggle to optimize prompts using the Essence Algorithm (no LLM)
                 "body_strength": ("FLOAT", {
                     "default": 1.0, 
                     "min": 0.0, 
@@ -39,6 +61,7 @@ class EncodingEnchantress:
                     "tooltip": "Strength for quality + aesthetic prompts (not used in smooth blend)"
                 }),
                 "negative_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 3.0, "step": 0.01}),
+                "optimize_prompt": ("BOOLEAN", {"default": False, "tooltip": "Optimize tags using the Essence Algorithm"}),
                 "token_report": ("BOOLEAN", {"default": False, "tooltip": "Generate detailed token usage report for each prompt"}),
             },
             "optional": {
@@ -48,15 +71,15 @@ class EncodingEnchantress:
                 "body": ("BODY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                "character": ("CHARACTER_DATA", {}),
-                "character_apply": ("BOOLEAN", {"default": False, "tooltip": "Generate prompts directly from character without intermediate nodes"})
+                # Oracle's Override: provide a single optional string; if not null, it replaces positive
+                "override": ("OVERRIDE_STRING", {"multiline": True, "forceInput": True, "defaultInput": False}),
+                "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True})
             }
         }
 
-    # Output order updated: positive, negative, tokens, character, pos, neg
-    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "CHARACTER_DATA", "STRING", "STRING")
-    RETURN_NAMES = ("positive", "negative", "tokens", "character", "pos", "neg")
+    # Output order updated for 2.0: positive, negative, tokens, pos, neg
+    RETURN_TYPES = ("CONDITIONING", "CONDITIONING", "STRING", "STRING", "STRING")
+    RETURN_NAMES = ("positive", "negative", "tokens", "pos", "neg")
     FUNCTION = "condition"
     CATEGORY = "Violet Tools 💅"
 
@@ -340,6 +363,12 @@ class EncodingEnchantress:
             list: List of framing-related terms to filter out (case-insensitive)
         """
         try:
+            # Lazy import yaml so the node loads even if PyYAML isn't installed
+            try:
+                import yaml  # type: ignore
+            except ImportError as exc:
+                raise FileNotFoundError("PyYAML not available") from exc
+
             # Get the path to the YAML file
             current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             yaml_path = os.path.join(current_dir, "feature_lists", "scene_seductress.yaml")
@@ -371,7 +400,7 @@ class EncodingEnchantress:
             
             return framing_terms
             
-        except (FileNotFoundError, yaml.YAMLError, KeyError) as e:
+        except (FileNotFoundError, KeyError, OSError, TypeError) as e:
             # Fallback to hardcoded list if YAML loading fails
             print(f"Warning: Could not load framing terms from YAML ({e}), using fallback list")
             return [
@@ -406,9 +435,15 @@ class EncodingEnchantress:
         
         return ""
 
-    def condition(self, clip, mode, body_strength, vibe_strength, negative_strength, token_report,
-                  quality="", scene="", glamour="", body="", aesthetic="", pose="", nullifier="",
-                  character=None, character_apply=False):
+    def condition(self, clip, mode, body_strength, vibe_strength, negative_strength, optimize_prompt, token_report,
+                  quality="",
+                  scene="",
+                  glamour="",
+                  body="",
+                  aesthetic="",
+                  pose="",
+                  nullifier="",
+                  override=None):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -441,13 +476,8 @@ class EncodingEnchantress:
             clip: CLIP model instance
             mode (str): Operation mode - "closeup", "portrait", "compete combine", or "smooth blend"
             body_strength (float): Strength multiplier for body-related prompts
-            vibe_strength (float): Strength multiplier for quality + aesthetic combination
             negative_strength (float): Strength multiplier for negative prompt
             quality (str): Quality prompt string
-            scene (str): Scene prompt string
-            glamour (str): Glamour prompt string
-            body (str): Body prompt string
-            aesthetic (str): Aesthetic prompt string
             pose (str): Pose prompt string
             nullifier (str): Negative prompt string
             
@@ -455,27 +485,113 @@ class EncodingEnchantress:
             tuple: (positive, negative, tokens, character, pos, neg)
         """
         
-        # If character_apply is true, pull segments straight from character when missing
-        if character_apply and character and isinstance(character, dict):
-            cd = character.get("data", {})
-            # Only inject if the provided segment is blank (user didn't connect node) to avoid overwriting explicit inputs
-            if not quality and "quality" in cd:
-                quality = cd["quality"].get("text", "")
-            if not scene and "scene" in cd:
-                scene = cd["scene"].get("text", "")
-            if not glamour and "glamour" in cd:
-                glamour = cd["glamour"].get("text", "")
-            if not body and "body" in cd:
-                body = cd["body"].get("text", "")
-            if not aesthetic and "aesthetic" in cd:
-                aesthetic = cd["aesthetic"].get("text", "")
-            if not pose and "pose" in cd:
-                pose = cd["pose"].get("text", "")
-            if not nullifier and "negative" in cd:
-                nullifier = cd["negative"].get("text", "")
+        # Character injection removed in 2.0 (wireless-only flow)
 
-        # Combine all text for reference after injections
-        pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+        # Accept either plain string or (text, meta) bundle and unwrap EARLY
+        def _unwrap_bundle(val):
+            if isinstance(val, (list, tuple)) and len(val) == 2 and isinstance(val[1], dict):
+                return val[0], val[1]
+            return val, None
+
+        # Unwrap possible (text, meta) bundles; we ignore meta in 2.0
+        quality, _ = _unwrap_bundle(quality)
+        scene, _ = _unwrap_bundle(scene)
+        glamour, _ = _unwrap_bundle(glamour)
+        body, _ = _unwrap_bundle(body)
+        aesthetic, _ = _unwrap_bundle(aesthetic)
+        pose, _ = _unwrap_bundle(pose)
+        nullifier, _ = _unwrap_bundle(nullifier)
+    # override may be None (OracleOverride disabled); do not coerce to string here
+
+        # Normalize to strings for downstream processing
+        def _ensure_str(v):
+            return v if isinstance(v, str) else ("" if v is None else str(v))
+        quality = _ensure_str(quality)
+        scene = _ensure_str(scene)
+        glamour = _ensure_str(glamour)
+        body = _ensure_str(body)
+        aesthetic = _ensure_str(aesthetic)
+        pose = _ensure_str(pose)
+        nullifier = _ensure_str(nullifier)
+        # Normalize override: keep None if disabled, otherwise strip to string (empty allowed)
+        if override is not None and not isinstance(override, str):
+            override = str(override)
+        if isinstance(override, str):
+            override = override.strip()
+
+        # Save originals for token savings calculations (strings only)
+        original_segments = {
+            "quality": quality or "", "scene": scene or "", "glamour": glamour or "",
+            "body": body or "", "aesthetic": aesthetic or "", "pose": pose or "",
+            "negative": nullifier or "",
+        }
+
+        # Determine positive text: if override provided (not None), use it; else combine segments
+        if override is not None:
+            pos_text = override
+        else:
+            pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+
+        # Optional prompt processing pipeline (Essence Algorithm only)
+        processor_choice = "Essence Algorithm" if optimize_prompt else "None"
+
+        # Token counts before processing
+        def _count_tokens(text: str) -> int:
+            if not text:
+                return 0
+            try:
+                tokens = clip.tokenize(text)
+                merged = self._merge_streams_by_max(tokens)
+                return sum(merged)
+            except (AttributeError, KeyError, IndexError, TypeError, RuntimeError):
+                return 0
+
+        pre_counts = {k: _count_tokens(v) for k, v in original_segments.items()}
+
+        if processor_choice != "None" and override is None:
+            try:
+                # Use bundled algorithm-only consolidator
+                # Ensure dependency for fuzzy matching exists
+                self._ensure_requirements(["rapidfuzz"], allow_auto_install=False)
+                pkg_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                base_dir = os.path.join(pkg_root, "node_resources")
+                consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
+                import importlib.util, sys
+                spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
+                if not spec or not spec.loader:
+                    raise ImportError(f"Unable to load consolidator at {consolidator_path}")
+                # Reuse a single loaded module to preserve global caches and avoid repeated logs
+                if spec.name in sys.modules:
+                    pc = sys.modules[spec.name]
+                else:
+                    pc = importlib.util.module_from_spec(spec)
+                    sys.modules[spec.name] = pc
+                    spec.loader.exec_module(pc)  # type: ignore
+
+                cfg = pc.ConsolidationConfig(base_dir, sfw_mode=False)
+
+                def process_one(text: str) -> str:
+                    if not text:
+                        return ""
+                    if processor_choice == "Essence Algorithm":
+                        return pc.consolidate_algorithmic(text, cfg)
+                    else:  # None
+                        return text
+
+                # Apply to positive segments only; negative untouched here
+                quality = process_one(quality)
+                scene = process_one(scene)
+                glamour = process_one(glamour)
+                body = process_one(body)
+                aesthetic = process_one(aesthetic)
+                pose = process_one(pose)
+
+                # Recompute combined text
+                pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+            except ImportError as e:
+                print(f"[Encoding Enchantress] Essence processing ImportError: {e}.")
+            except (AttributeError, FileNotFoundError, OSError, RuntimeError, TypeError, ValueError) as e:
+                print(f"[Encoding Enchantress] Essence processing error: {e}")
         
         # Check for cowboy shot framing and add "cowboy" to negative if needed
         cowboy_negative = self._check_for_cowboys(scene)
@@ -485,7 +601,15 @@ class EncodingEnchantress:
         enc_negative = self.encode_with_strength(clip, combined_negative, negative_strength) if combined_negative else None
         negative_combined = self._combine_conditioning(enc_negative)
         
-        if mode == "closeup":
+        # If override is provided, encode positive strictly from override and skip mode grouping
+        if override is not None:
+            enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0)
+            positive_combined = enc_all_positive if enc_all_positive else [[]]
+            # Build token report early and return
+            token_items = [("🔮 Oracle's Override", pos_text), ("🚫 Negativity Nullifier", nullifier)]
+            token_report_text = self._make_token_report(clip, token_items, token_report)
+            return (positive_combined, negative_combined, token_report_text, pos_text, combined_negative)
+        elif mode == "closeup":
             # Closeup mode: encode glamour separately for character emphasis with closeup focus
             # Filter framing from scene to avoid conflicts with closeup framing
             filtered_scene = self._filter_scene_framing(scene)
@@ -538,18 +662,7 @@ class EncodingEnchantress:
             enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0) if pos_text else None
             positive_combined = enc_all_positive if enc_all_positive else [[]]
 
-        # Create character data structure for saving
-        character_output = {
-            "data": {
-                "quality": {"text": quality} if quality else {},
-                "scene": {"text": scene} if scene else {},
-                "glamour": {"text": glamour} if glamour else {},
-                "body": {"text": body} if body else {},
-                "aesthetic": {"text": aesthetic} if aesthetic else {},
-                "pose": {"text": pose} if pose else {},
-                "negative": {"text": nullifier} if nullifier else {}
-            }
-        }
+        # No character output in 2.0
 
         # Generate token report
         token_items = [
@@ -561,11 +674,38 @@ class EncodingEnchantress:
             ("🤩 Pose Priestess", pose),
             ("🚫 Negativity Nullifier", nullifier)
         ]
+        # If override was provided, report it succinctly at the top
+        if override is not None:
+            token_items.insert(0, ("🔮 Oracle's Override", pos_text))
         
         token_report_text = self._make_token_report(clip, token_items, token_report)
 
-        # New return order matches updated RETURN_NAMES
-        return (positive_combined, negative_combined, token_report_text, character_output, pos_text, combined_negative)
+        # Optional token savings suffix when processor active
+        if optimize_prompt and token_report:
+            def _only_text(val):
+                # Always return a string
+                if isinstance(val, (list, tuple)) and len(val) == 2 and isinstance(val[1], dict):
+                    t = val[0]
+                    return t if isinstance(t, str) else ""
+                return val if isinstance(val, str) else ""
+            post_segments = {
+                "quality": _only_text(quality), "scene": _only_text(scene), "glamour": _only_text(glamour),
+                "body": _only_text(body), "aesthetic": _only_text(aesthetic), "pose": _only_text(pose),
+                "negative": _only_text(nullifier),
+            }
+            post_counts = {k: _count_tokens(v) for k, v in post_segments.items()}
+            savings_lines = ["🪙 Token Savings"]
+            total_pre = total_post = 0
+            for k in ("quality","scene","glamour","body","aesthetic","pose"):
+                a = pre_counts.get(k, 0); b = post_counts.get(k, 0)
+                total_pre += a; total_post += b
+                if a or b:
+                    savings_lines.append(f"{k}: {a} → {b} (-{max(a-b,0)})")
+            savings_lines.append(f"total: {total_pre} → {total_post} (-{max(total_pre-total_post,0)})")
+            token_report_text = token_report_text + "\n\n" + "\n".join(savings_lines)
+
+        # 2.0 return order: positive, negative, tokens, pos, neg
+        return (positive_combined, negative_combined, token_report_text, pos_text, combined_negative)
 
 NODE_CLASS_MAPPINGS = {
     "EncodingEnchantress": EncodingEnchantress,

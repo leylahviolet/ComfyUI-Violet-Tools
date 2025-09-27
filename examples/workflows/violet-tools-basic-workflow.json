@@ -1,45 +1,190 @@
 {
-  "id": "688fc8ff-7466-478b-97de-501a5468d27c",
+  "id": "79477f08-1fc3-4d6b-81eb-1e3d8f7a6bc5",
   "revision": 0,
-  "last_node_id": 17,
-  "last_link_id": 17,
+  "last_node_id": 813,
+  "last_link_id": 124391,
   "nodes": [
     {
-      "id": 6,
-      "type": "PosePriestess",
+      "id": 211,
+      "type": "CheckpointLoaderSimple",
       "pos": [
-        1830,
-        770
+        340,
+        -90
       ],
       "size": [
-        300,
-        232
+        320,
+        98
       ],
       "flags": {},
-      "order": 0,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [
         {
-          "name": "pose",
-          "type": "POSE_STRING",
+          "name": "MODEL",
+          "type": "MODEL",
           "links": [
-            5
+            124376
+          ]
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            124373
+          ]
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            124381
           ]
         }
       ],
       "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
-        "Node name for S&R": "PosePriestess",
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "CheckpointLoaderSimple",
         "ue_properties": {
           "widget_ue_connectable": {
-            "general_pose": true,
-            "general_pose_strength": true,
-            "spicy_pose": true,
-            "spicy_pose_strength": true,
-            "gesture": true,
-            "include_gesture": true,
+            "ckpt_name": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "These-Violet-Delights-v1.safetensors"
+      ]
+    },
+    {
+      "id": 212,
+      "type": "EmptyLatentImage",
+      "pos": [
+        740,
+        -100
+      ],
+      "size": [
+        210,
+        110
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            124377
+          ]
+        }
+      ],
+      "title": "Square",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "EmptyLatentImage",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "width": true,
+            "height": true,
+            "batch_size": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        1536,
+        1536,
+        1
+      ]
+    },
+    {
+      "id": 762,
+      "type": "PreviewAny",
+      "pos": [
+        690,
+        590
+      ],
+      "size": [
+        220,
+        480
+      ],
+      "flags": {
+        "collapsed": false,
+        "pinned": true
+      },
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 124356
+        }
+      ],
+      "outputs": [],
+      "title": "Token Report",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "PreviewAny",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 795,
+      "type": "SceneSeductress",
+      "pos": [
+        -620,
+        380
+      ],
+      "size": [
+        300,
+        420
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "scene",
+          "type": "SCENE_STRING",
+          "links": [
+            124347
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
+        "Node name for S&R": "SceneSeductress",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "framing": true,
+            "framing_strength": true,
+            "angle": true,
+            "angle_strength": true,
+            "emotion": true,
+            "emotion_strength": true,
+            "time_of_day": true,
+            "time_of_day_strength": true,
+            "environment": true,
+            "environment_strength": true,
+            "lighting": true,
+            "lighting_strength": true,
             "extra": true
           },
           "version": "7.1",
@@ -47,28 +192,90 @@
         }
       },
       "widgets_values": [
-        "Random",
+        "cowboy shot",
         1,
-        "None",
+        "from below",
         1,
-        "Random",
-        true,
-        ""
-      ]
+        "brooding",
+        1,
+        "midnight",
+        1,
+        "forest",
+        1,
+        "backlit",
+        1,
+        "",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
     },
     {
-      "id": 3,
-      "type": "GlamourGoddess",
+      "id": 796,
+      "type": "QualityQueen",
       "pos": [
-        1170,
-        340
+        -620,
+        130
       ],
       "size": [
         300,
-        616
+        180
       ],
-      "flags": {},
-      "order": 1,
+      "flags": {
+        "pinned": true
+      },
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "quality",
+          "type": "QUALITY_STRING",
+          "links": [
+            124346
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
+        "Node name for S&R": "QualityQueen",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "include_boilerplate": true,
+            "style": true,
+            "extra": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        true,
+        "Cinematic",
+        "SFW, (covered nipples:1.2)",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
+    },
+    {
+      "id": 797,
+      "type": "GlamourGoddess",
+      "pos": [
+        -280,
+        130
+      ],
+      "size": [
+        300,
+        670
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -76,16 +283,17 @@
           "name": "glamour",
           "type": "GLAMOUR_STRING",
           "links": [
-            2
+            124348
           ]
         }
       ],
       "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
         "Node name for S&R": "GlamourGoddess",
         "ue_properties": {
           "widget_ue_connectable": {
+            "facial_hair": true,
             "hair_length": true,
             "hair_texture": true,
             "hairstyle": true,
@@ -115,44 +323,51 @@
         }
       },
       "widgets_values": [
-        "chin-length hair",
-        "wavy hair",
-        "bob cut hairstyle",
-        "black hair",
-        "teal highlights",
-        "Unspecified",
-        "hazel eyes",
-        "light makeup",
-        "winged-eyeliner",
-        "black eyeliner",
-        "light blush",
-        "light rose-red blush",
-        "lengthening mascara",
-        "light eyeshadow",
-        "teal eyeshadow",
-        "gloss lipstick",
-        "dark rose-red lipstick",
         "Unspecified",
         "Unspecified",
-        "trimmed fingernails",
-        "dark teal fingernails",
-        "dark teal toenails",
-        ""
-      ]
+        "wavy",
+        "half-up",
+        "silver",
+        "pink",
+        "Unspecified",
+        "hazel",
+        "bold",
+        "dramatic",
+        "Unspecified",
+        "light",
+        "Unspecified",
+        "lengthening",
+        "smoky",
+        "dark violet",
+        "Unspecified",
+        "dark plum",
+        "Unspecified",
+        "Unspecified",
+        "Unspecified",
+        "Unspecified",
+        "Unspecified",
+        "{glowing|bright|dead eyes}",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
     },
     {
-      "id": 4,
+      "id": 798,
       "type": "BodyBard",
       "pos": [
-        1500,
-        340
+        60,
+        130
       ],
       "size": [
         300,
-        688
+        730
       ],
-      "flags": {},
-      "order": 2,
+      "flags": {
+        "pinned": true
+      },
+      "order": 10,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -160,13 +375,13 @@
           "name": "body",
           "type": "BODY_STRING",
           "links": [
-            3
+            124349
           ]
         }
       ],
       "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
         "Node name for S&R": "BodyBard",
         "ue_properties": {
           "widget_ue_connectable": {
@@ -202,47 +417,53 @@
         }
       },
       "widgets_values": [
-        "twenty-year-old",
+        "Unspecified",
         "girl",
-        "pear-shaped body",
-        "short height",
-        "large breasts",
+        "athletic",
+        "Unspecified",
+        "small breasts",
         "natural-shaped breasts",
-        "huge ass",
-        "soft ass",
-        "very wide hips",
-        "hourglass waist",
-        "very thick thighs",
-        "plump lips",
-        "large eyes",
-        "porcelain skin",
-        "soft skin",
-        "flushed skin",
-        "huge erect nipples",
-        "huge areolas",
-        "light pink areolas",
+        "extremely large",
+        "Unspecified",
+        "extremely wide",
+        "narrow",
+        "extremely thick",
+        "full lips",
         "Unspecified",
         "Unspecified",
-        "full natural pubic hair",
-        "brown pubic hair",
+        "extremely detailed",
+        "flushed",
+        "extremely large erect",
+        "extremely large",
         "Unspecified",
         "Unspecified",
-        ""
-      ]
+        "Unspecified",
+        "natural",
+        "brown",
+        "Unspecified",
+        "Unspecified",
+        "",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
     },
     {
-      "id": 5,
+      "id": 799,
       "type": "AestheticAlchemist",
       "pos": [
-        1830,
-        530
+        400,
+        130
       ],
       "size": [
-        300,
-        184
+        250,
+        256
       ],
-      "flags": {},
-      "order": 3,
+      "flags": {
+        "pinned": true
+      },
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -250,19 +471,21 @@
           "name": "aesthetic",
           "type": "AESTHETIC_STRING",
           "links": [
-            4
+            124350
           ]
         }
       ],
       "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
         "Node name for S&R": "AestheticAlchemist",
         "ue_properties": {
           "widget_ue_connectable": {
             "aesthetic_1": true,
+            "aesthetic_1_fem": true,
             "aesthetic_1_strength": true,
             "aesthetic_2": true,
+            "aesthetic_2_fem": true,
             "aesthetic_2_strength": true,
             "extra": true
           },
@@ -271,478 +494,55 @@
         }
       },
       "widgets_values": [
-        "Innocent",
+        "Grunge",
+        "fem",
         1,
-        "Cottagecore",
-        0.8000000000000002,
-        ""
-      ]
+        "None",
+        "fem",
+        1.0000000000000002,
+        "",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
     },
     {
-      "id": 11,
-      "type": "CheckpointLoaderSimple",
+      "id": 800,
+      "type": "PosePriestess",
       "pos": [
-        1340,
-        10
+        400,
+        450
       ],
       "size": [
-        400,
-        98
+        250,
+        208
       ],
-      "flags": {},
-      "order": 4,
+      "flags": {
+        "pinned": true
+      },
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            10
-          ]
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            9
-          ]
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            16
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.44",
-        "Node name for S&R": "CheckpointLoaderSimple",
-        "ue_properties": {
-          "widget_ue_connectable": {
-            "ckpt_name": true
-          },
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "ilustmix_v55.safetensors"
-      ]
-    },
-    {
-      "id": 12,
-      "type": "EmptyLatentImage",
-      "pos": [
-        2200,
-        10
-      ],
-      "size": [
-        300,
-        106
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            11
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.44",
-        "Node name for S&R": "EmptyLatentImage",
-        "ue_properties": {
-          "widget_ue_connectable": {
-            "width": true,
-            "height": true,
-            "batch_size": true
-          },
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        1024,
-        1536,
-        1
-      ]
-    },
-    {
-      "id": 14,
-      "type": "VAEDecode",
-      "pos": [
-        3140,
-        0
-      ],
-      "size": [
-        140,
-        46
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "samples",
-          "type": "LATENT",
-          "link": 15
-        },
-        {
-          "name": "vae",
-          "type": "VAE",
-          "link": 16
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            17
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.44",
-        "Node name for S&R": "VAEDecode",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 13,
-      "type": "KSampler",
-      "pos": [
-        2810,
-        0
-      ],
-      "size": [
-        300,
-        474
-      ],
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 14
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 12
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 13
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 11
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            15
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.44",
-        "Node name for S&R": "KSampler",
-        "ue_properties": {
-          "widget_ue_connectable": {
-            "seed": true,
-            "steps": true,
-            "cfg": true,
-            "sampler_name": true,
-            "scheduler": true,
-            "denoise": true
-          },
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        824532022787573,
-        "fixed",
-        50,
-        8,
-        "euler_ancestral",
-        "normal",
-        1
-      ]
-    },
-    {
-      "id": 15,
-      "type": "SaveImage",
-      "pos": [
-        3310,
-        0
-      ],
-      "size": [
-        830,
-        1250
-      ],
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 17
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.44",
-        "Node name for S&R": "SaveImage",
-        "ue_properties": {
-          "widget_ue_connectable": {
-            "filename_prefix": true
-          },
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "ComfyUI"
-      ]
-    },
-    {
-      "id": 9,
-      "type": "Power Lora Loader (rgthree)",
-      "pos": [
-        1770,
-        10
-      ],
-      "size": [
-        400,
-        142
-      ],
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "inputs": [
-        {
-          "dir": 3,
-          "name": "model",
-          "type": "MODEL",
-          "link": 10
-        },
-        {
-          "dir": 3,
-          "name": "clip",
-          "type": "CLIP",
-          "link": 9
-        }
-      ],
-      "outputs": [
-        {
-          "dir": 4,
-          "name": "MODEL",
-          "shape": 3,
-          "type": "MODEL",
-          "links": [
-            14
-          ]
-        },
-        {
-          "dir": 4,
-          "name": "CLIP",
-          "shape": 3,
-          "type": "CLIP",
-          "links": [
-            8
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "rgthree-comfy",
-        "ver": "dbc5fa5e89b6a8b6a1a1dda787505b690f18026c",
-        "Show Strengths": "Single Strength",
-        "ue_properties": {
-          "widget_ue_connectable": {},
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        {},
-        {
-          "type": "PowerLoraLoaderHeaderWidget"
-        },
-        {
-          "on": true,
-          "lora": "9 Utility\\ILL Realism Slider.safetensors",
-          "strength": 3.3,
-          "strengthTwo": null
-        },
-        {},
-        ""
-      ]
-    },
-    {
-      "id": 1,
-      "type": "EncodingEnchantress",
-      "pos": [
-        2200,
-        340
-      ],
-      "size": [
-        300,
-        250
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 8
-        },
-        {
-          "name": "quality",
-          "shape": 7,
-          "type": "QUALITY_STRING",
-          "link": 1
-        },
-        {
-          "name": "glamour",
-          "shape": 7,
-          "type": "GLAMOUR_STRING",
-          "link": 2
-        },
-        {
-          "name": "body",
-          "shape": 7,
-          "type": "BODY_STRING",
-          "link": 3
-        },
-        {
-          "name": "aesthetic",
-          "shape": 7,
-          "type": "AESTHETIC_STRING",
-          "link": 4
-        },
         {
           "name": "pose",
-          "shape": 7,
           "type": "POSE_STRING",
-          "link": 5
-        },
-        {
-          "name": "nullifier",
-          "shape": 7,
-          "type": "NULLIFIER_STRING",
-          "link": 6
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
           "links": [
-            12
-          ]
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            13
-          ]
-        },
-        {
-          "name": "pos_text",
-          "type": "STRING",
-          "links": null
-        },
-        {
-          "name": "neg_text",
-          "type": "STRING",
-          "links": null
-        }
-      ],
-      "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
-        "Node name for S&R": "EncodingEnchantress",
-        "ue_properties": {
-          "widget_ue_connectable": {
-            "mode": true,
-            "body_strength": true,
-            "vibe_strength": true,
-            "negative_strength": true
-          },
-          "version": "7.1",
-          "input_ue_unconnectable": {}
-        }
-      },
-      "widgets_values": [
-        "smooth blend",
-        1.0000000000000002,
-        1.0000000000000002,
-        1
-      ]
-    },
-    {
-      "id": 2,
-      "type": "QualityQueen",
-      "pos": [
-        1830,
-        340
-      ],
-      "size": [
-        300,
-        136
-      ],
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "quality",
-          "type": "QUALITY_STRING",
-          "links": [
-            1
+            124351
           ]
         }
       ],
       "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
-        "Node name for S&R": "QualityQueen",
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
+        "Node name for S&R": "PosePriestess",
         "ue_properties": {
           "widget_ue_connectable": {
-            "include_boilerplate": true,
-            "style": true,
+            "general_pose": true,
+            "general_pose_strength": true,
+            "arm_gesture": true,
+            "arm_gesture_strength": true,
             "extra": true
           },
           "version": "7.1",
@@ -750,49 +550,32 @@
         }
       },
       "widgets_values": [
-        true,
-        "Photorealistic",
-        "SFW"
-      ]
+        "Random",
+        1.0000000000000002,
+        "None",
+        1.0000000000000002,
+        "",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
     },
     {
-      "id": 16,
-      "type": "MarkdownNote",
+      "id": 801,
+      "type": "NegativityNullifier",
       "pos": [
-        1170,
-        1090
+        60,
+        920
       ],
       "size": [
-        470,
-        160
+        300,
+        150
       ],
       "flags": {
         "pinned": true
       },
-      "order": 7,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {},
-      "widgets_values": [
-        "### 📝 What is \"Boilerplate\"?\n\nBoilerplate refers to standard, reusable prompt text that improves image quality and consistency. Think of it as the \"foundation\" prompts that experienced artists include in almost every generation.\n\nExamples of boilerplate include:\n\n- Quality enhancers: \"high quality, detailed, masterpiece\"\n- Technical specs: \"8k resolution, professional photography\"\n- Style foundations: \"cinematic lighting, sharp focus\"\n- Negative boilerplate: \"blurry, low quality, distorted\""
-      ],
-      "color": "#233",
-      "bgcolor": "#355"
-    },
-    {
-      "id": 7,
-      "type": "NegativityNullifier",
-      "pos": [
-        1830,
-        1060
-      ],
-      "size": [
-        300,
-        190
-      ],
-      "flags": {},
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -800,13 +583,13 @@
           "name": "nullifier",
           "type": "NULLIFIER_STRING",
           "links": [
-            6
+            124353
           ]
         }
       ],
       "properties": {
-        "aux_id": "leylahkrell/ComfyUI-Violet-Tools",
-        "ver": "421a05397d2c907e9c1bbe0fc0209557d112a2a3",
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
         "Node name for S&R": "NegativityNullifier",
         "ue_properties": {
           "widget_ue_connectable": {
@@ -819,210 +602,532 @@
       },
       "widgets_values": [
         true,
-        "shiny skin, plastic skin, cartoon, 3D, illustration, belly hair, ugly faces, ugly, bad teeth, mole, moles, birthmark, tattoo"
-      ]
+        "NSFW",
+        "load"
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
     },
     {
-      "id": 10,
-      "type": "MarkdownNote",
+      "id": 802,
+      "type": "CharacterCurator",
       "pos": [
-        2200,
-        640
+        400,
+        720
       ],
       "size": [
-        530,
-        610
+        250,
+        200
       ],
-      "flags": {},
-      "order": 9,
+      "flags": {
+        "pinned": true
+      },
+      "order": 0,
       "mode": 0,
       "inputs": [],
-      "outputs": [],
+      "outputs": [
+        {
+          "name": "name",
+          "type": "STRING",
+          "links": null
+        }
+      ],
       "properties": {
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "27a4c4242e63141e037bd32c8c84d6ac7b4452ea",
+        "Node name for S&R": "CharacterCurator",
         "ue_properties": {
-          "widget_ue_connectable": {},
+          "widget_ue_connectable": {
+            "load_character": true,
+            "save_character": true
+          },
           "version": "7.1",
           "input_ue_unconnectable": {}
         }
       },
       "widgets_values": [
-        "# 🧬 Encoding Enchantress - Four Operation Modes\n\n## 🔍 \"closeup\" Mode\n\nBest for: Face-focused portraits, beauty shots, headshots\n\n- Encodes glamour (hair/makeup) separately for strong character emphasis\n- Combines body + pose with \"portrait, closeup, face focus\" keywords\n- Combines quality + aesthetic with closeup keywords\n- Each element gets individual strength control for precise facial detail balance\n- Tip: Set features below the face to Unspecified for speed and peak precision\n\n## 👤 \"portrait\" Mode\n\nBest for: Dynamic portraits, upper body shots, character studies\n\n- Combines glamour + body into one conditioning for cohesive character\n- Groups quality + pose + aesthetic with \"head and shoulders portrait\" keywords\n- Adds \"body turned to the side, face turned to viewer\" for dynamic angles\n- Great balance between character features and artistic style\n- Tip: Set features below the chest to Unspecified for speed and peak precision\n\n## ⚔️ \"compete combine\" Mode (note: longer sampling)\n\nBest for: Emergent complexity, strong \"remixed\" composition\n\n- Creates separate conditionings for each element to compete/oscillate\n- Body + glamour combined with \"full body\" keyword\n- Pose, aesthetic, and quality each get their own conditioning\n- Elements can compete for attention, creating dynamic, divergent results\n- NOT for consistent characters\n\n## 🌊 \"smooth blend\" Mode (Default)\n\nBest for: Cohesive artistic styles, consistent characters, and when you want everything harmonized\n\n- Combines ALL prompts into a single conditioning at neutral strength\n- Everything blends smoothly together with equal weight\n- No competing elements - perfect harmony between all aspects\n- Ideal when you want style consistency over dramatic variety\n\n### Strength Controls:\n\n- body_strength: Controls body/glamour/pose emphasis (not used in smooth blend)\n- vibe_strength: Controls quality/aesthetic emphasis (not used in smooth blend)\n- negative_strength: Controls negative prompt strength across all modes"
+        "browse",
+        "browse",
+        "save",
+        null,
+        "browse",
+        "load",
+        "delete"
       ],
-      "color": "#233",
-      "bgcolor": "#355"
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
+    },
+    {
+      "id": 806,
+      "type": "EncodingEnchantress",
+      "pos": [
+        690,
+        130
+      ],
+      "size": [
+        220,
+        338
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 124373
+        },
+        {
+          "name": "quality",
+          "shape": 7,
+          "type": "QUALITY_STRING",
+          "link": 124346
+        },
+        {
+          "name": "scene",
+          "shape": 7,
+          "type": "SCENE_STRING",
+          "link": 124347
+        },
+        {
+          "name": "glamour",
+          "shape": 7,
+          "type": "GLAMOUR_STRING",
+          "link": 124348
+        },
+        {
+          "name": "body",
+          "shape": 7,
+          "type": "BODY_STRING",
+          "link": 124349
+        },
+        {
+          "name": "aesthetic",
+          "shape": 7,
+          "type": "AESTHETIC_STRING",
+          "link": 124350
+        },
+        {
+          "name": "pose",
+          "shape": 7,
+          "type": "POSE_STRING",
+          "link": 124351
+        },
+        {
+          "name": "override",
+          "shape": 7,
+          "type": "OVERRIDE_STRING",
+          "link": 124369
+        },
+        {
+          "name": "nullifier",
+          "shape": 7,
+          "type": "NULLIFIER_STRING",
+          "link": 124353
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            124378
+          ]
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            124379
+          ]
+        },
+        {
+          "name": "tokens",
+          "type": "STRING",
+          "links": [
+            124356
+          ]
+        },
+        {
+          "name": "pos",
+          "type": "STRING",
+          "links": []
+        },
+        {
+          "name": "neg",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "9715fb2f8ecd8f0ff1dceabab4253181f272a242",
+        "Node name for S&R": "EncodingEnchantress",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "mode": true,
+            "body_strength": true,
+            "vibe_strength": true,
+            "negative_strength": true,
+            "optimize_prompt": true,
+            "token_report": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "smooth blend",
+        1.0000000000000002,
+        1.0000000000000002,
+        1.0000000000000002,
+        true,
+        true
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
+    },
+    {
+      "id": 810,
+      "type": "OracleOverride",
+      "pos": [
+        -620,
+        860
+      ],
+      "size": [
+        640,
+        210
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "chain",
+          "shape": 7,
+          "type": "STRING",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "override",
+          "type": "OVERRIDE_STRING",
+          "links": [
+            124369
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-violet-tools",
+        "ver": "9715fb2f8ecd8f0ff1dceabab4253181f272a242",
+        "Node name for S&R": "OracleOverride",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "override": true,
+            "override_prompts": true
+          },
+          "version": "7.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "1girl, sitting on blanket, picnic, flower field, soft lighting, pastel colors, blush, smiling, short hair, sundress, food, basket, bread, jam, juice, white tights, ankle boots, hair ornament, blue sky, spring, nature, scenic, warm tone, cute, peaceful, solo, open mouth, brown eyes, pink hair, outdoors",
+        false
+      ],
+      "color": "#0F0517",
+      "bgcolor": "#1D0C29",
+      "boxcolor": "#666666"
+    },
+    {
+      "id": 811,
+      "type": "KSampler",
+      "pos": [
+        1040,
+        -20
+      ],
+      "size": [
+        220,
+        486
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 124376
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 124378
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 124379
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 124377
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            124380
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "KSampler"
+      },
+      "widgets_values": [
+        724120497332177,
+        "randomize",
+        25,
+        3,
+        "euler_ancestral",
+        "normal",
+        1
+      ]
+    },
+    {
+      "id": 812,
+      "type": "VAEDecode",
+      "pos": [
+        1290,
+        -20
+      ],
+      "size": [
+        140,
+        46
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "samples",
+          "type": "LATENT",
+          "link": 124380
+        },
+        {
+          "name": "vae",
+          "type": "VAE",
+          "link": 124381
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            124382
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "VAEDecode"
+      }
+    },
+    {
+      "id": 813,
+      "type": "SaveImage",
+      "pos": [
+        990,
+        520
+      ],
+      "size": [
+        550,
+        590
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 124382
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.44",
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "ComfyUI"
+      ]
     }
   ],
   "links": [
     [
-      1,
-      2,
+      124346,
+      796,
       0,
-      1,
+      806,
       1,
       "QUALITY_STRING"
     ],
     [
-      2,
-      3,
+      124347,
+      795,
       0,
-      1,
+      806,
       2,
+      "SCENE_STRING"
+    ],
+    [
+      124348,
+      797,
+      0,
+      806,
+      3,
       "GLAMOUR_STRING"
     ],
     [
-      3,
-      4,
+      124349,
+      798,
       0,
-      1,
-      3,
+      806,
+      4,
       "BODY_STRING"
     ],
     [
-      4,
-      5,
+      124350,
+      799,
       0,
-      1,
-      4,
+      806,
+      5,
       "AESTHETIC_STRING"
     ],
     [
-      5,
-      6,
+      124351,
+      800,
       0,
-      1,
-      5,
+      806,
+      6,
       "POSE_STRING"
     ],
     [
-      6,
-      7,
+      124353,
+      801,
       0,
-      1,
-      6,
+      806,
+      8,
       "NULLIFIER_STRING"
     ],
     [
-      8,
-      9,
+      124356,
+      806,
+      2,
+      762,
+      0,
+      "*"
+    ],
+    [
+      124369,
+      810,
+      0,
+      806,
+      7,
+      "OVERRIDE_STRING"
+    ],
+    [
+      124373,
+      211,
       1,
-      1,
+      806,
       0,
       "CLIP"
     ],
     [
-      9,
-      11,
-      1,
-      9,
-      1,
-      "CLIP"
-    ],
-    [
-      10,
-      11,
+      124376,
+      211,
       0,
-      9,
+      811,
       0,
       "MODEL"
     ],
     [
-      11,
-      12,
+      124377,
+      212,
       0,
-      13,
+      811,
       3,
       "LATENT"
     ],
     [
-      12,
-      1,
+      124378,
+      806,
       0,
-      13,
+      811,
       1,
       "CONDITIONING"
     ],
     [
-      13,
+      124379,
+      806,
       1,
-      1,
-      13,
+      811,
       2,
       "CONDITIONING"
     ],
     [
-      14,
-      9,
+      124380,
+      811,
       0,
-      13,
-      0,
-      "MODEL"
-    ],
-    [
-      15,
-      13,
-      0,
-      14,
+      812,
       0,
       "LATENT"
     ],
     [
-      16,
-      11,
+      124381,
+      211,
       2,
-      14,
+      812,
       1,
       "VAE"
     ],
     [
-      17,
-      14,
+      124382,
+      812,
       0,
-      15,
+      813,
       0,
       "IMAGE"
     ]
   ],
   "groups": [
     {
-      "id": 1,
+      "id": 9,
       "title": "Violet Tools 💅",
       "bounding": [
-        1160,
-        270,
-        1580,
-        993.5999755859375
+        -660,
+        30,
+        1610,
+        1080
       ],
       "color": "#a1309b",
-      "font_size": 24,
-      "flags": {
-        "pinned": true
-      }
-    },
-    {
-      "id": 2,
-      "title": "Loading Dock",
-      "bounding": [
-        1330,
-        -63.599998474121094,
-        1180,
-        225.60000610351562
-      ],
-      "color": "#3f789e",
-      "font_size": 24,
-      "flags": {
-        "pinned": true
-      }
-    },
-    {
-      "id": 3,
-      "title": "Render Farm",
-      "bounding": [
-        2800,
-        -70,
-        1350,
-        1333.5999755859375
-      ],
-      "color": "#8AA",
       "font_size": 24,
       "flags": {
         "pinned": true
@@ -1031,20 +1136,21 @@
   ],
   "config": {},
   "extra": {
-    "ue_links": [],
     "ds": {
-      "scale": 0.6300941473673333,
+      "scale": 0.693433494944151,
       "offset": [
-        -1070,
-        100
+        1000.0303564352788,
+        166.42830103507467
       ]
     },
-    "links_added_by_ue": [],
     "frontendVersion": "1.23.4",
+    "ue_links": [],
+    "links_added_by_ue": [],
     "VHS_latentpreview": false,
     "VHS_latentpreviewrate": 0,
     "VHS_MetadataImage": true,
-    "VHS_KeepIntermediate": true
+    "VHS_KeepIntermediate": true,
+    "groupNodes": {}
   },
   "version": 0.4
 }

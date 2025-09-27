@@ -1,0 +1,1432 @@
+aesthetic_features:
+  Alt Fashion: "eclectic styles, bold accessories, layered outfits, unique patterns, expressive individuality, asymmetrical cuts, vibrant colors, edgy aesthetics, alternative subcultures, statement pieces, urban vibe, confident poses, high-cut panties, edgy accessories"
+  Athleisure: "athleisure, sporty chic, comfortable fabrics, bold colors, activewear, yoga pants, crop tops, sneakers, urban vibe, confident poses, athletic accessories, high-cut panties, leggings, sports bras, joggers, high-waisted athletic briefs"
+  Bimbo: "bimbo fashion, bold colors, playful patterns, confident poses, provocative outfits, edgy accessories, nightlife vibe, seductive expressions, revealing clothing, high-cut panties, edgy aesthetics, nightlife atmosphere, confident body language, thongs, bright-colored lingerie"
+  Cottagecore: "cottagecore, pastel palette, vintage dresses, soft sunlight, floral fields, rural charm, cozy interiors, rustic elements, natural textures, gentle expressions, warm tones, idyllic countryside, whimsical details, cotton panties, lace accents"
+  Cyberpunk: "cyberpunk, neon glow, moody shadows, sleek tech, reflective surfaces, urban dystopia, futuristic fashion, vibrant colors, high-tech elements, rain-slicked metal, combat boots, glowing circuitry, holographic displays, bodysuits"
+  Dark Academia: "dark academia, vintage aesthetics, scholarly vibes, rich textures, muted colors, classic literature, ivy-covered walls, tailored blazers, high-waisted trousers, leather satchels, brooding expressions, antique books, lace accents, dark skirts, knee-high socks, white cotton thongs"
+  Dreamcore: "surreal ambiance, floating lights, foggy dreamscape, nostalgic textures, ethereal glow, whimsical elements, soft focus, distorted reality, pastel colors, abstract shapes, eerie calmness, dreamlike quality, panties with whimsical patterns, soft lighting"
+  E-girl: "e-girl, bold makeup, vibrant hair colors, edgy fashion, playful accessories, urban vibe, confident poses, layered outfits, street style, graphic tees, chunky sneakers, expressive individuality, alternative aesthetics, high-cut panties, fishnet stockings, blushed cheeks and nose, heart or star makeup details"
+  Edgy Streetwear: "oversized crop tops, shorts, urban landscapes, graffiti art, chunky sneakers, statement accessories, layered outfits, confident poses, street culture, edgy aesthetics, high-cut panties"
+  Fairycore: "fairycore, whimsical aesthetics, pastel colors, floral patterns, ethereal glow, nature-inspired elements, soft fabrics, delicate accessories, dreamy ambiance, magical vibes, lace accents, butterfly motifs, soft lighting, cotton panties"
+  Gothic Glam: "gothic fashion, lace, dramatic lighting, smoky eyes, dark luxury, ornate details, platform boots, velvet textures, mysterious ambiance, seductive, dark lipstick, rich fabric, brooding expressions, vintage jewelry, leather and lace panties"
+  Grunge: "grunge, distressed textures, dark colors, urban decay, layered clothing, rebellious spirit, ripped denim, band tees, leather jackets, combat boots, moody lighting, graffiti art, vintage vibes, alternative fashion, frayed panties"
+  Innocent: "soft colors, gentle expressions, floral patterns, light fabrics, serene settings, delicate features, pastels and modest lace, subtle makeup, dreamy ambiance, ethereal glow, whimsical details, innocence, purity, cotton panties, lace accents, bikini panties"
+  Mesh & Fishnets: "textured layers, edgy aesthetics, punk influences, bold contrasts, urban vibe, ripped details, fishnet tights, mesh tops, sheer fabrics, grunge elements, layered outfits, confident poses, alternative fashion, mesh panties"
+  Nu-Goth: "modern gothic, edgy fashion, dark aesthetics, bold eyeliner, layered outfits, urban vibe, leather jackets, combat boots, moody lighting, alternative styles, piercings, tattoos, pentacles, dark lipstick, fishnets, witchy elements, black thongs"
+  Post-Apocalyptic: "ruins, decay, rusted metal, survival gear, dusty wind, post-apocalyptic vibe, gritty textures, survival themes, dystopian elements, makeshift clothing, scavenged items, desolate environments, biker boots, damaged leather jackets, tattered clothing"
+  Retro Futurism: "vintage sci-fi, bold colors, chrome accents, geometric shapes, optimistic vibe, futuristic nostalgia, sleek lines, space age aesthetics, neon lights, classic cars, retro technology, playful designs, vinyl panties, metallic textures"
+  Rockabilly: "rockabilly fashion, vintage vibes, bold prints, high-waisted shorts, playful accessories, retro hairstyles, leather jackets, confident poses, classic cars, vibrant colors, edgy aesthetics, high-cut panties"
+  Slutty: "provocative outfits, bold makeup, confident poses, edgy accessories, nightlife vibe, horny, seductive expressions, revealing clothing, high-cut panties, edgy aesthetics, nightlife atmosphere, confident body language, thongs, ahegao face, aroused body language, ruined makeup"
+  Stripper: "glamorous outfits, high heels, confident poses, bold makeup, nightlife atmosphere, seductive expressions, revealing clothing, high-cut panties, edgy aesthetics, provocative poses, nightlife vibe, confident body language, thongs, bright-colored lingerie"
+  Y2K: "y2k fashion, nostalgic vibes, bold colors, metallic accents, playful patterns, crop tops, chunky sneakers, butterfly clips, vibrant makeup, retro technology, playful accessories, high-cut panties, low-rise thongs"
+body_features:
+  age:
+    baby: baby
+    child: child
+    teen: teen
+    young: young
+    young adult: young-adult
+    adult: adult
+    middle-aged: middle-aged
+    mature: mature
+    senior: senior
+    elderly: elderly
+    old: old
+    eighteen years old: eighteen-years-old
+    twenty years old: twenty-years-old
+    twenty five years old: twenty-five-years-old
+    thirty years old: thirty-years-old
+    thirty five years old: thirty-five-years-old
+    forty years old: forty-years-old
+    forty five years old: forty-five-years-old
+    fifty years old: fifty-years-old
+  gender:
+    child: child
+    boy: boy
+    girl: girl
+    adult: adult
+    man: man
+    woman: woman
+    femboy: femboy
+    tomboy: tomboy
+    nonbinary: nonbinary
+    genderfluid: genderfluid
+    androgynous: androgynous
+    transmasc: transmasc
+    transfem: transfem
+    transfemme: transfemme
+    trans boy: transgender boy
+    trans man: transgender man
+    trans girl: transgender girl
+    trans woman: transgender woman
+    intersex: intersex
+  physique:
+    slim: slim figure
+    skinny: skinny body
+    athletic: athletic build
+    muscular: muscular body
+    pregnant: pregnant body
+    voluptuous: voluptuous body
+    beefy: beefy physique
+    curvy: curvy figure
+    thick: thick body
+    plump: plump body
+    chubby: chubby body
+    plus-size: plus-size body
+    overweight: overweight body
+    obese: obese body
+  height:
+    miniature: miniature height
+    short: short height
+    petite: petite height
+    average: average height
+    tall: tall height
+    giant: giant height
+  chest_size:
+    extremely flat chest: extremely flat chest
+    very flat chest: very flat chest
+    small chest: small chest
+    average chest: average chest
+    large chest: large chest
+    huge chest: huge chest
+    massive chest: massive chest
+    extremely tiny breasts: extremely tiny breasts
+    tiny breasts: tiny breasts
+    small breasts: small breasts
+    medium breasts: medium breasts
+    large breasts: large breasts
+    huge breasts: huge breasts
+    extremely large breasts: extremely large breasts
+  chest_shape:
+    broad pecs: broad pecs
+    defined pecs: defined pecs
+    chiseled pecs: chiseled pecs
+    sculpted pecs: sculpted pecs
+    strong pecs: strong pecs
+    chubby pecs: chubby pecs
+    beefy pecs: beefy pecs
+    rounded pecs: rounded pecs
+    large pecs: large pecs
+    huge pecs: huge pecs
+    extremely large pecs: extremely large pecs
+    top-surgery scars: top-surgery scars
+    perky breasts: perky breasts
+    pointy breasts: pointy breasts
+    conical breasts: conical breasts
+    round breasts: round breasts
+    natural-shaped breasts: natural-shaped breasts
+    sagging breasts: sagging breasts
+  ass_size:
+    flat: flat ass
+    small: small ass
+    medium: medium ass
+    beefy: beefy ass
+    curvy: curvy ass
+    round: round ass
+    bubble butt: bubble butt
+    large: large ass
+    huge: huge ass
+    extremely large: extremely large ass
+  ass_shape:
+    firm: firm ass
+    toned: toned ass
+    perky: perky ass
+    chubby: chubby ass
+    fat: fat ass
+    soft: soft ass
+    squishy: squishy ass
+    cellulite: cellulite ass
+    sagging: sagging ass
+  hips:
+    skinny: skinny hips
+    slim: slim hips
+    narrow: narrow hips
+    wide: wide hips
+    thick: thick hips
+    very wide: very wide hips
+    child-bearing: child-bearing hips
+    extremely wide: extremely wide hips
+  waist:
+    skinny: skinny waist
+    slim: slim waist
+    narrow: narrow waist
+    thick: thick waist
+    soft: soft tummy
+    tapered: tapered waist
+    pregnant: pregnant belly
+    sagging: sagging belly
+  thighs:
+    skinny: skinny thighs
+    slender: slender thighs
+    athletic: athletic thighs
+    muscular: muscular thighs
+    chubby: chubby thighs
+    jiggly: jiggly thighs
+    thick: thick thighs
+    very thick: very thick thighs
+    extremely thick: extremely thick thighs
+  lips:
+    thin lips: thin lips
+    full lips: full lips
+    thick lips: thick lips
+    pouty lips: pouty lips
+    plump lips: plump lips
+    luscious lips: luscious lips
+    kissable lips: kissable lips
+  eyes:
+    narrow: narrow eyes
+    round: round eyes
+    large: large eyes
+    wide: wide eyes
+    hooded: hooded eyes
+    monolid: monolid eyes
+    upturned: upturned eyes
+    downturned: downturned eyes
+    almond-shaped: almond-shaped eyes
+  skin_tone:
+    bone-white: bone-white skin
+    pale: pale skin
+    fair: fair skin
+    rosy: rosy skin
+    peachy: peachy skin
+    olive: olive skin
+    golden: golden skin
+    caramel: caramel skin
+    amber: amber skin
+    copper: copper skin
+    umber: umber skin
+    bronze: bronze skin
+    brown: brown skin
+    dark brown: dark brown skin
+    mahogany: mahogany skin
+    cocoa: cocoa skin
+    ebony: ebony skin
+    dark ebony: dark ebony skin
+  skin_texture:
+    soft: soft skin
+    smooth: smooth skin
+    glossy: glossy skin
+    oily: oily skin
+    dry: dry skin
+    rough: rough skin
+    leathery: leathery skin
+    textured: textured skin
+    detailed: detailed skin
+    extremely detailed: extremely detailed skin
+  skin_state:
+    flushed: flushed skin
+    blemished: blemished skin
+    acne-prone: acne-prone skin
+    freckled: freckled skin
+    sun-kissed: sun-kissed skin
+    tanned: tanned skin
+    sunburned: sunburned skin
+    glowing: glowing skin
+    luminous: luminous skin
+    sweaty: sweaty skin
+    wet: wet skin
+  nipples:
+    tiny: tiny nipples
+    tiny erect: tiny erect nipples
+    tiny flat: tiny flat nipples
+    small: small nipples
+    small erect: small erect nipples
+    small flat: small flat nipples
+    medium: medium nipples
+    medium erect: medium erect nipples
+    medium flat: medium flat nipples
+    large: large nipples
+    large erect: large erect nipples
+    large flat: large flat nipples
+    huge: huge nipples
+    huge erect: huge erect nipples
+    huge flat: huge flat nipples
+    extremely large: extremely large nipples
+    extremely large erect: extremely large erect nipples
+    extremely large flat: extremely large flat nipples
+  areolas:
+    tiny: tiny areolas
+    small: small areolas
+    medium: medium areolas
+    large: large areolas
+    huge: huge areolas
+    extremely large: extremely large areolas
+  areola_shade:
+    pale: pale areolas
+    dark: dark areolas
+    pink: pink areolas
+    light pink: light pink areolas
+    dark pink: dark pink areolas
+    rose: rose-colored areolas
+    light rose: light rose-colored areolas
+    dark rose: dark rose-colored areolas
+    peach: peach-colored areolas
+    light peach: light peach-colored areolas
+    dark peach: dark peach-colored areolas
+    brown: brown areolas
+    light brown: light brown areolas
+    dark brown: dark brown areolas
+    ebony: ebony areolas
+    dark ebony: dark ebony areolas
+  genitals:
+    micropenis: micropenis
+    penis: uncircumcised penis
+    tiny penis: tiny uncircumcised penis
+    small penis: small uncircumcised penis
+    large penis: large uncircumcised penis
+    huge penis: huge uncircumcised penis
+    circumcised penis: circumcised penis
+    tiny circumcised penis: tiny circumcised penis
+    small circumcised penis: small circumcised penis
+    large circumcised penis: large circumcised penis
+    huge circumcised penis: huge circumcised penis
+    pussy: pussy
+    small pussy: small pussy
+    large pussy: large pussy
+    huge pussy: huge pussy
+    innie pussy: innie pussy
+    small innie pussy: small innie pussy
+    large innie pussy: large innie pussy
+    huge innie pussy: huge innie pussy
+  genital_state:
+    flaccid penis: flaccid penis
+    soft penis: soft penis
+    hard penis: hard penis
+    erect penis: erect penis
+    engorged penis: engorged penis
+    wet pussy: wet pussy
+    swollen pussy: swollen pussy
+    engorged pussy: engorged pussy
+  pubic_hair:
+    shaved: shaved pubic hair
+    trimmed: trimmed pubic hair
+    natural: natural pubic hair
+    extreme: extreme pubic hair
+    landing strip: landing strip pubic hair
+    heart-shaped: heart-shaped pubic hair
+  pubic_hair_color:
+    blonde: blonde pubic hair
+    red: red pubic hair
+    brown: brown pubic hair
+    silver: silver pubic hair
+    black: black pubic hair
+    dyed: dyed pubic hair
+  armpit_hair:
+    stubble: armpit hair stubble
+    trimmed: soft armpit hair
+    natural: natural armpit hair
+  armpit_hair_color:
+    blonde: blonde armpit hair
+    red: red armpit hair
+    brown: brown armpit hair
+    silver: silver armpit hair
+    black: black armpit hair
+    dyed: dyed armpit hair
+glamour_features:
+  hair_length:
+    buzzcut: buzzcut hair
+    short: short hair
+    medium: medium-length hair
+    chin-length: chin-length hair
+    shoulder-length: shoulder-length hair
+    mid-length: mid-length hair
+    long: long hair
+    very long: very long hair
+    extra-long: extra-long hair
+  hair_texture:
+    straight: straight hair
+    shiny: shiny hair
+    wavy: wavy hair
+    voluminous: voluminous hair
+    textured: textured hair
+    curly: curly hair
+    coily: coily hair
+    frizzy: frizzy hair
+  hairstyle:
+    loose: loose hairstyle
+    sleek: sleek hairstyle
+    messy: messy hairstyle
+    layered: layered hairstyle
+    undercut: undercut hairstyle
+    bob cut: bob cut hairstyle
+    blunt cut: blunt cut hairstyle
+    pixie cut: pixie cut hairstyle
+    bun: bun hairstyle
+    twin buns: twin buns hairstyle
+    messy bun: messy bun hairstyle
+    half-up: half-up hairstyle
+    braid: braid hairstyle
+    fishtail: fishtail hairstyle
+    crown braid: crown braid hairstyle
+    ponytail: ponytail hairstyle
+    high ponytail: high ponytail hairstyle
+    pigtails: pigtails hairstyle
+    twintails: twintails hairstyle
+    side ponytail: side ponytail hairstyle
+    half-up: half-up hairstyle
+    topknot: topknot hairstyle
+    side-swept: side-swept hairstyle
+    mohawk: mohawk hairstyle
+    fauxhawk: fauxhawk hairstyle
+    side shave: side shave hairstyle
+    bangs: bangs hairstyle
+    side bangs: side bangs hairstyle
+    curtain bangs: curtain bangs hairstyle
+    afro: afro hairstyle
+    dreadlocks: dreadlocks hairstyle
+    cornrows: cornrows hairstyle
+  hair_color:
+    white: white hair
+    silver: silver hair
+    gray: gray hair
+    black: black hair
+    charcoal: charcoal hair
+    brown: brown hair
+    light brown: light brown hair
+    dark brown: dark brown hair
+    red: red hair
+    light red: light red hair
+    dark red: dark red hair
+    red-orange: red-orange hair
+    light red-orange: light red-orange hair
+    dark red-orange: dark red-orange hair
+    orange: orange hair
+    light orange: light orange hair
+    dark orange: dark orange hair
+    yellow-orange: yellow-orange hair
+    light yellow-orange: light yellow-orange hair
+    dark yellow-orange: dark yellow-orange hair
+    yellow: yellow hair
+    light yellow: light yellow hair
+    dark yellow: dark yellow hair
+    yellow-green: yellow-green hair
+    light yellow-green: light yellow-green hair
+    dark yellow-green: dark yellow-green hair
+    lime-green: lime-green hair
+    light lime-green: light lime-green hair
+    dark lime-green: dark lime-green hair
+    green: green hair
+    light green: light green hair
+    dark green: dark green hair
+    teal-green: teal-green hair
+    light teal-green: light teal-green hair
+    dark teal-green: dark teal-green hair
+    teal: teal hair
+    light teal: light teal hair
+    dark teal: dark teal hair
+    cyan-teal: cyan-teal hair
+    light cyan-teal: light cyan-teal hair
+    dark cyan-teal: dark cyan-teal hair
+    cyan: cyan hair
+    light cyan: light cyan hair
+    dark cyan: dark cyan hair
+    sky-blue: sky-blue hair
+    light sky-blue: light sky-blue hair
+    dark sky-blue: dark sky-blue hair
+    blue: blue hair
+    light blue: light blue hair
+    dark blue: dark blue hair
+    blue-indigo: blue-indigo hair
+    light blue-indigo: light blue-indigo hair
+    dark blue-indigo: dark blue-indigo hair
+    indigo: indigo hair
+    light indigo: light indigo hair
+    dark indigo: dark indigo hair
+    blue-violet: blue-violet hair
+    light blue-violet: light blue-violet hair
+    dark blue-violet: dark blue-violet hair
+    violet: violet hair
+    light violet: light violet hair
+    dark violet: dark violet hair
+    purple: purple hair
+    light purple: light purple hair
+    dark purple: dark purple hair
+    magenta: magenta hair
+    light magenta: light magenta hair
+    dark magenta: dark magenta hair
+    pink-magenta: pink-magenta hair
+    light pink-magenta: light pink-magenta hair
+    dark pink-magenta: dark pink-magenta hair
+    pink: pink hair
+    light pink: light pink hair
+    dark pink: dark pink hair
+    rose-red: rose-red hair
+    light rose-red: light rose-red hair
+    dark rose-red: dark rose-red hair
+  highlight_color:
+    white: white highlights
+    silver: silver highlights
+    gray: gray highlights
+    black: black highlights
+    charcoal: charcoal highlights
+    brown: brown highlights
+    light brown: light brown highlights
+    dark brown: dark brown highlights
+    red: red highlights
+    light red: light red highlights
+    dark red: dark red highlights
+    red-orange: red-orange highlights
+    light red-orange: light red-orange highlights
+    dark red-orange: dark red-orange highlights
+    orange: orange highlights
+    light orange: light orange highlights
+    dark orange: dark orange highlights
+    yellow-orange: yellow-orange highlights
+    light yellow-orange: light yellow-orange highlights
+    dark yellow-orange: dark yellow-orange highlights
+    yellow: yellow highlights
+    light yellow: light yellow highlights
+    dark yellow: dark yellow highlights
+    yellow-green: yellow-green highlights
+    light yellow-green: light yellow-green highlights
+    dark yellow-green: dark yellow-green highlights
+    lime-green: lime-green highlights
+    light lime-green: light lime-green highlights
+    dark lime-green: dark lime-green highlights
+    green: green highlights
+    light green: light green highlights
+    dark green: dark green highlights
+    teal-green: teal-green highlights
+    light teal-green: light teal-green highlights
+    dark teal-green: dark teal-green highlights
+    teal: teal highlights
+    light teal: light teal highlights
+    dark teal: dark teal highlights
+    cyan-teal: cyan-teal highlights
+    light cyan-teal: light cyan-teal highlights
+    dark cyan-teal: dark cyan-teal highlights
+    cyan: cyan highlights
+    light cyan: light cyan highlights
+    dark cyan: dark cyan highlights
+    sky-blue: sky-blue highlights
+    light sky-blue: light sky-blue highlights
+    dark sky-blue: dark sky-blue highlights
+    blue: blue highlights
+    light blue: light blue highlights
+    dark blue: dark blue highlights
+    blue-indigo: blue-indigo highlights
+    light blue-indigo: light blue-indigo highlights
+    dark blue-indigo: dark blue-indigo highlights
+    indigo: indigo highlights
+    light indigo: light indigo highlights
+    dark indigo: dark indigo highlights
+    blue-violet: blue-violet highlights
+    light blue-violet: light blue-violet highlights
+    dark blue-violet: dark blue-violet highlights
+    violet: violet highlights
+    light violet: light violet highlights
+    dark violet: dark violet highlights
+    purple: purple highlights
+    light purple: light purple highlights
+    dark purple: dark purple highlights
+    magenta: magenta highlights
+    light magenta: light magenta highlights
+    dark magenta: dark magenta highlights
+    pink-magenta: pink-magenta highlights
+    light pink-magenta: light pink-magenta highlights
+    dark pink-magenta: dark pink-magenta highlights
+    pink: pink highlights
+    light pink: light pink highlights
+    dark pink: dark pink highlights
+    rose-red: rose-red highlights
+    light rose-red: light rose-red highlights
+    dark rose-red: dark rose-red highlights
+  dip_dye_color:
+    white: white dip-dyed hair
+    silver: silver dip-dyed hair
+    gray: gray dip-dyed hair
+    black: black dip-dyed hair
+    charcoal: charcoal dip-dyed hair
+    brown: brown dip-dyed hair
+    light brown: light brown dip-dyed hair
+    dark brown: dark brown dip-dyed hair
+    red: red dip-dyed hair
+    light red: light red dip-dyed hair
+    dark red: dark red dip-dyed hair
+    red-orange: red-orange dip-dyed hair
+    light red-orange: light red-orange dip-dyed hair
+    dark red-orange: dark red-orange dip-dyed hair
+    orange: orange dip-dyed hair
+    light orange: light orange dip-dyed hair
+    dark orange: dark orange dip-dyed hair
+    yellow-orange: yellow-orange dip-dyed hair
+    light yellow-orange: light yellow-orange dip-dyed hair
+    dark yellow-orange: dark yellow-orange dip-dyed hair
+    yellow: yellow dip-dyed hair
+    light yellow: light yellow dip-dyed hair
+    dark yellow: dark yellow dip-dyed hair
+    yellow-green: yellow-green dip-dyed hair
+    light yellow-green: light yellow-green dip-dyed hair
+    dark yellow-green: dark yellow-green dip-dyed hair
+    lime-green: lime-green dip-dyed hair
+    light lime-green: light lime-green dip-dyed hair
+    dark lime-green: dark lime-green dip-dyed hair
+    green: green dip-dyed hair
+    light green: light green dip-dyed hair
+    dark green: dark green dip-dyed hair
+    teal-green: teal-green dip-dyed hair
+    light teal-green: light teal-green dip-dyed hair
+    dark teal-green: dark teal-green dip-dyed hair
+    teal: teal dip-dyed hair
+    light teal: light teal dip-dyed hair
+    dark teal: dark teal dip-dyed hair
+    cyan-teal: cyan-teal dip-dyed hair
+    light cyan-teal: light cyan-teal dip-dyed hair
+    dark cyan-teal: dark cyan-teal dip-dyed hair
+    cyan: cyan dip-dyed hair
+    light cyan: light cyan dip-dyed hair
+    dark cyan: dark cyan dip-dyed hair
+    sky-blue: sky-blue dip-dyed hair
+    light sky-blue: light sky-blue dip-dyed hair
+    dark sky-blue: dark sky-blue dip-dyed hair
+    blue: blue dip-dyed hair
+    light blue: light blue dip-dyed hair
+    dark blue: dark blue dip-dyed hair
+    blue-indigo: blue-indigo dip-dyed hair
+    light blue-indigo: light blue-indigo dip-dyed hair
+    dark blue-indigo: dark blue-indigo dip-dyed hair
+    indigo: indigo dip-dyed hair
+    light indigo: light indigo dip-dyed hair
+    dark indigo: dark indigo dip-dyed hair
+    blue-violet: blue-violet dip-dyed hair
+    light blue-violet: light blue-violet dip-dyed hair
+    dark blue-violet: dark blue-violet dip-dyed hair
+    violet: violet dip-dyed hair
+    light violet: light violet dip-dyed hair
+    dark violet: dark violet dip-dyed hair
+    purple: purple dip-dyed hair
+    light purple: light purple dip-dyed hair
+    dark purple: dark purple dip-dyed hair
+    magenta: magenta dip-dyed hair
+    light magenta: light magenta dip-dyed hair
+    dark magenta: dark magenta dip-dyed hair
+    pink-magenta: pink-magenta dip-dyed hair
+    light pink-magenta: light pink-magenta dip-dyed hair
+    dark pink-magenta: dark pink-magenta dip-dyed hair
+    pink: pink dip-dyed hair
+    light pink: light pink dip-dyed hair
+    dark pink: dark pink dip-dyed hair
+    rose-red: rose-red dip-dyed hair
+    light rose-red: light rose-red dip-dyed hair
+    dark rose-red: dark rose-red dip-dyed hair
+  eye_color:
+    white: white eyes
+    silver: silver eyes
+    gray: gray eyes
+    black: black eyes
+    charcoal: charcoal eyes
+    hazel: hazel eyes
+    brown: brown eyes
+    amber: amber eyes
+    red: red eyes
+    light red: light red eyes
+    dark red: dark red eyes
+    red-orange: red-orange eyes
+    light red-orange: light red-orange eyes
+    dark red-orange: dark red-orange eyes
+    orange: orange eyes
+    light orange: light orange eyes
+    dark orange: dark orange eyes
+    yellow-orange: yellow-orange eyes
+    light yellow-orange: light yellow-orange eyes
+    dark yellow-orange: dark yellow-orange eyes
+    yellow: yellow eyes
+    light yellow: light yellow eyes
+    dark yellow: dark yellow eyes
+    yellow-green: yellow-green eyes
+    light yellow-green: light yellow-green eyes
+    dark yellow-green: dark yellow-green eyes
+    lime-green: lime-green eyes
+    light lime-green: light lime-green eyes
+    dark lime-green: dark lime-green eyes
+    green: green eyes
+    light green: light green eyes
+    dark green: dark green eyes
+    teal-green: teal-green eyes
+    light teal-green: light teal-green eyes
+    dark teal-green: dark teal-green eyes
+    teal: teal eyes
+    light teal: light teal eyes
+    dark teal: dark teal eyes
+    cyan-teal: cyan-teal eyes
+    light cyan-teal: light cyan-teal eyes
+    dark cyan-teal: dark cyan-teal eyes
+    cyan: cyan eyes
+    light cyan: light cyan eyes
+    dark cyan: dark cyan eyes
+    sky-blue: sky-blue eyes
+    light sky-blue: light sky-blue eyes
+    dark sky-blue: dark sky-blue eyes
+    blue: blue eyes
+    light blue: light blue eyes
+    dark blue: dark blue eyes
+    blue-indigo: blue-indigo eyes
+    light blue-indigo: light blue-indigo eyes
+    dark blue-indigo: dark blue-indigo eyes
+    indigo: indigo eyes
+    light indigo: light indigo eyes
+    dark indigo: dark indigo eyes
+    blue-violet: blue-violet eyes
+    light blue-violet: light blue-violet eyes
+    dark blue-violet: dark blue-violet eyes
+    violet: violet eyes
+    light violet: light violet eyes
+    dark violet: dark violet eyes
+    purple: purple eyes
+    light purple: light purple eyes
+    dark purple: dark purple eyes
+    magenta: magenta eyes
+    light magenta: light magenta eyes
+    dark magenta: dark magenta eyes
+    pink-magenta: pink-magenta eyes
+    light pink-magenta: light pink-magenta eyes
+    dark pink-magenta: dark pink-magenta eyes
+    pink: pink eyes
+    light pink: light pink eyes
+    dark pink: dark pink eyes
+    rose-red: rose-red eyes
+    light rose-red: light rose-red eyes
+    dark rose-red: dark rose-red eyes
+  makeup_weight:
+    natural: natural makeup
+    makeup: makeup
+    light: light makeup
+    full: full makeup
+    bold: bold makeup
+    glam: glam makeup
+    ruined: ruined makeup
+  eyeliner_style:
+    winged: winged-eyeliner
+    cat-eye: cat-eye eyeliner
+    graphic: graphic-eyeliner
+    dramatic: dramatic eyeliner
+    underlined: underlined eyeliner
+    double: double eyeliner
+    smudged: smudged eyeliner
+  eyeliner_color:
+    white: white eyeliner
+    silver: silver eyeliner
+    gray: gray eyeliner
+    black: black eyeliner
+    charcoal: charcoal eyeliner
+    red: red eyeliner
+    light red: light red eyeliner
+    dark red: dark red eyeliner
+    red-orange: red-orange eyeliner
+    light red-orange: light red-orange eyeliner
+    dark red-orange: dark red-orange eyeliner
+    orange: orange eyeliner
+    light orange: light orange eyeliner
+    dark orange: dark orange eyeliner
+    yellow-orange: yellow-orange eyeliner
+    light yellow-orange: light yellow-orange eyeliner
+    dark yellow-orange: dark yellow-orange eyeliner
+    yellow: yellow eyeliner
+    light yellow: light yellow eyeliner
+    dark yellow: dark yellow eyeliner
+    yellow-green: yellow-green eyeliner
+    light yellow-green: light yellow-green eyeliner
+    dark yellow-green: dark yellow-green eyeliner
+    lime-green: lime-green eyeliner
+    light lime-green: light lime-green eyeliner
+    dark lime-green: dark lime-green eyeliner
+    green: green eyeliner
+    light green: light green eyeliner
+    dark green: dark green eyeliner
+    teal-green: teal-green eyeliner
+    light teal-green: light teal-green eyeliner
+    dark teal-green: dark teal-green eyeliner
+    teal: teal eyeliner
+    light teal: light teal eyeliner
+    dark teal: dark teal eyeliner
+    cyan-teal: cyan-teal eyeliner
+    light cyan-teal: light cyan-teal eyeliner
+    dark cyan-teal: dark cyan-teal eyeliner
+    cyan: cyan eyeliner
+    light cyan: light cyan eyeliner
+    dark cyan: dark cyan eyeliner
+    sky-blue: sky-blue eyeliner
+    light sky-blue: light sky-blue eyeliner
+    dark sky-blue: dark sky-blue eyeliner
+    blue: blue eyeliner
+    light blue: light blue eyeliner
+    dark blue: dark blue eyeliner
+    blue-indigo: blue-indigo eyeliner
+    light blue-indigo: light blue-indigo eyeliner
+    dark blue-indigo: dark blue-indigo eyeliner
+    indigo: indigo eyeliner
+    light indigo: light indigo eyeliner
+    dark indigo: dark indigo eyeliner
+    blue-violet: blue-violet eyeliner
+    light blue-violet: light blue-violet eyeliner
+    dark blue-violet: dark blue-violet eyeliner
+    violet: violet eyeliner
+    light violet: light violet eyeliner
+    dark violet: dark violet eyeliner
+    purple: purple eyeliner
+    light purple: light purple eyeliner
+    dark purple: dark purple eyeliner
+    magenta: magenta eyeliner
+    light magenta: light magenta eyeliner
+    dark magenta: dark magenta eyeliner
+    pink-magenta: pink-magenta eyeliner
+    light pink-magenta: light pink-magenta eyeliner
+    dark pink-magenta: dark pink-magenta eyeliner
+    pink: pink eyeliner
+    light pink: light pink eyeliner
+    dark pink: dark pink eyeliner
+    rose-red: rose-red eyeliner
+    light rose-red: light rose-red eyeliner
+    dark rose-red: dark rose-red eyeliner
+  blush_weight:
+    blush: blush
+    light: light blush
+    heavy: heavy blush
+  blush_color:
+    white: white blush
+    silver: silver blush
+    gray: gray blush
+    black: black blush
+    charcoal: charcoal blush
+    red: red blush
+    light red: light red blush
+    dark red: dark red blush
+    red-orange: red-orange blush
+    light red-orange: light red-orange blush
+    dark red-orange: dark red-orange blush
+    orange: orange blush
+    light orange: light orange blush
+    dark orange: dark orange blush
+    yellow-orange: yellow-orange blush
+    light yellow-orange: light yellow-orange blush
+    dark yellow-orange: dark yellow-orange blush
+    yellow: yellow blush
+    light yellow: light yellow blush
+    dark yellow: dark yellow blush
+    yellow-green: yellow-green blush
+    light yellow-green: light yellow-green blush
+    dark yellow-green: dark yellow-green blush
+    lime-green: lime-green blush
+    light lime-green: light lime-green blush
+    dark lime-green: dark lime-green blush
+    green: green blush
+    light green: light green blush
+    dark green: dark green blush
+    teal-green: teal-green blush
+    light teal-green: light teal-green blush
+    dark teal-green: dark teal-green blush
+    teal: teal blush
+    light teal: light teal blush
+    dark teal: dark teal blush
+    cyan-teal: cyan-teal blush
+    light cyan-teal: light cyan-teal blush
+    dark cyan-teal: dark cyan-teal blush
+    cyan: cyan blush
+    light cyan: light cyan blush
+    dark cyan: dark cyan blush
+    sky-blue: sky-blue blush
+    light sky-blue: light sky-blue blush
+    dark sky-blue: dark sky-blue blush
+    blue: blue blush
+    light blue: light blue blush
+    dark blue: dark blue blush
+    blue-indigo: blue-indigo blush
+    light blue-indigo: light blue-indigo blush
+    dark blue-indigo: dark blue-indigo blush
+    indigo: indigo blush
+    light indigo: light indigo blush
+    dark indigo: dark indigo blush
+    blue-violet: blue-violet blush
+    light blue-violet: light blue-violet blush
+    dark blue-violet: dark blue-violet blush
+    violet: violet blush
+    light violet: light violet blush
+    dark violet: dark violet blush
+    purple: purple blush
+    light purple: light purple blush
+    dark purple: dark purple blush
+    magenta: magenta blush
+    light magenta: light magenta blush
+    dark magenta: dark magenta blush
+    pink-magenta: pink-magenta blush
+    light pink-magenta: light pink-magenta blush
+    dark pink-magenta: dark pink-magenta blush
+    pink: pink blush
+    light pink: light pink blush
+    dark pink: dark pink blush
+    rose-red: rose-red blush
+    light rose-red: light rose-red blush
+    dark rose-red: dark rose-red blush
+  mascara:
+    mascara: mascara
+    lengthening: lengthening mascara
+    volumizing: volumizing mascara
+    dramatic: dramatic mascara
+    ruined: ruined mascara
+    clumpy: clumpy mascara
+  eyeshadow:
+    natural: natural eyeshadow
+    eyeshadow: eyeshadow
+    light: light eyeshadow
+    full: full eyeshadow
+    bold: bold eyeshadow
+    glam: glam eyeshadow
+    smoky: smoky eyeshadow
+    glitter: glitter eyeshadow
+    metallic: metallic eyeshadow
+    colorful: colorful eyeshadow
+  eyeshadow_color:
+    white: white eyeshadow
+    silver: silver eyeshadow
+    gray: gray eyeshadow
+    black: black eyeshadow
+    charcoal: charcoal eyeshadow
+    red: red eyeshadow
+    light red: light red eyeshadow
+    dark red: dark red eyeshadow
+    red-orange: red-orange eyeshadow
+    light red-orange: light red-orange eyeshadow
+    dark red-orange: dark red-orange eyeshadow
+    orange: orange eyeshadow
+    light orange: light orange eyeshadow
+    dark orange: dark orange eyeshadow
+    yellow-orange: yellow-orange eyeshadow
+    light yellow-orange: light yellow-orange eyeshadow
+    dark yellow-orange: dark yellow-orange eyeshadow
+    yellow: yellow eyeshadow
+    light yellow: light yellow eyeshadow
+    dark yellow: dark yellow eyeshadow
+    yellow-green: yellow-green eyeshadow
+    light yellow-green: light yellow-green eyeshadow
+    dark yellow-green: dark yellow-green eyeshadow
+    lime-green: lime-green eyeshadow
+    light lime-green: light lime-green eyeshadow
+    dark lime-green: dark lime-green eyeshadow
+    green: green eyeshadow
+    light green: light green eyeshadow
+    dark green: dark green eyeshadow
+    teal-green: teal-green eyeshadow
+    light teal-green: light teal-green eyeshadow
+    dark teal-green: dark teal-green eyeshadow
+    teal: teal eyeshadow
+    light teal: light teal eyeshadow
+    dark teal: dark teal eyeshadow
+    cyan-teal: cyan-teal eyeshadow
+    light cyan-teal: light cyan-teal eyeshadow
+    dark cyan-teal: dark cyan-teal eyeshadow
+    cyan: cyan eyeshadow
+    light cyan: light cyan eyeshadow
+    dark cyan: dark cyan eyeshadow
+    sky-blue: sky-blue eyeshadow
+    light sky-blue: light sky-blue eyeshadow
+    dark sky-blue: dark sky-blue eyeshadow
+    blue: blue eyeshadow
+    light blue: light blue eyeshadow
+    dark blue: dark blue eyeshadow
+    blue-indigo: blue-indigo eyeshadow
+    light blue-indigo: light blue-indigo eyeshadow
+    dark blue-indigo: dark blue-indigo eyeshadow
+    indigo: indigo eyeshadow
+    light indigo: light indigo eyeshadow
+    dark indigo: dark indigo eyeshadow
+    blue-violet: blue-violet eyeshadow
+    light blue-violet: light blue-violet eyeshadow
+    dark blue-violet: dark blue-violet eyeshadow
+    violet: violet eyeshadow
+    light violet: light violet eyeshadow
+    dark violet: dark violet eyeshadow
+    purple: purple eyeshadow
+    light purple: light purple eyeshadow
+    dark purple: dark purple eyeshadow
+    magenta: magenta eyeshadow
+    light magenta: light magenta eyeshadow
+    dark magenta: dark magenta eyeshadow
+    pink-magenta: pink-magenta eyeshadow
+    light pink-magenta: light pink-magenta eyeshadow
+    dark pink-magenta: dark pink-magenta eyeshadow
+    pink: pink eyeshadow
+    light pink: light pink eyeshadow
+    dark pink: dark pink eyeshadow
+    rose-red: rose-red eyeshadow
+    light rose-red: light rose-red eyeshadow
+    dark rose-red: dark rose-red eyeshadow
+  lipstick_type:
+    nude: nude lipstick
+    lipstick: lipstick
+    matte: matte lipstick
+    gloss: gloss lipstick
+    metallic: metallic lipstick
+    high-gloss: high-gloss lipstick
+    satin: satin lipstick
+    liquid: liquid lipstick
+    tinted balm: tinted lip balm
+  lipstick_color:
+    white: white lipstick
+    silver: silver lipstick
+    gray: gray lipstick
+    black: black lipstick
+    charcoal: charcoal lipstick
+    red: red lipstick
+    light red: light red lipstick
+    dark red: dark red lipstick
+    red-orange: red-orange lipstick
+    light red-orange: light red-orange lipstick
+    dark red-orange: dark red-orange lipstick
+    orange: orange lipstick
+    light orange: light orange lipstick
+    dark orange: dark orange lipstick
+    yellow-orange: yellow-orange lipstick
+    light yellow-orange: light yellow-orange lipstick
+    dark yellow-orange: dark yellow-orange lipstick
+    yellow: yellow lipstick
+    light yellow: light yellow lipstick
+    dark yellow: dark yellow lipstick
+    yellow-green: yellow-green lipstick
+    light yellow-green: light yellow-green lipstick
+    dark yellow-green: dark yellow-green lipstick
+    lime-green: lime-green lipstick
+    light lime-green: light lime-green lipstick
+    dark lime-green: dark lime-green lipstick
+    green: green lipstick
+    light green: light green lipstick
+    dark green: dark green lipstick
+    teal-green: teal-green lipstick
+    light teal-green: light teal-green lipstick
+    dark teal-green: dark teal-green lipstick
+    teal: teal lipstick
+    light teal: light teal lipstick
+    dark teal: dark teal lipstick
+    cyan-teal: cyan-teal lipstick
+    light cyan-teal: light cyan-teal lipstick
+    dark cyan-teal: dark cyan-teal lipstick
+    cyan: cyan lipstick
+    light cyan: light cyan lipstick
+    dark cyan: dark cyan lipstick
+    sky-blue: sky-blue lipstick
+    light sky-blue: light sky-blue lipstick
+    dark sky-blue: dark sky-blue lipstick
+    blue: blue lipstick
+    light blue: light blue lipstick
+    dark blue: dark blue lipstick
+    blue-indigo: blue-indigo lipstick
+    light blue-indigo: light blue-indigo lipstick
+    dark blue-indigo: dark blue-indigo lipstick
+    indigo: indigo lipstick
+    light indigo: light indigo lipstick
+    dark indigo: dark indigo lipstick
+    blue-violet: blue-violet lipstick
+    light blue-violet: light blue-violet lipstick
+    dark blue-violet: dark blue-violet lipstick
+    violet: violet lipstick
+    light violet: light violet lipstick
+    dark violet: dark violet lipstick
+    purple: purple lipstick
+    light purple: light purple lipstick
+    dark purple: dark purple lipstick
+    magenta: magenta lipstick
+    light magenta: light magenta lipstick
+    dark magenta: dark magenta lipstick
+    pink-magenta: pink-magenta lipstick
+    light pink-magenta: light pink-magenta lipstick
+    dark pink-magenta: dark pink-magenta lipstick
+    pink: pink lipstick
+    light pink: light pink lipstick
+    dark pink: dark pink lipstick
+    rose-red: rose-red lipstick
+    light rose-red: light rose-red lipstick
+    dark rose-red: dark rose-red lipstick
+    plum: plum lipstick
+    light plum: light plum lipstick
+    dark plum: dark plum lipstick
+  brows:
+    natural: natural brows
+    arched: arched brows
+    thin: thin brows
+    full: full brows
+    bold: bold brows
+    feathered: feathered brows
+    bleached: bleached brows
+    shaved: shaved brows
+  brow_color:
+    white: white eyebrows
+    silver: silver eyebrows
+    gray: gray eyebrows
+    black: black eyebrows
+    charcoal: charcoal eyebrows
+    red: red eyebrows
+    light red: light red eyebrows
+    dark red: dark red eyebrows
+    red-orange: red-orange eyebrows
+    light red-orange: light red-orange eyebrows
+    dark red-orange: dark red-orange eyebrows
+    orange: orange eyebrows
+    light orange: light orange eyebrows
+    dark orange: dark orange eyebrows
+    yellow-orange: yellow-orange eyebrows
+    light yellow-orange: light yellow-orange eyebrows
+    dark yellow-orange: dark yellow-orange eyebrows
+    yellow: yellow eyebrows
+    light yellow: light yellow eyebrows
+    dark yellow: dark yellow eyebrows
+    yellow-green: yellow-green eyebrows
+    light yellow-green: light yellow-green eyebrows
+    dark yellow-green: dark yellow-green eyebrows
+    lime-green: lime-green eyebrows
+    light lime-green: light lime-green eyebrows
+    dark lime-green: dark lime-green eyebrows
+    green: green eyebrows
+    light green: light green eyebrows
+    dark green: dark green eyebrows
+    teal-green: teal-green eyebrows
+    light teal-green: light teal-green eyebrows
+    dark teal-green: dark teal-green eyebrows
+    teal: teal eyebrows
+    light teal: light teal eyebrows
+    dark teal: dark teal eyebrows
+    cyan-teal: cyan-teal eyebrows
+    light cyan-teal: light cyan-teal eyebrows
+    dark cyan-teal: dark cyan-teal eyebrows
+    cyan: cyan eyebrows
+    light cyan: light cyan eyebrows
+    dark cyan: dark cyan eyebrows
+    sky-blue: sky-blue eyebrows
+    light sky-blue: light sky-blue eyebrows
+    dark sky-blue: dark sky-blue eyebrows
+    blue: blue eyebrows
+    light blue: light blue eyebrows
+    dark blue: dark blue eyebrows
+    blue-indigo: blue-indigo eyebrows
+    light blue-indigo: light blue-indigo eyebrows
+    dark blue-indigo: dark blue-indigo eyebrows
+    indigo: indigo eyebrows
+    light indigo: light indigo eyebrows
+    dark indigo: dark indigo eyebrows
+    blue-violet: blue-violet eyebrows
+    light blue-violet: light blue-violet eyebrows
+    dark blue-violet: dark blue-violet eyebrows
+    violet: violet eyebrows
+    light violet: light violet eyebrows
+    dark violet: dark violet eyebrows
+    purple: purple eyebrows
+    light purple: light purple eyebrows
+    dark purple: dark purple eyebrows
+    magenta: magenta eyebrows
+    light magenta: light magenta eyebrows
+    dark magenta: dark magenta eyebrows
+    pink-magenta: pink-magenta eyebrows
+    light pink-magenta: light pink-magenta eyebrows
+    dark pink-magenta: dark pink-magenta eyebrows
+    pink: pink eyebrows
+    light pink: light pink eyebrows
+    dark pink: dark pink eyebrows
+    rose-red: rose-red eyebrows
+    light rose-red: light rose-red eyebrows
+    dark rose-red: dark rose-red eyebrows
+  fingernail_shape:
+    trimmed: trimmed fingernails
+    short: short fingernails
+    square: square-shaped fingernails
+    oval: oval-shaped fingernails
+    almond: almond-shaped fingernails
+    coffin: coffin-shaped fingernails
+    stilleto: stilleto-shaped fingernails
+  fingernail_color:
+    white: white fingernails
+    silver: silver fingernails
+    gray: gray fingernails
+    black: black fingernails
+    charcoal: charcoal fingernails
+    red: red fingernails
+    light red: light red fingernails
+    dark red: dark red fingernails
+    red-orange: red-orange fingernails
+    light red-orange: light red-orange fingernails
+    dark red-orange: dark red-orange fingernails
+    orange: orange fingernails
+    light orange: light orange fingernails
+    dark orange: dark orange fingernails
+    yellow-orange: yellow-orange fingernails
+    light yellow-orange: light yellow-orange fingernails
+    dark yellow-orange: dark yellow-orange fingernails
+    yellow: yellow fingernails
+    light yellow: light yellow fingernails
+    dark yellow: dark yellow fingernails
+    yellow-green: yellow-green fingernails
+    light yellow-green: light yellow-green fingernails
+    dark yellow-green: dark yellow-green fingernails
+    lime-green: lime-green fingernails
+    light lime-green: light lime-green fingernails
+    dark lime-green: dark lime-green fingernails
+    green: green fingernails
+    light green: light green fingernails
+    dark green: dark green fingernails
+    teal-green: teal-green fingernails
+    light teal-green: light teal-green fingernails
+    dark teal-green: dark teal-green fingernails
+    teal: teal fingernails
+    light teal: light teal fingernails
+    dark teal: dark teal fingernails
+    cyan-teal: cyan-teal fingernails
+    light cyan-teal: light cyan-teal fingernails
+    dark cyan-teal: dark cyan-teal fingernails
+    cyan: cyan fingernails
+    light cyan: light cyan fingernails
+    dark cyan: dark cyan fingernails
+    sky-blue: sky-blue fingernails
+    light sky-blue: light sky-blue fingernails
+    dark sky-blue: dark sky-blue fingernails
+    blue: blue fingernails
+    light blue: light blue fingernails
+    dark blue: dark blue fingernails
+    blue-indigo: blue-indigo fingernails
+    light blue-indigo: light blue-indigo fingernails
+    dark blue-indigo: dark blue-indigo fingernails
+    indigo: indigo fingernails
+    light indigo: light indigo fingernails
+    dark indigo: dark indigo fingernails
+    blue-violet: blue-violet fingernails
+    light blue-violet: light blue-violet fingernails
+    dark blue-violet: dark blue-violet fingernails
+    violet: violet fingernails
+    light violet: light violet fingernails
+    dark violet: dark violet fingernails
+    purple: purple fingernails
+    light purple: light purple fingernails
+    dark purple: dark purple fingernails
+    magenta: magenta fingernails
+    light magenta: light magenta fingernails
+    dark magenta: dark magenta fingernails
+    pink-magenta: pink-magenta fingernails
+    light pink-magenta: light pink-magenta fingernails
+    dark pink-magenta: dark pink-magenta fingernails
+    pink: pink fingernails
+    light pink: light pink fingernails
+    dark pink: dark pink fingernails
+    rose-red: rose-red fingernails
+    light rose-red: light rose-red fingernails
+    dark rose-red: dark rose-red fingernails
+  toenail_color:
+    white: white toenails
+    silver: silver toenails
+    gray: gray toenails
+    black: black toenails
+    charcoal: charcoal toenails
+    red: red toenails
+    light red: light red toenails
+    dark red: dark red toenails
+    red-orange: red-orange toenails
+    light red-orange: light red-orange toenails
+    dark red-orange: dark red-orange toenails
+    orange: orange toenails
+    light orange: light orange toenails
+    dark orange: dark orange toenails
+    yellow-orange: yellow-orange toenails
+    light yellow-orange: light yellow-orange toenails
+    dark yellow-orange: dark yellow-orange toenails
+    yellow: yellow toenails
+    light yellow: light yellow toenails
+    dark yellow: dark yellow toenails
+    yellow-green: yellow-green toenails
+    light yellow-green: light yellow-green toenails
+    dark yellow-green: dark yellow-green toenails
+    lime-green: lime-green toenails
+    light lime-green: light lime-green toenails
+    dark lime-green: dark lime-green toenails
+    green: green toenails
+    light green: light green toenails
+    dark green: dark green toenails
+    teal-green: teal-green toenails
+    light teal-green: light teal-green toenails
+    dark teal-green: dark teal-green toenails
+    teal: teal toenails
+    light teal: light teal toenails
+    dark teal: dark teal toenails
+    cyan-teal: cyan-teal toenails
+    light cyan-teal: light cyan-teal toenails
+    dark cyan-teal: dark cyan-teal toenails
+    cyan: cyan toenails
+    light cyan: light cyan toenails
+    dark cyan: dark cyan toenails
+    sky-blue: sky-blue toenails
+    light sky-blue: light sky-blue toenails
+    dark sky-blue: dark sky-blue toenails
+    blue: blue toenails
+    light blue: light blue toenails
+    dark blue: dark blue toenails
+    blue-indigo: blue-indigo toenails
+    light blue-indigo: light blue-indigo toenails
+    dark blue-indigo: dark blue-indigo toenails
+    indigo: indigo toenails
+    light indigo: light indigo toenails
+    dark indigo: dark indigo toenails
+    blue-violet: blue-violet toenails
+    light blue-violet: light blue-violet toenails
+    dark blue-violet: dark blue-violet toenails
+    violet: violet toenails
+    light violet: light violet toenails
+    dark violet: dark violet toenails
+    purple: purple toenails
+    light purple: light purple toenails
+    dark purple: dark purple toenails
+    magenta: magenta toenails
+    light magenta: light magenta toenails
+    dark magenta: dark magenta toenails
+    pink-magenta: pink-magenta toenails
+    light pink-magenta: light pink-magenta toenails
+    dark pink-magenta: dark pink-magenta toenails
+    pink: pink toenails
+    light pink: light pink toenails
+    dark pink: dark pink toenails
+    rose-red: rose-red toenails
+    light rose-red: light rose-red toenails
+    dark rose-red: dark rose-red toenails
+pose_features:
+  general_poses:
+    all fours: "on all fours, knees and palms on the ground"
+    arched back: "arching back, chest lifted proudly"
+    bent over: "bent over, hands on knees, back straight"
+    crossed legs: "cross-legged while standing or seated"
+    crouching low: "crouching low, on the balls of feet, arms relaxed"
+    deep squat: "deep squat, knees wide, heels flat on the floor"
+    flat sprawl: "sprawled on back, arms above head"
+    heels seated: "sitting between heels, legs folded to the sides"
+    hip pop: "hips tilted, one hand on hip"
+    kneeling both: "kneeling on both knees, sitting back on heels"
+    kneeling one: "resting on one knee, the other raised upright"
+    leaning forward: "leaning forward, arms resting on knees or thighs"
+    leg elevated: "one leg elevated, foot resting on a surface"
+    leg lift: "one leg lifted, playful or flirty bend at the knee"
+    legs open seated: "sitting with legs open, confident and casual"
+    legs up: "back flat, legs up against wall or bent"
+    lying spread: "lying down with legs spread, one knee bent up"
+    lying on back: "lying on back, one leg bent, other straight"
+    raised thigh: "thigh raised onto a ledge or step"
+    side extension: "leg extended out to the side, toes pointed"
+    side leg lift: "lying on side, lifting top leg up"
+    side lean: "leaning sideways, weight on one leg"
+    side lying: "lying on side, arm tucked under head"
+    side recline: "one leg bent up while lying sideways"
+    stomach sprawl: "lying on stomach, legs slightly parted"
+    twist seated: "seated with a twist, one hand on knee"
+    twist standing: "standing with a twist, one hand on hip"
+    twist and look: "twisting at the waist, glancing over shoulder"
+    wide stance: "standing wide stance, feet planted firm and far apart"
+    standing: "standing upright, relaxed posture, arms at sides"
+    sitting straight: "sitting upright in chair, back straight, hands on lap"
+    walking: "mid-step, one foot forward, natural walking motion"
+    reaching up: "reaching upward with one or both arms, stretching pose"
+    looking back: "looking back over shoulder, body facing forward"
+    reclining: "reclining back, propped up on elbows, relaxed"
+  arm_gestures:
+    adjusting_jewelry: "adjusting earring or necklace"
+    arms_crossed_chest: "arms crossed under chest"
+    hands_behind_head: "both hands behind head, elbows wide"
+    brushing_hair: "brushing hair behind ear"
+    fingers_in_waistband: "fingers hooked into waistband"
+    caressing_cheek: "hand gently caressing cheek or collarbone"
+    hand_over_heart: "hand resting over heart"
+    tracing_thigh: "hand tracing along thigh"
+    hands_clasped: "hands clasped in front or behind back"
+    hands_on_hips: "hands on hips, assertive posture"
+    holding_delicate: "holding something delicately"
+    lifting_skirt: "lifting skirt or tugging fabric"
+    hand_in_hair: "one arm raised, fingers in hair"
+    hand_on_chin: "one hand supporting chin"
+    pulling_sleeve: "pulling sleeve up or off shoulder"
+    pointing_finger: "pointing with index finger"
+    waving: "waving hello or goodbye"
+    peace_sign: "peace sign or V gesture"
+    hand_covering_mouth: "hand covering mouth in surprise"
+    arms_outstretched: "arms outstretched wide, welcoming"
+    hands_on_waist: "both hands on waist"
+    thumbs_up: "thumbs up gesture"
+quality_features:
+  boilerplate:
+    - "masterpiece"
+    - "best quality" 
+    - "very aesthetic"
+    - "detailed eyes"
+    - "ultra-detailed"
+    - "high resolution"
+  styles:
+    Photorealistic: "photorealistic, ultra-detailed, lighting realism, subsurface scattering skin, detailed skin, depth of field, moody atmosphere, backlit, cinematic background, bokeh, rule of thirds"
+    Portrait: "professional portrait, soft lighting, detailed facial features, shallow depth of field, studio quality, perfect skin texture, warm highlights"
+    Cinematic: "cinematic lighting, film grain, dramatic shadows, detailed skin, depth of field, bokeh, movie still quality, professional color grading"
+    Anime: "anime style, clean lines, cel shading, stylized, vibrant colors, dramatic lighting, perfect anime proportions"
+    Illustration: "digital illustration, bold outlines, stylized shading, vibrant colors, dynamic composition, clean vector style"
+    Oil Painting: "oil painting style, rich textures, painterly brushstrokes, classical technique, vibrant pigments, canvas texture, masterful blending"
+    Watercolor: "watercolor style, soft washes, delicate textures, flowing colors, artistic paper texture, transparent layers, organic bleeds"
+    Digital Art: "digital artwork, clean rendering, polished finish, modern techniques, vibrant colors, sharp details, professional digital painting"
+    Painterly: "painterly, brush strokes, traditional media feel, soft texture, rich colors, artistic lighting, impressionistic quality"
+    Hyperreal Fantasy: "hyperrealism, fantasy detail, surreal beauty, extremely detailed skin, enchanted lighting, magical atmosphere"
+    Dreamy: "soft focus, ethereal glow, dreamy atmosphere, gentle lighting, romantic mood, hazy quality, pastel tones"
+    Polaroid: "vintage polaroid style, instant film aesthetic, soft focus, warm vintage tones, slightly faded colors, nostalgic feel, film grain"
+    Black and White: "black and white photography, high contrast, dramatic shadows, classic monochrome, film noir lighting, timeless aesthetic"
+    Film Photography: "35mm film style, natural grain, authentic colors, slightly soft focus, vintage film aesthetic, organic quality"
+    Retro: "retro photography style, vintage colors, soft vignetting, film grain, nostalgic mood, classic composition, aged aesthetic"
+scene_features:
+  framing:
+    portrait: "portrait"
+    upper body: "upper body"
+    cowboy shot: "cowboy-shot"
+    feet out of frame: "feet out of frame"
+    full body: "full body"
+    wide shot: "wide shot"
+    very wide shot: "very wide shot"
+    lower body: "lower body"
+    head out of frame: "head out of frame"
+    eyes out of frame: "eyes out of frame"
+  angle:
+    Dutch angle: "Dutch angle"
+    from above: "from above"
+    from behind: "from behind"
+    from below: "from below"
+    from side: "from side"
+    high up: "high up"
+    multiple views: "multiple views"
+    sideways: "sideways"
+    straight-on: "straight-on"
+    upside-down: "upside-down"
+  emotion:
+    serene: "calm, relaxed, peaceful, tranquil"
+    flirty: "playful, teasing, alluring, coquettish"
+    dreamy: "wistful, soft, hazy, ethereal"
+    joyful: "smiling, laughing, delighted, exuberant"
+    brooding: "intense, moody, pensive, dramatic"
+    longing: "yearning, tender, wistful, vulnerable"
+    mischievous: "cheeky, sly, playful, impish"
+    shy: "blushing, hesitant, demure, nervous"
+    passionate: "fierce, devoted, ardent, smoldering"
+    melancholic: "sad, nostalgic, quiet, bittersweet"
+  time_of_day:
+    dawn: "dawn light, morning haze, soft glow, golden edges"
+    morning: "bright sunlight, gentle warmth, soft shadows, fresh air"
+    noon: "harsh sunlight, crisp contrast, vibrant colors, sharp shadows"
+    afternoon: "angled sunlight, mellow warmth, lazy glow, long shadows"
+    golden hour: "sunset light, golden glow, warm tones, soft focus"
+    dusk: "dim light, pastel sky, fading glow, tranquil ambiance"
+    night: "dark sky, cool tones, moody contrast, artificial lights"
+    midnight: "deep shadows, rich contrast, quiet stillness, mysterious atmosphere"
+  environment:
+    bedroom: "rumpled sheets, soft pillows, cozy clutter, intimate space"
+    cafe: "wood tables, mugs, warm bustle, soft chatter"
+    classroom: "desks, books, chalkboard, sunlight through windows"
+    forest: "lush greenery, dappled light, earthy tones, distant trees"
+    city street: "urban textures, neon lights, pavement reflections, background motion"
+    beach: "soft sand, ocean waves, warm breeze, sunlit water"
+    library: "shelves of books, quiet ambiance, dust motes, warm lamplight"
+    rooftop: "open sky, city skyline, cool breeze, distant lights"
+    garden: "flower blossoms, winding paths, vibrant colors, natural beauty"
+    bathhouse: "steamy air, tiled walls, dripping water, serene stillness"
+  lighting:
+    soft: "soft lighting, diffuse shadows, warm tones, gentle glow"
+    harsh: "strong lighting, sharp contrast, defined shadows, high clarity"
+    backlit: "backlighting, glowing edges, rim light, halo effect"
+    spotlight: "focused light, dramatic shadow, high contrast, center emphasis"
+    candlelit: "warm flicker, low light, golden glow, romantic ambiance"
+    neon: "colorful neon, glowing edges, electric hues, high saturation"
+    dappled: "dappled light, leaf shadows, soft highlights, natural pattern"
+    moonlit: "cool tones, soft shadows, subtle glow, mysterious atmosphere"
+    overcast: "diffuse light, muted tones, soft shadows, low contrast"
+    strobe: "flashing light, high contrast, dynamic motion, chaotic energy"
