@@ -71,6 +71,9 @@ class EncodingEnchantress:
                 "body": ("BODY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
+                # Oracle's Override controls placed at end; ensure override is second-to-last above nullifier
+                "override_prompts": ("BOOLEAN", {"default": False, "forceInput": True, "defaultInput": False}),
+                "override": ("STRING", {"multiline": True, "forceInput": True, "defaultInput": False}),
                 "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True})
             }
         }
@@ -440,7 +443,9 @@ class EncodingEnchantress:
                   body="",
                   aesthetic="",
                   pose="",
-                  nullifier=""):
+                  nullifier="",
+                  override="",
+                  override_prompts=False):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -503,6 +508,7 @@ class EncodingEnchantress:
         aesthetic, _ = _unwrap_bundle(aesthetic)
         pose, _ = _unwrap_bundle(pose)
         nullifier, _ = _unwrap_bundle(nullifier)
+        # override is plain string input; normalize below
 
         # Normalize to strings for downstream processing
         def _ensure_str(v):
@@ -514,6 +520,7 @@ class EncodingEnchantress:
         aesthetic = _ensure_str(aesthetic)
         pose = _ensure_str(pose)
         nullifier = _ensure_str(nullifier)
+        override = _ensure_str(override)
 
         # Save originals for token savings calculations (strings only)
         original_segments = {
@@ -522,8 +529,11 @@ class EncodingEnchantress:
             "negative": nullifier or "",
         }
 
-        # Combine all text for reference (pre-processing)
-        pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
+        # Combine all text for reference (pre-processing) unless override is active
+        if bool(override_prompts) and override.strip():
+            pos_text = override.strip()
+        else:
+            pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
 
         # Optional prompt processing pipeline (Essence Algorithm only)
         processor_choice = "Essence Algorithm" if optimize_prompt else "None"
@@ -594,7 +604,11 @@ class EncodingEnchantress:
         enc_negative = self.encode_with_strength(clip, combined_negative, negative_strength) if combined_negative else None
         negative_combined = self._combine_conditioning(enc_negative)
         
-        if mode == "closeup":
+        # If override is active, encode positive strictly from override and skip mode grouping
+        if bool(override_prompts) and pos_text:
+            enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0)
+            positive_combined = enc_all_positive if enc_all_positive else [[]]
+        elif mode == "closeup":
             # Closeup mode: encode glamour separately for character emphasis with closeup focus
             # Filter framing from scene to avoid conflicts with closeup framing
             filtered_scene = self._filter_scene_framing(scene)
@@ -659,6 +673,9 @@ class EncodingEnchantress:
             ("🤩 Pose Priestess", pose),
             ("🚫 Negativity Nullifier", nullifier)
         ]
+        # If override is active, report it succinctly at the top
+        if bool(override_prompts) and override.strip():
+            token_items.insert(0, ("🔮 Oracle's Override", override.strip()))
         
         token_report_text = self._make_token_report(clip, token_items, token_report)
 

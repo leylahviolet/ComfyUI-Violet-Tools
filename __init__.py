@@ -10,6 +10,7 @@ from .nodes.encoding_enchantress import EncodingEnchantress
 from .nodes.negativity_nullifier import NegativityNullifier
 from .nodes.character_inspector import CharacterInspector
 from .nodes.character_curator import CharacterCurator
+from .nodes.oracle_override import OracleOverride
 
 # Enable web extensions
 WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
@@ -30,7 +31,8 @@ NODE_CLASS_MAPPINGS = {
     "AestheticAlchemist": AestheticAlchemist,
     "PosePriestess": PosePriestess,
     "NegativityNullifier": NegativityNullifier,
-    "CharacterCurator": CharacterCurator
+    "CharacterCurator": CharacterCurator,
+    "OracleOverride": OracleOverride
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -43,5 +45,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "PosePriestess": "🤩 Pose Priestess",
     "NegativityNullifier": "🚫 Negativity Nullifier",
     "CharacterCurator": "💖 Character Curator"
-    ,"CharacterInspector": "🪞 Character Inspector"
+    ,"CharacterInspector": "🪞 Character Inspector",
+    "OracleOverride": "🔮 Oracle's Override"
 }
