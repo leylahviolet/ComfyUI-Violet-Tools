@@ -350,7 +350,8 @@
         'EncodingEnchantress',
         'NegativityNullifier',
         'OracleOverride',
-        'CharacterCurator'
+        'CharacterCurator',
+        'SaveSiren'
     ];
 
     // Track styled nodes to avoid duplicate styling
