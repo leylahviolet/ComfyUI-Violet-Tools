@@ -113,7 +113,7 @@
     function shouldEnhanceWidget(widget, node) {
         if (!widget || !node || !colorPalette) return false;
         if (widget.type !== 'combo') return false;
-        const nodeType = node.type;
+    const nodeType = node.type;
     if (!nodeType || !nodeType.match(/^(GlamourGoddess|BodyBard|AestheticAlchemist|QualityQueen|SceneSeductress|PosePriestess|EncodingEnchantress|NegativityNullifier)$/)) return false;
         return widget.name && Object.keys(colorPalette.colorFields).includes(widget.name);
     }

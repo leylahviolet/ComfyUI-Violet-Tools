@@ -121,7 +121,7 @@ The Aesthetic Alchemist includes carefully curated definitions for:
 
   ```bash
   cd ComfyUI/custom_nodes
-  git clone https://github.com/leylahkrell/ComfyUI-Violet-Tools.git
+  git clone https://github.com/leylahviolet/ComfyUI-Violet-Tools.git
   ```
 
 1. Restart ComfyUI to load the new nodes.
