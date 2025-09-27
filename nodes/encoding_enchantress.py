@@ -71,9 +71,8 @@ class EncodingEnchantress:
                 "body": ("BODY_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "aesthetic": ("AESTHETIC_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
                 "pose": ("POSE_STRING", {"multiline": False, "forceInput": True, "defaultInput": True}),
-                # Oracle's Override controls placed at end; ensure override is second-to-last above nullifier
-                "override_prompts": ("BOOLEAN", {"default": False, "forceInput": True, "defaultInput": False}),
-                "override": ("STRING", {"multiline": True, "forceInput": True, "defaultInput": False}),
+                # Oracle's Override: provide a single optional string; if not null, it replaces positive
+                "override": ("OVERRIDE_STRING", {"multiline": True, "forceInput": True, "defaultInput": False}),
                 "nullifier": ("NULLIFIER_STRING", {"multiline": False, "forceInput": True, "defaultInput": True})
             }
         }
@@ -444,8 +443,7 @@ class EncodingEnchantress:
                   aesthetic="",
                   pose="",
                   nullifier="",
-                  override="",
-                  override_prompts=False):
+                  override=None):
         """
         Main function that combines prompts and creates weighted conditioning data.
         
@@ -478,13 +476,8 @@ class EncodingEnchantress:
             clip: CLIP model instance
             mode (str): Operation mode - "closeup", "portrait", "compete combine", or "smooth blend"
             body_strength (float): Strength multiplier for body-related prompts
-            vibe_strength (float): Strength multiplier for quality + aesthetic combination
             negative_strength (float): Strength multiplier for negative prompt
             quality (str): Quality prompt string
-            scene (str): Scene prompt string
-            glamour (str): Glamour prompt string
-            body (str): Body prompt string
-            aesthetic (str): Aesthetic prompt string
             pose (str): Pose prompt string
             nullifier (str): Negative prompt string
             
@@ -508,7 +501,7 @@ class EncodingEnchantress:
         aesthetic, _ = _unwrap_bundle(aesthetic)
         pose, _ = _unwrap_bundle(pose)
         nullifier, _ = _unwrap_bundle(nullifier)
-        # override is plain string input; normalize below
+    # override may be None (OracleOverride disabled); do not coerce to string here
 
         # Normalize to strings for downstream processing
         def _ensure_str(v):
@@ -520,7 +513,11 @@ class EncodingEnchantress:
         aesthetic = _ensure_str(aesthetic)
         pose = _ensure_str(pose)
         nullifier = _ensure_str(nullifier)
-        override = _ensure_str(override)
+        # Normalize override: keep None if disabled, otherwise strip to string (empty allowed)
+        if override is not None and not isinstance(override, str):
+            override = str(override)
+        if isinstance(override, str):
+            override = override.strip()
 
         # Save originals for token savings calculations (strings only)
         original_segments = {
@@ -529,9 +526,9 @@ class EncodingEnchantress:
             "negative": nullifier or "",
         }
 
-        # Combine all text for reference (pre-processing) unless override is active
-        if bool(override_prompts) and override.strip():
-            pos_text = override.strip()
+        # Determine positive text: if override provided (not None), use it; else combine segments
+        if override is not None:
+            pos_text = override
         else:
             pos_text = self._combine_text(quality, scene, body, glamour, aesthetic, pose)
 
@@ -551,15 +548,15 @@ class EncodingEnchantress:
 
         pre_counts = {k: _count_tokens(v) for k, v in original_segments.items()}
 
-        if processor_choice != "None":
+        if processor_choice != "None" and override is None:
             try:
                 # Use bundled algorithm-only consolidator
                 # Ensure dependency for fuzzy matching exists
                 self._ensure_requirements(["rapidfuzz"], allow_auto_install=False)
-                import importlib.util, sys
                 pkg_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                 base_dir = os.path.join(pkg_root, "node_resources")
                 consolidator_path = os.path.join(base_dir, "prompt_consolidator.py")
+                import importlib.util, sys
                 spec = importlib.util.spec_from_file_location("vt_prompt_consolidator", consolidator_path)
                 if not spec or not spec.loader:
                     raise ImportError(f"Unable to load consolidator at {consolidator_path}")
@@ -604,10 +601,14 @@ class EncodingEnchantress:
         enc_negative = self.encode_with_strength(clip, combined_negative, negative_strength) if combined_negative else None
         negative_combined = self._combine_conditioning(enc_negative)
         
-        # If override is active, encode positive strictly from override and skip mode grouping
-        if bool(override_prompts) and pos_text:
+        # If override is provided, encode positive strictly from override and skip mode grouping
+        if override is not None:
             enc_all_positive = self.encode_with_strength(clip, pos_text, 1.0)
             positive_combined = enc_all_positive if enc_all_positive else [[]]
+            # Build token report early and return
+            token_items = [("🔮 Oracle's Override", pos_text), ("🚫 Negativity Nullifier", nullifier)]
+            token_report_text = self._make_token_report(clip, token_items, token_report)
+            return (positive_combined, negative_combined, token_report_text, pos_text, combined_negative)
         elif mode == "closeup":
             # Closeup mode: encode glamour separately for character emphasis with closeup focus
             # Filter framing from scene to avoid conflicts with closeup framing
@@ -673,9 +674,9 @@ class EncodingEnchantress:
             ("🤩 Pose Priestess", pose),
             ("🚫 Negativity Nullifier", nullifier)
         ]
-        # If override is active, report it succinctly at the top
-        if bool(override_prompts) and override.strip():
-            token_items.insert(0, ("🔮 Oracle's Override", override.strip()))
+        # If override was provided, report it succinctly at the top
+        if override is not None:
+            token_items.insert(0, ("🔮 Oracle's Override", pos_text))
         
         token_report_text = self._make_token_report(clip, token_items, token_report)
 
@@ -693,7 +694,7 @@ class EncodingEnchantress:
                 "negative": _only_text(nullifier),
             }
             post_counts = {k: _count_tokens(v) for k, v in post_segments.items()}
-            savings_lines = ["— Token savings (approx):"]
+            savings_lines = ["🪙 Token Savings"]
             total_pre = total_post = 0
             for k in ("quality","scene","glamour","body","aesthetic","pose"):
                 a = pre_counts.get(k, 0); b = post_counts.get(k, 0)

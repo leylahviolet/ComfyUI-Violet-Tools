@@ -2,11 +2,28 @@
 
 ## [Unreleased]
 
-### 🔧 Paths
+No unreleased changes.
 
-- Characters now save to ComfyUI/user/default/comfyui-violet-tools/characters with a legacy read-only fallback of ComfyUI/output/characters. This aligns storage with common ComfyUI conventions and preserves existing workflows.
+## [2.1.0] - 2025-09-26
 
-## [2.0.0] - 2025-09-27
+### 🔮 Oracle's Override (Refined)
+
+- Simplified to a single output: `override`.
+- New `chain` input lets you prepend text to the manual override; both `chain` and `override` are joined with ", " and support wildcards using `{a|b|c}` syntax (resolved repeatedly until stable).
+- Output is `null` unless `override_prompts` is true. When true, the combined string is emitted and used as the full positive prompt.
+- VT styling applied to the node for consistent visuals.
+
+### 🧬 Encoding Enchantress Integration
+
+- Accepts a single optional `override` input. If the value is not null (empty string allowed), it is used as the entire positive prompt, skipping mode grouping. If null, normal prompt assembly proceeds.
+- Token report includes the override section when used.
+
+### 🧹 Cleanup (Legacy Removal)
+
+- Fully removed legacy character nodes from the repository: `Character Creator` and `Character Cache`.
+- Backend character module is wireless-only now: removed prompt-time UI sync code; kept REST endpoints for Curator (GET/POST/DELETE `/violet/character`).
+
+## [2.0.0] - 2025-09-26
 
 ### ✨ Wireless Character Flow
 

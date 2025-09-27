@@ -61,9 +61,7 @@
         for (const id in nodes) {
             const n = nodes[id];
             const t = n && n.type;
-            if (t && (t === 'CharacterCurator' || t === '💖 Character Curator')) return n; // preferred
-            // Legacy fallback (if present in old sessions)
-            if (t && (t === 'CharacterCache' || t === '🗃️ Character Cache')) return n;
+            if (t && (t === 'CharacterCurator' || t === '💖 Character Curator')) return n; // Curator only in 2.0+
         }
         return null;
     }
@@ -71,8 +69,8 @@
     function getSelectedCharacterName() {
         const sel = findCharacterSelectorNode();
         if (!sel || !sel.widgets) return null;
-        // Curator stores selection in 'load_character'; legacy Cache used 'character'
-        const w = sel.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+        // Curator stores selection in 'load_character'
+        const w = sel.widgets.find(w => w && w.name === 'load_character');
         return w ? w.value : null;
     }
 
@@ -230,11 +228,11 @@
                 try { showCharacterNameOverlay(node); } catch(e) {}
             });
             const saveBtn = node.addWidget('button', 'Save Character', 'save', async () => {
-                // CharacterCurator uses save_character; Creator uses character_name
+                // CharacterCurator uses save_character
                 let nm = '';
                 try {
                     if (Array.isArray(node.widgets)) {
-                        const pref = node.widgets.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                        const pref = node.widgets.find(w => w && w.name === 'save_character');
                         nm = pref && typeof pref.value === 'string' ? pref.value : '';
                     }
                 } catch(e) {}
@@ -247,7 +245,7 @@
                 let sel = '';
                 try {
                     if (Array.isArray(node.widgets)) {
-                        const w = node.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                        const w = node.widgets.find(w => w && w.name === 'load_character');
                         sel = w && typeof w.value === 'string' ? w.value : '';
                     }
                 } catch(e) {}
@@ -258,7 +256,7 @@
                         if (res.ok) {
                             toast(`Deleted '${sel}'.`, 'success');
                             try {
-                                const w = node.widgets.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                                const w = node.widgets.find(w => w && w.name === 'load_character');
                                 if (w) w.value = 'None';
                                 if (node && node.graph && typeof node.setDirtyCanvas === 'function') node.setDirtyCanvas(true, true);
                             } catch(e) {}
@@ -275,8 +273,8 @@
             // Reorder widgets: [Browse], save_character, [Save], [spacer], load_character, [Load All], [Delete]
             try {
                 const ws = Array.isArray(node.widgets) ? node.widgets.slice() : [];
-                const saveField = ws.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
-                const loadField = ws.find(w => w && (w.name === 'load_character' || w.name === 'character'));
+                const saveField = ws.find(w => w && w.name === 'save_character');
+                const loadField = ws.find(w => w && w.name === 'load_character');
                 const spacer = { name: '__vt_gap__', type: 'vt-spacer', computeSize: () => [node.size ? node.size[0] : 140, 14] };
                 const desired = [];
                 if (browseBtn) desired.push(browseBtn);
@@ -351,6 +349,7 @@
         'PosePriestess',
         'EncodingEnchantress',
         'NegativityNullifier',
+        'OracleOverride',
         'CharacterCurator'
     ];
 
@@ -761,7 +760,7 @@
         } else {
             renderNameList(list, all, (picked) => {
                 try {
-                    const w = node.widgets.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                    const w = node.widgets.find(w => w && w.name === 'save_character');
                     if (w) w.value = picked;
                     if (node && node.graph && typeof node.setDirtyCanvas === 'function') node.setDirtyCanvas(true, true);
                 } catch(e) {}
@@ -773,7 +772,7 @@
             const filtered = all.filter(n => n.toLowerCase().includes(q));
             if (filtered.length === 0) showEmpty(); else renderNameList(list, filtered, (picked) => {
                 try {
-                    const w = node.widgets.find(w => w && (w.name === 'save_character' || w.name === 'character_name'));
+                    const w = node.widgets.find(w => w && w.name === 'save_character');
                     if (w) w.value = picked;
                     if (node && node.graph && typeof node.setDirtyCanvas === 'function') node.setDirtyCanvas(true, true);
                 } catch(e) {}
