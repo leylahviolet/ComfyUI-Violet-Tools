@@ -18,7 +18,15 @@ No unreleased changes.
 - Accepts a single optional `override` input. If the value is not null (empty string allowed), it is used as the entire positive prompt, skipping mode grouping. If null, normal prompt assembly proceeds.
 - Token report includes the override section when used.
 
-### 🧹 Cleanup (Legacy Removal)
+### � Prompt Optimization (Essence Algorithm)
+
+- New optional `optimize_prompt` toggle in 🧬 Encoding Enchantress compresses redundant tags and canonicalizes aliases to reduce total token count — improving effective attention on what matters.
+- Purely algorithmic (no LLM). Uses curated allowlists, alias maps, and feature metadata bundled under `node_resources/`.
+- Safe heuristics: preserves unknowns, applies conservative fuzzy matching with a retention guard, and adds back originals if a reduction would over-trim.
+- Scope: optimizes positive segments only (quality, scene, glamour, body, aesthetic, pose). Negatives are left unchanged. Disabled automatically when 🔮 Oracle's Override is used.
+- Reporting: when `token_report` is enabled, a "🪙 Token Savings" section is appended showing per-segment and total before→after token counts.
+
+### �🧹 Cleanup (Legacy Removal)
 
 - Fully removed legacy character nodes from the repository: `Character Creator` and `Character Cache`.
 - Backend character module is wireless-only now: removed prompt-time UI sync code; kept REST endpoints for Curator (GET/POST/DELETE `/violet/character`).

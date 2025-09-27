@@ -13,6 +13,10 @@ Advanced text encoding and prompt processing node for enhanced prompt interpreta
 - Four encoding modes: closeup, portrait, smooth blend, and compete combine
 - Individual strength controls for different prompt elements
 - Optional manual override: accepts a single override string from 🔮 Oracle's Override; when present, it becomes the entire positive prompt
+- Optional prompt optimization: the Essence Algorithm reduces redundant tokens and canonicalizes aliases to maximize attention on key concepts
+  - Purely algorithmic (no LLM); positive-only (quality, scene, glamour, body, aesthetic, pose)
+  - Disabled automatically when 🔮 Oracle's Override is used
+  - When `token_report` is on, adds a “🪙 Token Savings” summary with before→after counts
 - **Token Report System**: Detailed analysis of token usage per Violet Tools node
   - Shows 77-token chunk breakdown for each prompt component
   - SDXL support with merged stream analysis
