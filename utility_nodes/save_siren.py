@@ -61,6 +61,46 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
         print(f"🧜‍♀️ Save Siren Debug: Model object type: {type(model_obj)}")
         print(f"🧜‍♀️ Save Siren Debug: Model object attrs: {[attr for attr in dir(model_obj) if not attr.startswith('_')][:15]}")
         
+        # Method 0: Try ComfyUI's checkpoint state manager (most direct approach)
+        try:
+            import comfy.sd
+            if hasattr(comfy.sd, 'current_checkpoint') and comfy.sd.current_checkpoint:
+                checkpoint_info = comfy.sd.current_checkpoint
+                print(f"🧜‍♀️ Save Siren Debug: Found current_checkpoint: {checkpoint_info}")
+                if isinstance(checkpoint_info, str):
+                    name = _extract_model_name(checkpoint_info)
+                    if os.path.exists(checkpoint_info):
+                        model_hash = _get_file_hash(checkpoint_info)
+                        print(f"🧜‍♀️ Save Siren Debug: Found via checkpoint state: {name}")
+                elif hasattr(checkpoint_info, 'filename'):
+                    name = _extract_model_name(checkpoint_info.filename)
+                    if os.path.exists(checkpoint_info.filename):
+                        model_hash = _get_file_hash(checkpoint_info.filename)
+                        print(f"🧜‍♀️ Save Siren Debug: Found via checkpoint.filename: {name}")
+        except ImportError:
+            print("🧜‍♀️ Save Siren Debug: comfy.sd not available")
+        except Exception as e:
+            print(f"🧜‍♀️ Save Siren Debug: checkpoint state error: {e}")
+        
+        # Method 0b: Try model_management module
+        if not name:
+            try:
+                import comfy.model_management
+                # Some versions store checkpoint info in model_management
+                if hasattr(comfy.model_management, 'current_loaded_model'):
+                    current_model = comfy.model_management.current_loaded_model
+                    print(f"🧜‍♀️ Save Siren Debug: current_loaded_model type: {type(current_model)}")
+                    if hasattr(current_model, 'model_path'):
+                        model_path = current_model.model_path
+                        if model_path and os.path.exists(model_path):
+                            name = _extract_model_name(model_path)
+                            model_hash = _get_file_hash(model_path)
+                            print(f"🧜‍♀️ Save Siren Debug: Found via model_management: {name}")
+            except ImportError:
+                print("🧜‍♀️ Save Siren Debug: comfy.model_management not available")
+            except Exception as e:
+                print(f"🧜‍♀️ Save Siren Debug: model_management error: {e}")
+        
         # Additional debug for ModelPatcher
         if type(model_obj).__name__ == 'ModelPatcher':
             print(f"🧜‍♀️ Save Siren Debug: ModelPatcher-specific attrs: {[attr for attr in dir(model_obj) if 'model' in attr.lower() or 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]}")
@@ -74,6 +114,18 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
                 model_inner = model_obj.model
                 print(f"🧜‍♀️ Save Siren Debug: Inner model type: {type(model_inner)}")
                 print(f"🧜‍♀️ Save Siren Debug: Inner model attrs: {[attr for attr in dir(model_inner) if not attr.startswith('_')][:15]}")
+                
+                # Check if inner model has current_patcher that might lead back to path info
+                if hasattr(model_inner, 'current_patcher') and model_inner.current_patcher:
+                    patcher = model_inner.current_patcher
+                    print(f"🧜‍♀️ Save Siren Debug: Found current_patcher: {type(patcher)}")
+                    if hasattr(patcher, 'filename') or hasattr(patcher, 'model_path'):
+                        path = getattr(patcher, 'filename', None) or getattr(patcher, 'model_path', None)
+                        if path and os.path.exists(path):
+                            name = _extract_model_name(path)
+                            model_hash = _get_file_hash(path)
+                            print(f"🧜‍♀️ Save Siren Debug: Found via current_patcher: {name}")
+                
                 # Look for path-related attributes in inner model
                 path_attrs = [attr for attr in dir(model_inner) if 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]
                 if path_attrs:
