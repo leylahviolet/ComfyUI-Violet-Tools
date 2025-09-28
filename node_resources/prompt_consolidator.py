@@ -72,9 +72,13 @@ def _alias_or_canonical(token: str, cfg: ConsolidationConfig) -> str:
                 return canon
     match = rf_process.extractOne(key, cfg.allowlist, scorer=fuzz.QRatio)
     if match:
-        candidate, score, _ = match
-        if score >= 90:
-            return candidate
+        try:
+            candidate, score, _ = match
+            if score >= 90:
+                return candidate
+        except (ValueError, TypeError):
+            # Handle cases where match doesn't unpack to 3 elements
+            pass
     return key
 
 
@@ -122,6 +126,19 @@ def _soft_compact_fallback(input_text: str, cfg: ConsolidationConfig) -> str:
 
 def consolidate_algorithmic(input_text: str, cfg: ConsolidationConfig) -> str:
     tokens = _split_and_clean(input_text)
+    if not tokens:
+        return ""
+
+    # Filter out placeholder values that shouldn't be processed as real tokens
+    filtered_tokens = []
+    placeholder_values = {"random", "none", "unspecified", "missing"}
+    
+    for token in tokens:
+        token_lower = token.lower().strip()
+        if token_lower not in placeholder_values:
+            filtered_tokens.append(token)
+    
+    tokens = filtered_tokens
     if not tokens:
         return ""
 

@@ -4,6 +4,16 @@
 
 No unreleased changes.
 
+## [2.1.2] - 2025-09-28
+
+### 🐛 Critical Fixes
+
+- **Essence Algorithm Error Handling**: Fixed "kSampler list index out of range" error that occurred when using optimize_prompt with characters that had empty negative prompts
+  - Enhanced `_alias_or_canonical` function with proper tuple unpacking error handling for rapidfuzz results
+  - Added placeholder value filtering to consolidator (removes "random", "none", "unspecified", etc.)
+  - Fixed negative conditioning handling to always return valid conditioning objects instead of None
+  - Characters with empty negative prompts (like default Character Curator saves) now work properly with prompt optimization
+
 ## [2.1.1] - 2025-09-27
 
 ### 🐛 Critical Fix

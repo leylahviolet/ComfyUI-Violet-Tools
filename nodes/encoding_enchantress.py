@@ -597,9 +597,14 @@ class EncodingEnchantress:
         cowboy_negative = self._check_for_cowboys(scene)
         combined_negative = self._combine_text(nullifier, cowboy_negative)
         
-        # Encode negative
-        enc_negative = self.encode_with_strength(clip, combined_negative, negative_strength) if combined_negative else None
-        negative_combined = self._combine_conditioning(enc_negative)
+        # Encode negative - ensure we always have a valid negative conditioning
+        if combined_negative and combined_negative.strip():
+            enc_negative = self.encode_with_strength(clip, combined_negative, negative_strength)
+            negative_combined = self._combine_conditioning(enc_negative)
+        else:
+            # Create a minimal empty negative conditioning that ComfyUI can handle
+            enc_negative = self.encode_with_strength(clip, "", 1.0)
+            negative_combined = self._combine_conditioning(enc_negative)
         
         # If override is provided, encode positive strictly from override and skip mode grouping
         if override is not None:
