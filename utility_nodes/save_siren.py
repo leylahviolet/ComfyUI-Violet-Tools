@@ -593,7 +593,82 @@ class SaveSiren:
                                     
                                     # Check if target model has patches or additional_models directly
                                     if hasattr(model, 'patches') and model.patches:
-                                        print(f"  Target has {len(model.patches)} patches")
+                                        patch_count = len(model.patches)
+                                        print(f"  Target has {patch_count} patches")
+                                        
+                                        # LoRAs are often stored as patches - let's inspect them
+                                        lora_list = []
+                                        lora_keys_found = set()
+                                        
+                                        # Sample some patch keys to look for LoRA patterns
+                                        patch_keys = list(model.patches.keys())
+                                        print(f"  Sample patch keys: {patch_keys[:10]}")
+                                        
+                                        # Look for LoRA-style patch keys and try to extract LoRA names
+                                        for patch_key in patch_keys:
+                                            patch_data = model.patches[patch_key]
+                                            
+                                            # LoRA patches often have specific patterns
+                                            if isinstance(patch_key, str):
+                                                # Look for common LoRA layer patterns
+                                                if any(lora_pattern in patch_key.lower() for lora_pattern in ['lora_up', 'lora_down', 'lora.up', 'lora.down']):
+                                                    print(f"    LoRA patch found: {patch_key}")
+                                                    
+                                                    # Extract LoRA name from patch data if possible
+                                                    if hasattr(patch_data, '__len__') and len(patch_data) >= 3:
+                                                        # LoRA patches are often tuples: (strength, patch_info, lora_key)
+                                                        try:
+                                                            if len(patch_data) >= 3 and hasattr(patch_data[2], 'get'):
+                                                                lora_info = patch_data[2]
+                                                                if 'lora_key' in lora_info:
+                                                                    lora_key = lora_info['lora_key']
+                                                                    print(f"      LoRA key: {lora_key}")
+                                                                    if lora_key not in lora_keys_found:
+                                                                        lora_keys_found.add(lora_key)
+                                                                        # Try to extract filename from lora_key
+                                                                        if hasattr(lora_key, 'filename') or hasattr(lora_key, 'model_path'):
+                                                                            lora_path = getattr(lora_key, 'filename', None) or getattr(lora_key, 'model_path', None)
+                                                                            if lora_path:
+                                                                                lora_name = _extract_model_name(lora_path)
+                                                                                print(f"        *** Found LoRA: {lora_name} from path: {lora_path} ***")
+                                                                                lora_list.append({
+                                                                                    'name': lora_name,
+                                                                                    'hash': _get_file_hash(lora_path) if os.path.exists(lora_path) else None
+                                                                                })
+                                                        except Exception as e:
+                                                            print(f"      Error extracting LoRA from patch: {e}")
+                                        
+                                        # Alternative: look for LoRA info in patch structure
+                                        if not lora_list and patch_count > 100:  # If we have many patches but no LoRAs found
+                                            print(f"  Attempting alternative LoRA extraction from {patch_count} patches...")
+                                            
+                                            # Try to get LoRA info from model's additional models or other attributes
+                                            for attr in ['lora_models', 'loaded_loras', 'applied_loras']:
+                                                if hasattr(model, attr):
+                                                    lora_attr = getattr(model, attr)
+                                                    print(f"    Found {attr}: {lora_attr}")
+                                            
+                                            # Check if model has a method to get LoRA info
+                                            if hasattr(model, 'get_additional_models'):
+                                                additional = model.get_additional_models()
+                                                print(f"    get_additional_models(): {additional}")
+                                                
+                                            # Sample a few patches to see their structure
+                                            for i, (patch_key, patch_data) in enumerate(list(model.patches.items())[:3]):
+                                                print(f"    Patch {i}: {patch_key} -> {type(patch_data)}")
+                                                if hasattr(patch_data, '__len__') and len(patch_data) > 0:
+                                                    print(f"      Patch data structure: {[type(item) for item in patch_data] if hasattr(patch_data, '__iter__') else 'Not iterable'}")
+                                                    if hasattr(patch_data, '__iter__'):
+                                                        for j, item in enumerate(patch_data):
+                                                            if j >= 3:  # Only show first 3 items
+                                                                break
+                                                            print(f"        Item {j}: {type(item)} - {str(item)[:50]}...")
+                                        
+                                        if lora_list:
+                                            # Store as JSON string to match metadata format
+                                            model_info['loras_json'] = json.dumps(lora_list)
+                                            print(f"      *** Extracted {len(lora_list)} LoRAs from patches ***")
+                                    
                                     if hasattr(model, 'additional_models') and model.additional_models:
                                         print(f"  Target has {len(model.additional_models)} additional_models")
                                         for add_key, add_model in model.additional_models.items():
