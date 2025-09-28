@@ -18,6 +18,9 @@ def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]
     arr = image
     if isinstance(arr, list):  # Some nodes pass lists
         arr = arr[0]
+    # Convert tensor to numpy if needed
+    if hasattr(arr, 'cpu'):  # PyTorch tensor
+        arr = arr.cpu().numpy()
     if arr.ndim == 4:  # B,H,W,C -> take first
         _, h, w, _ = arr.shape
     elif arr.ndim == 3:  # H,W,C
@@ -35,6 +38,9 @@ def _to_pil(image: Optional[np.ndarray]) -> Image.Image:
         arr = arr[0]
     if arr.ndim == 4:
         arr = arr[0]
+    # Convert tensor to numpy if needed (ComfyUI passes tensors)
+    if hasattr(arr, 'cpu'):  # PyTorch tensor
+        arr = arr.cpu().numpy()
     # Convert from 0..1 float to 0..255 uint8
     arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
     return Image.fromarray(arr)
