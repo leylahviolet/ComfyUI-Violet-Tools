@@ -4,6 +4,15 @@
 
 No unreleased changes.
 
+## [2.1.1] - 2025-09-27
+
+### 🐛 Critical Fix
+
+- **Character Sync Distribution**: Moved `character_sync.py` from ignored `lib/` folder to `node_resources/` folder
+  - Fixes "works on my machine" issue where character sync functionality was only available locally
+  - All users now receive character sync endpoints and functionality
+  - Updated import paths accordingly
+
 ## [2.1.0] - 2025-09-26
 
 ### 🔮 Oracle's Override (Refined)
@@ -50,7 +59,7 @@ No unreleased changes.
 ### 🧰 Internals
 
 - Web: `vt-node-styling.js` injects Curator buttons and overlay UI.
-- Server: `lib/character_sync.py` adds name listing (`_list_character_names`) and bumps saved payload `violet_tools_version` to `2.0.0`.
+- Server: `node_resources/character_sync.py` adds name listing (`_list_character_names`) and bumps saved payload `violet_tools_version` to `2.0.0`.
 - Kept all existing string type identifiers and return orders stable for compatibility.
 
 ## [1.5.0] - 2025-09-26

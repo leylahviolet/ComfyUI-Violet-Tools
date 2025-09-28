@@ -17,7 +17,7 @@ WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "web")
 
 # Side-effect import: registers /violet/character endpoint and on-prompt handler
 try:
-    from .lib import character_sync  # noqa: F401
+    from .node_resources import character_sync  # noqa: F401
 except (ImportError, RuntimeError):
     # Non-fatal: if server isn't available in this context, skip silently
     pass
