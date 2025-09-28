@@ -48,7 +48,7 @@ def _to_pil(image: Optional[np.ndarray]) -> Image.Image:
 def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
     """
     Extract model name and hash from ComfyUI MODEL object.
-    Based on patterns from save_image_extended.py and utils_info.py.
+    Handles various ComfyUI model object structures.
     """
     if model_obj is None:
         return {"name": None, "hash": None}
@@ -57,51 +57,110 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
     model_hash = None
     
     try:
-        # Try to get model config/path info (ComfyUI model objects usually have these)
+        # Debug: Print model object structure (remove this after debugging)
+        print(f"🧜‍♀️ Save Siren Debug: Model object type: {type(model_obj)}")
+        print(f"🧜‍♀️ Save Siren Debug: Model object attrs: {[attr for attr in dir(model_obj) if not attr.startswith('_')][:10]}")
+        
+        # Method 1: Try model.model.model_config.unet_config approach
         if hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_config'):
             config = model_obj.model.model_config
             if hasattr(config, 'unet_config') and hasattr(config.unet_config, 'model_path'):
                 model_path = config.unet_config.model_path
-                if model_path:
-                    # Extract name from path
-                    name = os.path.splitext(os.path.basename(model_path))[0]
-                    # Remove common model extensions  
-                    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
-                        name = name.removesuffix(ext)
-                    
-                    # Calculate hash if file exists
-                    if os.path.exists(model_path):
-                        model_hash = _get_file_hash(model_path)
+                if model_path and os.path.exists(model_path):
+                    name = _extract_model_name(model_path)
+                    model_hash = _get_file_hash(model_path)
+                    print(f"🧜‍♀️ Save Siren Debug: Found via method 1: {name}")
         
-        # Alternative: try to get from model patcher (another ComfyUI pattern)
-        elif hasattr(model_obj, 'model_patcher'):
+        # Method 2: Try ModelPatcher pattern (very common in ComfyUI)
+        if not name and hasattr(model_obj, 'model_patcher'):
             patcher = model_obj.model_patcher
-            if hasattr(patcher, 'model_options') and 'model_path' in patcher.model_options:
-                model_path = patcher.model_options['model_path']
-                if model_path:
-                    name = os.path.splitext(os.path.basename(model_path))[0]
-                    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
-                        name = name.removesuffix(ext)
-                    if os.path.exists(model_path):
-                        model_hash = _get_file_hash(model_path)
+            print(f"🧜‍♀️ Save Siren Debug: Found model_patcher, attrs: {[attr for attr in dir(patcher) if not attr.startswith('_')][:10]}")
+            # Check for model_options dict
+            if hasattr(patcher, 'model_options') and isinstance(patcher.model_options, dict):
+                print(f"🧜‍♀️ Save Siren Debug: model_options keys: {list(patcher.model_options.keys())}")
+                model_path = patcher.model_options.get('model_path')
+                if model_path and os.path.exists(model_path):
+                    name = _extract_model_name(model_path)
+                    model_hash = _get_file_hash(model_path)
+                    print(f"🧜‍♀️ Save Siren Debug: Found via method 2: {name}")
         
-        # Try model.model.diffusion_model.checkpoint_path (yet another pattern)
-        elif hasattr(model_obj, 'model') and hasattr(model_obj.model, 'diffusion_model'):
-            diff_model = model_obj.model.diffusion_model  
-            if hasattr(diff_model, 'checkpoint_path'):
-                model_path = diff_model.checkpoint_path
-                if model_path:
-                    name = os.path.splitext(os.path.basename(model_path))[0]
-                    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
-                        name = name.removesuffix(ext)
-                    if os.path.exists(model_path):
+        # Method 3: Try direct model patcher approach
+        if not name and hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_patcher'):
+            patcher = model_obj.model.model_patcher
+            if hasattr(patcher, 'model_options') and isinstance(patcher.model_options, dict):
+                model_path = patcher.model_options.get('model_path')
+                if model_path and os.path.exists(model_path):
+                    name = _extract_model_name(model_path)
+                    model_hash = _get_file_hash(model_path)
+                    print(f"🧜‍♀️ Save Siren Debug: Found via method 3: {name}")
+        
+        # Method 4: Look for checkpoint_path attribute (another pattern)
+        if not name:
+            for attr_path in ['checkpoint_path', 'model_path', 'ckpt_path']:
+                if hasattr(model_obj, attr_path):
+                    model_path = getattr(model_obj, attr_path)
+                    if model_path and os.path.exists(model_path):
+                        name = _extract_model_name(model_path)
                         model_hash = _get_file_hash(model_path)
+                        print(f"🧜‍♀️ Save Siren Debug: Found via method 4 ({attr_path}): {name}")
+                        break
+        
+        # Method 5: Deep search through model object structure
+        if not name:
+            model_path = _deep_search_for_model_path(model_obj)
+            if model_path and os.path.exists(model_path):
+                name = _extract_model_name(model_path)
+                model_hash = _get_file_hash(model_path)
+                print(f"🧜‍♀️ Save Siren Debug: Found via method 5 (deep search): {name}")
                         
-    except Exception:
-        # Silent fallback - don't break the node if model introspection fails
-        pass
+    except Exception as e:
+        # Debug: Print the exception
+        print(f"🧜‍♀️ Save Siren Debug: Model extraction error: {e}")
+    
+    if not name:
+        print("🧜‍♀️ Save Siren Debug: No model name found - all methods failed")
     
     return {"name": name, "hash": model_hash}
+
+def _extract_model_name(file_path: str) -> Optional[str]:
+    """Extract clean model name from file path"""
+    if not file_path:
+        return None
+    name = os.path.splitext(os.path.basename(file_path))[0]
+    # Remove common model extensions  
+    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
+        name = name.removesuffix(ext)
+    return name if name else None
+
+def _deep_search_for_model_path(obj: Any, max_depth: int = 3) -> Optional[str]:
+    """Recursively search object for model path attributes"""
+    if max_depth <= 0 or obj is None:
+        return None
+    
+    # Check for common path attributes
+    path_attrs = ['model_path', 'checkpoint_path', 'ckpt_path', 'file_path', 'path']
+    for attr in path_attrs:
+        if hasattr(obj, attr):
+            path = getattr(obj, attr)
+            if isinstance(path, str) and path and os.path.exists(path):
+                return path
+    
+    # Search deeper in common model object attributes
+    search_attrs = ['model', 'model_patcher', 'diffusion_model', 'unet', 'model_config', 'config']
+    for attr in search_attrs:
+        if hasattr(obj, attr):
+            sub_obj = getattr(obj, attr)
+            result = _deep_search_for_model_path(sub_obj, max_depth - 1)
+            if result:
+                return result
+    
+    # Search in dictionaries
+    if isinstance(obj, dict):
+        for key in ['model_path', 'checkpoint_path', 'ckpt_path', 'file_path', 'path']:
+            if key in obj and isinstance(obj[key], str) and obj[key] and os.path.exists(obj[key]):
+                return obj[key]
+    
+    return None
 
 def _get_file_hash(file_path: str, truncate_length: int = 12) -> Optional[str]:
     """Calculate SHA256 hash of file, truncated for compact metadata"""
