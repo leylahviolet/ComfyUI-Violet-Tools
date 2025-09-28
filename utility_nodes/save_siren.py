@@ -1,15 +1,16 @@
+from typing import Any, Dict, Optional, Tuple, List
 import os
-import json
-import datetime
 import hashlib
-from typing import Any, Dict, Optional, Tuple
-
-from PIL import Image, PngImagePlugin
+import datetime
+import json
 import numpy as np
+from PIL import Image, PngImagePlugin
+
 
 def _now_str() -> str:
     """Local time string for filename"""
     return datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
 
 def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]]:
     """Extract width/height from ComfyUI IMAGE tensor"""
@@ -29,6 +30,7 @@ def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]
         return None, None
     return w, h
 
+
 def _to_pil(image: Optional[np.ndarray]) -> Image.Image:
     """Convert ComfyUI IMAGE to PIL Image. Creates 1x1 placeholder if no image."""
     if image is None:
@@ -45,10 +47,415 @@ def _to_pil(image: Optional[np.ndarray]) -> Image.Image:
     arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
     return Image.fromarray(arr)
 
+
+def _clean_filename(filename: str) -> str:
+    """Remove subfolder paths and clean up filename for display"""
+    if not filename:
+        return filename
+    
+    # Remove path separators (both Windows and Unix style)
+    clean_name = filename.split('\\')[-1].split('/')[-1]
+    
+    # Remove common file extensions for cleaner display
+    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
+        clean_name = clean_name.removesuffix(ext)
+    
+    return clean_name
+
+
+def _get_civitai_name(file_hash: str, model_type: str = "unknown") -> Optional[str]:
+    """Get the real model name from Civitai using file hash"""
+    if not file_hash:
+        return None
+    
+    try:
+        import requests
+        api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{file_hash}'
+        response = requests.get(api_url, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            # Get model name and version name
+            model_name = data.get('model', {}).get('name', '')
+            version_name = data.get('name', '')
+            
+            if model_name and version_name:
+                return f"{model_name} - {version_name}"
+            elif model_name:
+                return model_name
+            elif version_name:
+                return version_name
+                
+    except Exception:
+        pass  # Silently handle API failures
+    
+    return None
+
+
+def _get_civitai_info(file_hash: str, model_type: str = "unknown") -> tuple[Optional[str], Optional[str]]:
+    """Get both name and correct hash from Civitai API"""
+    if not file_hash:
+        return None, None
+    
+    try:
+        import requests
+        api_url = f'https://civitai.com/api/v1/model-versions/by-hash/{file_hash}'
+        response = requests.get(api_url, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            # Get model name
+            model_name = data.get('model', {}).get('name', '')
+            version_name = data.get('name', '')
+            
+            if model_name and version_name:
+                final_name = f"{model_name} - {version_name}"
+            elif model_name:
+                final_name = model_name
+            elif version_name:
+                final_name = version_name
+            else:
+                final_name = None
+            
+            # Get the correct hash from files array
+            files = data.get('files', [])
+            correct_hash = None
+            for file_info in files:
+                hashes = file_info.get('hashes', {})
+                # Choose hash type based on model_type
+                if model_type == "checkpoints":
+                    # Models should use AUTOV2
+                    if 'AutoV2' in hashes:
+                        correct_hash = hashes['AutoV2'].lower()  # Force lowercase!
+                        break
+                elif model_type == "loras":
+                    # LoRAs should use AUTOV3
+                    if 'AutoV3' in hashes:
+                        correct_hash = hashes['AutoV3'].lower()  # Force lowercase!
+                        break
+                
+                # If we didn't find the preferred type, fall back to any available
+                if not correct_hash:
+                    if 'AutoV3' in hashes:
+                        correct_hash = hashes['AutoV3'].lower()
+                        break
+                    elif 'AutoV2' in hashes:
+                        correct_hash = hashes['AutoV2'].lower()
+                        break
+                    elif 'SHA256' in hashes:
+                        # Last resort: truncated SHA256
+                        sha256 = hashes['SHA256']
+                        correct_hash = (sha256[:12] if len(sha256) > 12 else sha256).lower()
+                        break
+            
+            return final_name, correct_hash
+                
+    except Exception:
+        pass  # Silently handle API failures
+    
+    return None, None
+
+
+# Workflow-based model and LoRA extraction helpers
+def _sha256(path: str, short: int = 12) -> Optional[str]:
+    """Calculate SHA256 hash of file, truncated for compact metadata"""
+    if not path or not os.path.exists(path):
+        return None
+    try:
+        BUF_SIZE = 1024 * 128  # 128KB chunks
+        sha256_hash = hashlib.sha256()
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(BUF_SIZE), b""):
+                sha256_hash.update(chunk)
+        return sha256_hash.hexdigest()[:short]
+    except Exception:
+        return None
+
+
+def _resolve_path(category: str, name: str) -> Optional[str]:
+    """Resolve model/LoRA name to full path using folder_paths"""
+    try:
+        import folder_paths
+        return folder_paths.get_full_path(category, name)
+    except Exception:
+        return None
+
+
+def _resolve_any_lora_path(name: str) -> Optional[str]:
+    """Try to resolve LoRA name in both loras and lycoris folders"""
+    for cat in ("loras", "lycoris"):
+        p = _resolve_path(cat, name)
+        if p:
+            return p
+    return None
+
+
+def _get_workflow(extra_pnginfo: Any, prompt: Any) -> Optional[Dict[str, Any]]:
+    """Extract workflow graph from ComfyUI execution context"""
+    wf = None
+    if isinstance(extra_pnginfo, dict):
+        wf = extra_pnginfo.get("workflow")
+    if not wf and isinstance(prompt, dict):
+        wf = prompt.get("workflow")  # rare fallback
+    return wf if isinstance(wf, dict) else None
+
+
+def _index_workflow(wf: Dict[str, Any]):
+    """Build lookup structures for workflow graph navigation"""
+    nodes = {n["id"]: n for n in wf.get("nodes", []) if isinstance(n, dict) and "id" in n}
+    links = wf.get("links", [])
+    # Build: link_id -> (src_node, src_slot, dst_node, dst_slot)
+    linkmap = {}
+    for l in links:
+        # Format: [link_id, from_node, from_slot, to_node, to_slot, ...]
+        if isinstance(l, list) and len(l) >= 5:
+            linkmap[l[0]] = (l[1], l[2], l[3], l[4])
+    return nodes, linkmap
+
+
+def _find_this_node(nodes: Dict[int, Dict[str, Any]], class_types=("SaveSiren", "🧜‍♀️ Save Siren")) -> Optional[Dict[str, Any]]:
+    """Find our Save Siren node in the workflow graph"""
+    candidates = [n for n in nodes.values() if n.get("type") in class_types]
+    if candidates:
+        return candidates[-1]  # Most recent if multiple
+    # Fallback: match by title
+    candidates = [n for n in nodes.values() if n.get("title") in class_types]
+    return candidates[-1] if candidates else None
+
+
+def _link_src_for_input(nodes, linkmap, node, input_name: str) -> Optional[int]:
+    """Find the source node feeding a specific input socket"""
+    for inp in node.get("inputs", []):
+        if inp.get("name") == input_name and inp.get("link") in linkmap:
+            src_node_id = linkmap[inp["link"]][0]
+            return src_node_id
+    return None
+
+
+def _walk_model_chain(nodes, linkmap, start_node_id: int):
+    """Walk upstream from model input to collect checkpoint and LoRAs"""
+    ckpt_name = None
+    lora_nodes: List[Dict[str, Any]] = []
+
+    seen = set()
+    stack = [start_node_id]
+    
+    while stack:
+        nid = stack.pop()
+        if nid in seen:
+            continue
+        seen.add(nid)
+        n = nodes.get(nid)
+        if not n:
+            continue
+        ntype = n.get("type") or n.get("title") or ""
+
+        # LoRA detection FIRST to avoid conflicts (more specific keywords)
+        if any(keyword in ntype for keyword in ["LoraLoader", "LoRA", "Lora", "Power"]):
+            lora_nodes.append(n)
+            
+        # Checkpoint loader detection (more restrictive to avoid LoRA conflicts)
+        elif any(keyword in ntype for keyword in ["CheckpointLoader", "CheckpointLoaderSimple", "Checkpoint"]) or ntype in ["Load Checkpoint", "ModelLoader"]:
+            inputs = n.get("inputs", [])
+            for i in inputs:
+                input_name = i.get("name", "")
+                input_value = i.get("value", "")
+                # Expanded input name detection for different loader types
+                if input_name in ["ckpt_name", "model_name", "checkpoint_name", "name"] and input_value:
+                    ckpt_name = input_value.strip()
+            
+            # If inputs are empty, check widgets (most common case)
+            if not ckpt_name:
+                widgets = n.get("widgets_values", [])
+                if widgets and len(widgets) > 0 and widgets[0]:
+                    ckpt_name = widgets[0].strip()
+
+        # Continue upstream via "model" input
+        src = _link_src_for_input(nodes, linkmap, n, "model")
+        if src is not None:
+            stack.append(src)
+
+    # LoRAs in application order (closest to checkpoint first)
+    lora_nodes.reverse()
+    return ckpt_name, lora_nodes
+
+
+def extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True):
+    """
+    Extract model and LoRA info from workflow graph.
+    Returns: (model_info, loras_list)
+    """
+    wf = _get_workflow(extra_pnginfo, prompt)
+    model_info = {"name": None, "hash": None}
+    loras_out: List[Dict[str, Any]] = []
+
+    if wf:
+        nodes, linkmap = _index_workflow(wf)
+        me = _find_this_node(nodes)
+        if me:
+            upstream_model_node = _link_src_for_input(nodes, linkmap, me, "model")
+            if upstream_model_node is not None:
+                ckpt_name, lora_nodes = _walk_model_chain(nodes, linkmap, upstream_model_node)
+
+                # Model name + hash
+                if ckpt_name:
+                    model_info["name"] = _clean_filename(ckpt_name)
+                    if want_hashes:
+                        p = _resolve_path("checkpoints", ckpt_name)
+                        full_hash = _sha256(p, short=64) if p else None  # Get full hash for Civitai lookup
+                        
+                        # Try to get real name and correct hash from Civitai
+                        if full_hash:
+                            civitai_name, correct_hash = _get_civitai_info(full_hash, "checkpoints")
+                            if civitai_name:
+                                model_info["name"] = civitai_name
+                            if correct_hash:
+                                model_info["hash"] = correct_hash  # Use Civitai's AUTOV2 hash!
+                            else:
+                                # Fallback to truncated SHA256
+                                model_info["hash"] = full_hash[:10].lower()  # Force lowercase!
+                        else:
+                            model_info["hash"] = None
+
+                # Each LoRA
+                for ln in lora_nodes:
+                    name, sm, sc = None, None, None
+                    
+                    # First try inputs (for connected LoRAs)
+                    for i in ln.get("inputs", []):
+                        if i.get("name") == "lora_name":
+                            name = (i.get("value") or "").strip() or name
+                        elif i.get("name") == "strength_model":
+                            sm = i.get("value")
+                        elif i.get("name") == "strength_clip":
+                            sc = i.get("value")
+                    
+                    # If no inputs, try widgets (most common for LoRA nodes)
+                    if not name:
+                        widgets = ln.get("widgets_values", [])
+                        if len(widgets) >= 1:  # LoraLoader typically: [name, strength_model, strength_clip]
+                            name = widgets[0] if widgets[0] else None
+                        if len(widgets) >= 2:
+                            try:
+                                sm = float(widgets[1]) if widgets[1] is not None else None
+                            except (ValueError, TypeError):
+                                sm = None
+                        if len(widgets) >= 3:
+                            try:
+                                sc = float(widgets[2]) if widgets[2] is not None else None
+                            except (ValueError, TypeError):
+                                sc = None
+                    
+                    if name and name.strip():
+                        clean_name = _clean_filename(name.strip())
+                        lhash = None
+                        civitai_name = None
+                        
+                        if want_hashes:
+                            lp = _resolve_any_lora_path(name)
+                            if lp:
+                                full_hash = _sha256(lp, short=64)  # Full hash for Civitai lookup
+                                
+                                # Try to get real name and correct hash from Civitai
+                                if full_hash:
+                                    civitai_name, correct_hash = _get_civitai_info(full_hash, "loras")
+                                    if correct_hash:
+                                        lhash = correct_hash  # Use Civitai's AUTOV3 hash!
+                                    else:
+                                        # Fallback to truncated SHA256
+                                        lhash = full_hash[:12].lower()  # Force lowercase!
+                                else:
+                                    lhash = None
+                        
+                        loras_out.append({
+                            "name": civitai_name if civitai_name else clean_name,
+                            "filename": clean_name,  # Keep original filename for reference
+                            "hash": lhash,
+                            "strength_model": round(sm, 2) if sm is not None else None,
+                            "strength_clip": round(sc, 2) if sc is not None else None
+                        })
+
+    return model_info, loras_out
+
+
+def _build_a1111_parameters(payload: Dict[str, Any], loras: List[Dict[str, Any]]) -> str:
+    """Build A1111 format parameters string matching exact reference format"""
+    parts = []
+    
+    # Line 1: Positive prompt only (no label, no LoRA tags embedded)
+    prompt = payload.get("positiveprompt", "")
+    parts.append(prompt)
+    
+    # Line 2: Negative prompt with exact label format
+    negative = payload.get("negativeprompt", "")
+    if negative:
+        parts.append(f"Negative prompt: {negative}")
+    
+    # Line 3: All settings in exact reference order and format
+    settings = []
+    
+    # Steps
+    if "steps" in payload:
+        settings.append(f"Steps: {payload['steps']}")
+    
+    # Sampler 
+    if "sampler" in payload:
+        settings.append(f"Sampler: {payload['sampler']}")
+    
+    # Schedule type (exact capitalization from reference)
+    settings.append("Schedule type: Automatic")
+    
+    # CFG scale (exact format from reference)
+    if "cfg" in payload:
+        settings.append(f"CFG scale: {payload['cfg']}")
+    
+    # Seed
+    if "seed" in payload:
+        settings.append(f"Seed: {payload['seed']}")
+    
+    # Size
+    if "size" in payload:
+        settings.append(f"Size: {payload['size']}")
+    
+    # Model hash (10-digit AUTOV2, lowercase)
+    if "hash" in payload:
+        model_hash = payload['hash']
+        short_model_hash = model_hash[:10] if len(model_hash) > 10 else model_hash
+        settings.append(f"Model hash: {short_model_hash.lower()}")
+    
+    # Model name
+    if "model" in payload:
+        settings.append(f"Model: {payload['model']}")
+    
+    # Lora hashes (exact capitalization and format from reference)
+    if loras:
+        lora_hashes = []
+        for lora in loras:
+            name = lora.get("filename", lora.get("name", "unknown"))
+            hash_val = lora.get("hash", "unknown")
+            if hash_val and hash_val != "unknown":
+                # 12-digit AUTOV3 hash, lowercase
+                short_hash = hash_val[:12] if len(hash_val) > 12 else hash_val
+                lora_hashes.append(f"{name}: {short_hash.lower()}")
+        
+        if lora_hashes:
+            settings.append(f'Lora hashes: "{", ".join(lora_hashes)}"')
+    
+    # Version (exact format from reference)
+    settings.append("Version: v1.10.0")
+    
+    # Add settings line
+    if settings:
+        parts.append(", ".join(settings))
+    
+    return "\n".join(parts)
+
+
 def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
     """
-    Extract model name and hash from ComfyUI MODEL object.
-    Handles various ComfyUI model object structures.
+    Fallback model extraction from MODEL object (introspection).
+    Prefer workflow-based extraction when possible.
     """
     if model_obj is None:
         return {"name": None, "hash": None}
@@ -57,217 +464,34 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
     model_hash = None
     
     try:
-        # Debug: Print model object structure (remove this after debugging)
-        print(f"🧜‍♀️ Save Siren Debug: Model object type: {type(model_obj)}")
-        print(f"🧜‍♀️ Save Siren Debug: Model object attrs: {[attr for attr in dir(model_obj) if not attr.startswith('_')][:15]}")
-        
-        # Method 0: Try ComfyUI's checkpoint state manager (most direct approach)
-        try:
-            import comfy.sd
-            if hasattr(comfy.sd, 'current_checkpoint') and comfy.sd.current_checkpoint:
-                checkpoint_info = comfy.sd.current_checkpoint
-                print(f"🧜‍♀️ Save Siren Debug: Found current_checkpoint: {checkpoint_info}")
-                if isinstance(checkpoint_info, str):
-                    name = _extract_model_name(checkpoint_info)
-                    if os.path.exists(checkpoint_info):
-                        model_hash = _get_file_hash(checkpoint_info)
-                        print(f"🧜‍♀️ Save Siren Debug: Found via checkpoint state: {name}")
-                elif hasattr(checkpoint_info, 'filename'):
-                    name = _extract_model_name(checkpoint_info.filename)
-                    if os.path.exists(checkpoint_info.filename):
-                        model_hash = _get_file_hash(checkpoint_info.filename)
-                        print(f"🧜‍♀️ Save Siren Debug: Found via checkpoint.filename: {name}")
-        except ImportError:
-            print("🧜‍♀️ Save Siren Debug: comfy.sd not available")
-        except Exception as e:
-            print(f"🧜‍♀️ Save Siren Debug: checkpoint state error: {e}")
-        
-        # Method 0b: Try model_management module
-        if not name:
-            try:
-                import comfy.model_management
-                # Some versions store checkpoint info in model_management
-                if hasattr(comfy.model_management, 'current_loaded_model'):
-                    current_model = comfy.model_management.current_loaded_model
-                    print(f"🧜‍♀️ Save Siren Debug: current_loaded_model type: {type(current_model)}")
-                    if hasattr(current_model, 'model_path'):
-                        model_path = current_model.model_path
-                        if model_path and os.path.exists(model_path):
-                            name = _extract_model_name(model_path)
-                            model_hash = _get_file_hash(model_path)
-                            print(f"🧜‍♀️ Save Siren Debug: Found via model_management: {name}")
-            except ImportError:
-                print("🧜‍♀️ Save Siren Debug: comfy.model_management not available")
-            except Exception as e:
-                print(f"🧜‍♀️ Save Siren Debug: model_management error: {e}")
-        
-        # Method 0c: Try folder_paths checkpoint tracking
-        if not name:
-            try:
-                import folder_paths
-                # Sometimes ComfyUI stores recently used checkpoints
-                if hasattr(folder_paths, 'folder_names_and_paths'):
-                    checkpoints_info = folder_paths.folder_names_and_paths.get('checkpoints', None)
-                    print(f"🧜‍♀️ Save Siren Debug: checkpoints folder info: {checkpoints_info}")
-                
-                # Try to get the currently loaded model files
-                if hasattr(folder_paths, 'get_filename_list'):
-                    try:
-                        checkpoint_files = folder_paths.get_filename_list('checkpoints')
-                        print(f"🧜‍♀️ Save Siren Debug: available checkpoints: {checkpoint_files[:5]}...")  # First 5 only
-                    except Exception as e:
-                        print(f"🧜‍♀️ Save Siren Debug: get_filename_list error: {e}")
-                        
-            except ImportError:
-                print("🧜‍♀️ Save Siren Debug: folder_paths not available")
-            except Exception as e:
-                print(f"🧜‍♀️ Save Siren Debug: folder_paths error: {e}")
-        
-        # Method 0d: Try to inspect the ModelPatcher's model_state_dict or backup for hints
-        if not name and type(model_obj).__name__ == 'ModelPatcher':
-            try:
-                # Sometimes the model path is in backup info
-                if hasattr(model_obj, 'backup') and model_obj.backup:
-                    print(f"🧜‍♀️ Save Siren Debug: ModelPatcher.backup type: {type(model_obj.backup)}")
-                    if hasattr(model_obj.backup, 'items'):
-                        backup_keys = list(model_obj.backup.keys())[:10]  # First 10 keys only
-                        print(f"🧜‍♀️ Save Siren Debug: backup keys sample: {backup_keys}")
-                
-                # Check if there are any string attributes that might contain paths
-                all_attrs = [attr for attr in dir(model_obj) if not attr.startswith('_')]
-                for attr_name in all_attrs:
-                    try:
-                        attr_value = getattr(model_obj, attr_name)
-                        if isinstance(attr_value, str) and ('.safetensors' in attr_value or '.ckpt' in attr_value or '.pt' in attr_value):
-                            print(f"🧜‍♀️ Save Siren Debug: Found model file reference in {attr_name}: {attr_value}")
-                            if os.path.exists(attr_value):
-                                name = _extract_model_name(attr_value)
-                                model_hash = _get_file_hash(attr_value)
-                                print(f"🧜‍♀️ Save Siren Debug: Found model via string scan: {name}")
-                                break
-                    except:
-                        continue
-                        
-            except Exception as e:
-                print(f"🧜‍♀️ Save Siren Debug: ModelPatcher inspection error: {e}")
+        # Method 1: ModelPatcher pattern (most common)
         if type(model_obj).__name__ == 'ModelPatcher':
-            print(f"🧜‍♀️ Save Siren Debug: ModelPatcher-specific attrs: {[attr for attr in dir(model_obj) if 'model' in attr.lower() or 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]}")
-            if hasattr(model_obj, 'model_options'):
-                print(f"🧜‍♀️ Save Siren Debug: model_options = {model_obj.model_options}")
-            if hasattr(model_obj, 'model_config'):
-                print("🧜‍♀️ Save Siren Debug: has model_config")
-            if hasattr(model_obj, 'model'):
-                print("🧜‍♀️ Save Siren Debug: has model attribute")
-                # Let's explore the nested model object
-                model_inner = model_obj.model
-                print(f"🧜‍♀️ Save Siren Debug: Inner model type: {type(model_inner)}")
-                print(f"🧜‍♀️ Save Siren Debug: Inner model attrs: {[attr for attr in dir(model_inner) if not attr.startswith('_')][:15]}")
-                
-                # Check if inner model has current_patcher that might lead back to path info
-                if hasattr(model_inner, 'current_patcher') and model_inner.current_patcher:
-                    patcher = model_inner.current_patcher
-                    print(f"🧜‍♀️ Save Siren Debug: Found current_patcher: {type(patcher)}")
-                    if hasattr(patcher, 'filename') or hasattr(patcher, 'model_path'):
-                        path = getattr(patcher, 'filename', None) or getattr(patcher, 'model_path', None)
-                        if path and os.path.exists(path):
-                            name = _extract_model_name(path)
-                            model_hash = _get_file_hash(path)
-                            print(f"🧜‍♀️ Save Siren Debug: Found via current_patcher: {name}")
-                
-                # Look for path-related attributes in inner model
-                path_attrs = [attr for attr in dir(model_inner) if 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]
-                if path_attrs:
-                    print(f"🧜‍♀️ Save Siren Debug: Inner model path attrs: {path_attrs}")
-                    for attr in path_attrs:
-                        try:
-                            value = getattr(model_inner, attr)
-                            print(f"🧜‍♀️ Save Siren Debug: Inner model.{attr} = {value}")
-                        except:
-                            pass
-            
-            # Also check if ModelPatcher itself has any direct path attributes
-            all_attrs = [attr for attr in dir(model_obj) if not attr.startswith('_')]
-            path_attrs = [attr for attr in all_attrs if 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower() or 'checkpoint' in attr.lower()]
-            if path_attrs:
-                print(f"🧜‍♀️ Save Siren Debug: ModelPatcher path attrs: {path_attrs}")
-                for attr in path_attrs:
-                    try:
-                        value = getattr(model_obj, attr)
-                        print(f"🧜‍♀️ Save Siren Debug: ModelPatcher.{attr} = {value}")
-                    except:
-                        pass
-        
-        # Method 1: Try model.model.model_config.unet_config approach
-        if hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_config'):
-            config = model_obj.model.model_config
-            if hasattr(config, 'unet_config') and hasattr(config.unet_config, 'model_path'):
-                model_path = config.unet_config.model_path
-                if model_path and os.path.exists(model_path):
-                    name = _extract_model_name(model_path)
-                    model_hash = _get_file_hash(model_path)
-                    print(f"🧜‍♀️ Save Siren Debug: Found via method 1: {name}")
-        
-        # Method 2: Try ModelPatcher pattern (very common in ComfyUI)
-        if not name and hasattr(model_obj, 'model_patcher'):
-            patcher = model_obj.model_patcher
-            print(f"🧜‍♀️ Save Siren Debug: Found model_patcher, attrs: {[attr for attr in dir(patcher) if not attr.startswith('_')][:10]}")
-            # Check for model_options dict
-            if hasattr(patcher, 'model_options') and isinstance(patcher.model_options, dict):
-                print(f"🧜‍♀️ Save Siren Debug: model_options keys: {list(patcher.model_options.keys())}")
-                model_path = patcher.model_options.get('model_path')
-                if model_path and os.path.exists(model_path):
-                    name = _extract_model_name(model_path)
-                    model_hash = _get_file_hash(model_path)
-                    print(f"🧜‍♀️ Save Siren Debug: Found via method 2: {name}")
-        
-        # Method 2b: The model object IS the ModelPatcher (direct case)
-        if not name and type(model_obj).__name__ == 'ModelPatcher':
-            print(f"🧜‍♀️ Save Siren Debug: Model object IS ModelPatcher, checking for model path...")
-            # Check if ModelPatcher has model_options
             if hasattr(model_obj, 'model_options') and isinstance(model_obj.model_options, dict):
-                print(f"🧜‍♀️ Save Siren Debug: ModelPatcher.model_options keys: {list(model_obj.model_options.keys())}")
                 model_path = model_obj.model_options.get('model_path')
-                if model_path:
-                    print(f"🧜‍♀️ Save Siren Debug: Found model_path: {model_path}")
-                    if os.path.exists(model_path):
-                        name = _extract_model_name(model_path)
-                        model_hash = _get_file_hash(model_path)
-                        print(f"🧜‍♀️ Save Siren Debug: Found via method 2b: {name}")
-                    else:
-                        print(f"🧜‍♀️ Save Siren Debug: model_path does not exist: {model_path}")
+                if model_path and os.path.exists(model_path):
+                    name = _extract_model_name(model_path)
+                    model_hash = _get_file_hash(model_path)
             
-            # Also try folder_paths approach for ModelPatcher
-            if not name:
-                try:
-                    import folder_paths
-                    # ModelPatcher might store just the filename, need to resolve full path
-                    if hasattr(model_obj, 'model_options'):
-                        model_opts = model_obj.model_options
-                        # Try different keys that might contain the model file
-                        for key in ['model_path', 'ckpt_name', 'checkpoint', 'filename']:
-                            if key in model_opts and model_opts[key]:
-                                model_file = model_opts[key]
-                                print(f"🧜‍♀️ Save Siren Debug: Trying key '{key}': {model_file}")
-                                # If it's just a filename, try to resolve full path
-                                if not os.path.isabs(model_file):
-                                    full_path = folder_paths.get_full_path("checkpoints", model_file)
-                                    if full_path and os.path.exists(full_path):
-                                        name = _extract_model_name(full_path)
-                                        model_hash = _get_file_hash(full_path)
-                                        print(f"🧜‍♀️ Save Siren Debug: Found via folder_paths resolution: {name}")
-                                        break
-                                else:
-                                    if os.path.exists(model_file):
-                                        name = _extract_model_name(model_file)
-                                        model_hash = _get_file_hash(model_file)
-                                        print(f"🧜‍♀️ Save Siren Debug: Found via absolute path: {name}")
-                                        break
-                except ImportError:
-                    print("🧜‍♀️ Save Siren Debug: folder_paths not available")
-                except Exception as e:
-                    print(f"🧜‍♀️ Save Siren Debug: folder_paths resolution error: {e}")
+            # Try additional ModelPatcher attributes for newer ComfyUI versions
+            actual_attrs = [attr for attr in dir(model_obj) if not attr.startswith('_')]
+            
+            # Try to access the underlying model for path info
+            if not name and hasattr(model_obj, 'model') and model_obj.model:
+                inner_model = model_obj.model
+                if hasattr(inner_model, 'model_config') and inner_model.model_config:
+                    config = inner_model.model_config
+                    # Look for path-related attributes in config
+                    for attr in ['unet_config', 'model_path', 'checkpoint_path']:
+                        if hasattr(config, attr):
+                            attr_val = getattr(config, attr)
+                            if hasattr(attr_val, 'model_path'):
+                                path_val = attr_val.model_path
+                                if path_val and os.path.exists(path_val):
+                                    name = _extract_model_name(path_val)
+                                    model_hash = _get_file_hash(path_val)
+                                    break
         
-        # Method 3: Try direct model patcher approach
+        # Method 2: Nested model patcher
         if not name and hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_patcher'):
             patcher = model_obj.model.model_patcher
             if hasattr(patcher, 'model_options') and isinstance(patcher.model_options, dict):
@@ -275,48 +499,29 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
                 if model_path and os.path.exists(model_path):
                     name = _extract_model_name(model_path)
                     model_hash = _get_file_hash(model_path)
-                    print(f"🧜‍♀️ Save Siren Debug: Found via method 3: {name}")
         
-        # Method 3b: Check inner model object for path attributes
-        if not name and hasattr(model_obj, 'model'):
-            inner_model = model_obj.model
-            # Check common path attributes on inner model
-            for attr_name in ['model_path', 'checkpoint_path', 'ckpt_path', 'file_path', 'path']:
-                if hasattr(inner_model, attr_name):
-                    model_path = getattr(inner_model, attr_name)
-                    if model_path and isinstance(model_path, str) and os.path.exists(model_path):
-                        name = _extract_model_name(model_path)
-                        model_hash = _get_file_hash(model_path)
-                        print(f"🧜‍♀️ Save Siren Debug: Found via method 3b ({attr_name}): {name}")
-                        break
-        
-        # Method 4: Look for checkpoint_path attribute (another pattern)
+        # Method 3: Direct path attributes
         if not name:
             for attr_path in ['checkpoint_path', 'model_path', 'ckpt_path']:
                 if hasattr(model_obj, attr_path):
-                    model_path = getattr(model_obj, attr_path)
-                    if model_path and os.path.exists(model_path):
-                        name = _extract_model_name(model_path)
-                        model_hash = _get_file_hash(model_path)
-                        print(f"🧜‍♀️ Save Siren Debug: Found via method 4 ({attr_path}): {name}")
+                    path_val = getattr(model_obj, attr_path)
+                    if isinstance(path_val, str) and path_val and os.path.exists(path_val):
+                        name = _extract_model_name(path_val)
+                        model_hash = _get_file_hash(path_val)
                         break
         
-        # Method 5: Deep search through model object structure
+        # Method 4: Deep search
         if not name:
             model_path = _deep_search_for_model_path(model_obj)
             if model_path and os.path.exists(model_path):
                 name = _extract_model_name(model_path)
                 model_hash = _get_file_hash(model_path)
-                print(f"🧜‍♀️ Save Siren Debug: Found via method 5 (deep search): {name}")
                         
     except Exception as e:
-        # Debug: Print the exception
-        print(f"🧜‍♀️ Save Siren Debug: Model extraction error: {e}")
-    
-    if not name:
-        print("🧜‍♀️ Save Siren Debug: No model name found - all methods failed")
+        pass  # Silently handle errors in fallback mode
     
     return {"name": name, "hash": model_hash}
+
 
 def _extract_model_name(file_path: str) -> Optional[str]:
     """Extract clean model name from file path"""
@@ -327,6 +532,7 @@ def _extract_model_name(file_path: str) -> Optional[str]:
     for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
         name = name.removesuffix(ext)
     return name if name else None
+
 
 def _deep_search_for_model_path(obj: Any, max_depth: int = 3) -> Optional[str]:
     """Recursively search object for model path attributes"""
@@ -358,6 +564,7 @@ def _deep_search_for_model_path(obj: Any, max_depth: int = 3) -> Optional[str]:
     
     return None
 
+
 def _get_file_hash(file_path: str, truncate_length: int = 12) -> Optional[str]:
     """Calculate SHA256 hash of file, truncated for compact metadata"""
     if not file_path or not os.path.exists(file_path):
@@ -373,6 +580,7 @@ def _get_file_hash(file_path: str, truncate_length: int = 12) -> Optional[str]:
         return sha256_hash.hexdigest()[:truncate_length]
     except Exception:
         return None
+
 
 class SaveSiren:
     """
@@ -392,10 +600,12 @@ class SaveSiren:
             import nodes
             if hasattr(nodes, 'KSampler') and hasattr(nodes.KSampler, 'INPUT_TYPES'):
                 ksampler_inputs = nodes.KSampler.INPUT_TYPES()
-                if 'required' in ksampler_inputs and 'sampler_name' in ksampler_inputs['required']:
-                    sampler_choices = ksampler_inputs['required']['sampler_name']
+                if "sampler_name" in ksampler_inputs.get("required", {}):
+                    sampler_choices = ksampler_inputs["required"]["sampler_name"]
                     if isinstance(sampler_choices, (list, tuple)) and len(sampler_choices) > 0:
-                        sampler_input = (sampler_choices[0], {"default": sampler_choices[0][0] if sampler_choices[0] else "euler_ancestral"})
+                        # Handle both (choices, {}) and just [choices] formats
+                        choices = sampler_choices[0] if isinstance(sampler_choices[0], (list, tuple)) else sampler_choices
+                        sampler_input = (choices, {"default": "euler_ancestral"})
         except Exception:
             # Fallback to common samplers
             common_samplers = ["euler_ancestral", "euler", "dpmpp_2m", "dpmpp_sde", "heun", "dpm_2", "lms"]
@@ -415,6 +625,10 @@ class SaveSiren:
                 "positive": ("STRING", {"forceInput": True, "tooltip": "Positive prompt"}),
                 "negative": ("STRING", {"forceInput": True, "tooltip": "Negative prompt"}),
                 "seed": ("INT", {"forceInput": True, "tooltip": "Generation seed"})
+            },
+            "hidden": {
+                "prompt": "PROMPT",
+                "extra_pnginfo": "EXTRA_PNGINFO"
             }
         }
 
@@ -435,452 +649,71 @@ class SaveSiren:
         model: Any = None,
         positive: Optional[str] = None,
         negative: Optional[str] = None,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
+        prompt: Any = None,
+        extra_pnginfo: Any = None
     ) -> Tuple[str]:
-        import json  # Import at function level to avoid lint issues
-        import datetime
-        
         # Extract image dimensions
         w, h = _shape_wh(image)
         size_str = f"{w}x{h}" if (w and h) else None
         
-        # Extract model info with fallback to execution context scanning
-        model_info = _extract_model_info(model)
+        # Extract model and LoRA info via workflow (preferred) or fallback to introspection
+        model_info, loras = extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True)
         
-        # If model extraction failed, try to get it from global ComfyUI context
-        if model_info.get("name") is None:
-            try:
-                # Try to access execution context for model references
-                import sys
-                if hasattr(sys.modules.get('execution', None), 'current_execution') or hasattr(sys.modules.get('execution', None), 'last_execution'):
-                    print("🧜‍♀️ Save Siren Debug: Found execution module, checking for model references")
-                
-                # Alternative: scan all modules for recent checkpoint loading
-                for module_name in ['model_management', 'sd', 'checkpoint_state', 'execution']:
-                    full_name = f"comfy.{module_name}"
-                    if full_name in sys.modules:
-                        module = sys.modules[full_name]
-                        print(f"🧜‍♀️ Save Siren Debug: Found {full_name}, attrs: {[a for a in dir(module) if 'model' in a.lower() or 'checkpoint' in a.lower()]}")
-                        
-                        # Special handling for model_management module
-                        if module_name == 'model_management':
-                            try:
-                                # Check current_loaded_models
-                                if hasattr(module, 'current_loaded_models') and module.current_loaded_models:
-                                    loaded_models = module.current_loaded_models
-                                    print(f"🧜‍♀️ Save Siren Debug: === Analyzing {len(loaded_models)} LoadedModel objects ===")
-                                    
-                                    # First, let's categorize what types of models we have
-                                    model_types = {}
-                                    for i, loaded_model in enumerate(loaded_models):
-                                        if hasattr(loaded_model, 'model') and loaded_model.model:
-                                            model_patch = loaded_model.model
-                                            model_type = str(type(model_patch))
-                                            if model_type not in model_types:
-                                                model_types[model_type] = []
-                                            model_types[model_type].append((i, loaded_model))
-                                    
-                                    print(f"🧜‍♀️ Save Siren Debug: Model types found: {list(model_types.keys())}")
-                                    
-                                    # Now examine each LoadedModel in detail
-                                    for i, loaded_model in enumerate(loaded_models):
-                                        print(f"🧜‍♀️ Save Siren Debug: === LoadedModel[{i}] ===")
-                                        print(f"  Type: {type(loaded_model)}")
-                                        print(f"  Currently used: {getattr(loaded_model, 'currently_used', 'unknown')}")
-                                        
-                                        if hasattr(loaded_model, 'model') and loaded_model.model:
-                                            model_patch = loaded_model.model
-                                            print(f"  Model type: {type(model_patch)}")
-                                            
-                                            # Check if this is our target model
-                                            is_target_model = model_patch is model
-                                            print(f"  Is target model: {is_target_model}")
-                                            
-                                            # Look for model path in model options
-                                            if hasattr(model_patch, 'model_options') and isinstance(model_patch.model_options, dict):
-                                                opts = model_patch.model_options
-                                                print(f"  Model options keys: {list(opts.keys())}")
-                                                
-                                                if 'model_path' in opts and opts['model_path']:
-                                                    model_path = opts['model_path']
-                                                    print(f"  Found model_path: {model_path}")
-                                                    if os.path.exists(model_path):
-                                                        # Use this model regardless of target match since we need a model
-                                                        model_info["name"] = _extract_model_name(model_path)
-                                                        model_info["hash"] = _get_file_hash(model_path)
-                                                        print(f"  *** Using model: {model_info['name']} (target={is_target_model}) ***")
-                                            
-                                            # Check for patches (where LoRAs usually live) - check all models
-                                            if hasattr(model_patch, 'patches') and model_patch.patches:
-                                                print(f"  Has patches: {len(model_patch.patches)} items")
-                                                for patch_key in list(model_patch.patches.keys())[:5]:  # Show first 5
-                                                    patch_data = model_patch.patches[patch_key]
-                                                    print(f"    Patch key: {patch_key} -> {type(patch_data)}")
-                                                    if hasattr(patch_data, '__len__') and len(patch_data) > 0:
-                                                        print(f"      Patch data sample: {str(patch_data)[:100]}...")
-                                            
-                                            # Check additional_models (LoRAs often stored here) - check all models
-                                            if hasattr(model_patch, 'additional_models') and model_patch.additional_models:
-                                                print(f"  Additional models: {len(model_patch.additional_models)} items")
-                                                lora_list = []  # Create local list for LoRAs
-                                                for add_key, add_model in model_patch.additional_models.items():
-                                                    print(f"    Additional: {add_key} -> {type(add_model)}")
-                                                    # Check if additional model has path info
-                                                    if hasattr(add_model, 'model_path'):
-                                                        add_path = add_model.model_path
-                                                        print(f"      Additional model path: {add_path}")
-                                                        if 'lora' in str(add_path).lower():
-                                                            lora_name = _extract_model_name(add_path)
-                                                            print(f"      *** Found LoRA: {lora_name} ***")
-                                                            lora_list.append({
-                                                                'name': lora_name,
-                                                                'hash': _get_file_hash(add_path) if os.path.exists(add_path) else None
-                                                            })
-                                                
-                                                # Add LoRA list to model_info if we found any
-                                                if lora_list:
-                                                    # Store as JSON string to match metadata format
-                                                    import json
-                                                    model_info['loras_json'] = json.dumps(lora_list)
-                                                    print(f"      Added {len(lora_list)} LoRAs to metadata")
-                                            else:
-                                                print(f"  No additional_models found")
-                                            
-                                            # Also check for direct model path attributes on ModelPatcher
-                                            path_attrs = [attr for attr in dir(model_patch) if 'path' in attr.lower() or 'file' in attr.lower()]
-                                            if path_attrs:
-                                                print(f"  Path-related attrs: {path_attrs}")
-                                                for attr in path_attrs:
-                                                    try:
-                                                        value = getattr(model_patch, attr)
-                                                        if isinstance(value, str) and any(ext in value for ext in ['.safetensors', '.ckpt', '.pt']):
-                                                            print(f"    {attr}: {value}")
-                                                            if os.path.exists(value) and not model_info.get("name"):
-                                                                model_info["name"] = _extract_model_name(value)
-                                                                model_info["hash"] = _get_file_hash(value)
-                                                                print(f"    *** Using model from {attr}: {model_info['name']} ***")
-                                                    except:
-                                                        pass
-                                            
-                                            # Check for LoRA-specific attributes
-                                            lora_attrs = [attr for attr in dir(model_patch) if 'lora' in attr.lower()]
-                                            if lora_attrs:
-                                                print(f"  LoRA-related attrs: {lora_attrs}")
-                                                for attr in lora_attrs:
-                                                    try:
-                                                        value = getattr(model_patch, attr)
-                                                        if value:
-                                                            print(f"    {attr}: {str(value)[:100]}...")
-                                                    except:
-                                                        pass
-                                        print()
-                                    
-                                    if model_info.get("name"):
-                                        print(f"🧜‍♀️ Save Siren Debug: Successfully extracted model: {model_info['name']}")
-                                        if 'loras_json' in model_info:
-                                            loras_json = model_info['loras_json']
-                                            if loras_json:
-                                                loras = json.loads(loras_json)
-                                                print(f"🧜‍♀️ Save Siren Debug: Found {len(loras)} LoRAs: {[l['name'] for l in loras]}")
-                                    
-                                    # Additional debug: inspect our target model directly
-                                    print(f"🧜‍♀️ Save Siren Debug: === Direct Target Model Inspection ===")
-                                    print(f"  Target model type: {type(model)}")
-                                    print(f"  Target model id: {id(model)}")
-                                    for lm in loaded_models:
-                                        if hasattr(lm, 'model'):
-                                            print(f"  LoadedModel.model id: {id(lm.model)} (match: {lm.model is model})")
-                                    
-                                    # Check if target model has patches or additional_models directly
-                                    if hasattr(model, 'patches') and model.patches:
-                                        patch_count = len(model.patches)
-                                        print(f"  Target has {patch_count} patches")
-                                        
-                                        # LoRAs are often stored as patches - let's inspect them
-                                        lora_list = []
-                                        lora_keys_found = set()
-                                        
-                                        # Sample some patch keys to look for LoRA patterns
-                                        patch_keys = list(model.patches.keys())
-                                        print(f"  Sample patch keys: {patch_keys[:10]}")
-                                        
-                                        # Look for LoRA-style patch keys and try to extract LoRA names
-                                        for patch_key in patch_keys:
-                                            patch_data = model.patches[patch_key]
-                                            
-                                            # LoRA patches often have specific patterns
-                                            if isinstance(patch_key, str):
-                                                # Look for common LoRA layer patterns
-                                                if any(lora_pattern in patch_key.lower() for lora_pattern in ['lora_up', 'lora_down', 'lora.up', 'lora.down']):
-                                                    print(f"    LoRA patch found: {patch_key}")
-                                                    
-                                                    # Extract LoRA name from patch data if possible
-                                                    if hasattr(patch_data, '__len__') and len(patch_data) >= 3:
-                                                        # LoRA patches are often tuples: (strength, patch_info, lora_key)
-                                                        try:
-                                                            if len(patch_data) >= 3 and hasattr(patch_data[2], 'get'):
-                                                                lora_info = patch_data[2]
-                                                                if 'lora_key' in lora_info:
-                                                                    lora_key = lora_info['lora_key']
-                                                                    print(f"      LoRA key: {lora_key}")
-                                                                    if lora_key not in lora_keys_found:
-                                                                        lora_keys_found.add(lora_key)
-                                                                        # Try to extract filename from lora_key
-                                                                        if hasattr(lora_key, 'filename') or hasattr(lora_key, 'model_path'):
-                                                                            lora_path = getattr(lora_key, 'filename', None) or getattr(lora_key, 'model_path', None)
-                                                                            if lora_path:
-                                                                                lora_name = _extract_model_name(lora_path)
-                                                                                print(f"        *** Found LoRA: {lora_name} from path: {lora_path} ***")
-                                                                                lora_list.append({
-                                                                                    'name': lora_name,
-                                                                                    'hash': _get_file_hash(lora_path) if os.path.exists(lora_path) else None
-                                                                                })
-                                                        except Exception as e:
-                                                            print(f"      Error extracting LoRA from patch: {e}")
-                                        
-                                        # Alternative: look for LoRA info in patch structure
-                                        if not lora_list and patch_count > 100:  # If we have many patches but no LoRAs found
-                                            print(f"  Attempting alternative LoRA extraction from {patch_count} patches...")
-                                            
-                                            # Try to get LoRA info from model's additional models or other attributes
-                                            for attr in ['lora_models', 'loaded_loras', 'applied_loras']:
-                                                if hasattr(model, attr):
-                                                    lora_attr = getattr(model, attr)
-                                                    print(f"    Found {attr}: {lora_attr}")
-                                            
-                                            # Check if model has a method to get LoRA info
-                                            if hasattr(model, 'get_additional_models'):
-                                                additional = model.get_additional_models()
-                                                print(f"    get_additional_models(): {additional}")
-                                                
-                                            # Sample a few patches to see their structure
-                                            for i, (patch_key, patch_data) in enumerate(list(model.patches.items())[:5]):
-                                                print(f"    Patch {i}: {patch_key} -> {type(patch_data)}")
-                                                if hasattr(patch_data, '__len__') and len(patch_data) > 0:
-                                                    print(f"      Patch data structure: {[type(item) for item in patch_data] if hasattr(patch_data, '__iter__') else 'Not iterable'}")
-                                                    if hasattr(patch_data, '__iter__'):
-                                                        for j, item in enumerate(patch_data):
-                                                            if j >= 3:  # Only show first 3 items
-                                                                break
-                                                            print(f"        Item {j}: {type(item)} - {str(item)[:50]}...")
-                                                            
-                                                            # If this is a tuple (strength, lora_adapter), extract LoRA info
-                                                            if isinstance(item, tuple) and len(item) >= 2:
-                                                                strength, lora_adapter = item[0], item[1]
-                                                                print(f"          Strength: {strength}")
-                                                                print(f"          LoRA adapter: {type(lora_adapter)}")
-                                                                
-                                                                # Check if this is a LoRA adapter object
-                                                                if hasattr(lora_adapter, '__class__') and 'lora' in str(lora_adapter.__class__).lower():
-                                                                    # Look for common LoRA attributes
-                                                                    lora_attrs = [attr for attr in dir(lora_adapter) if not attr.startswith('_')]
-                                                                    print(f"          LoRA adapter attrs: {lora_attrs[:10]}")
-                                                                    
-                                                                    # Try to extract file path/name from LoRA adapter
-                                                                    found_lora = False
-                                                                    for path_attr in ['filename', 'model_path', 'file_path', 'path', 'name']:
-                                                                        if hasattr(lora_adapter, path_attr):
-                                                                            path_value = getattr(lora_adapter, path_attr)
-                                                                            print(f"          LoRA {path_attr}: {path_value}")
-                                                                            if isinstance(path_value, str) and ('.safetensors' in path_value or '.pt' in path_value):
-                                                                                lora_name = _extract_model_name(path_value)
-                                                                                print(f"          *** FOUND LoRA: {lora_name} (strength: {strength}) ***")
-                                                                                
-                                                                                # Add to our LoRA list
-                                                                                if lora_name and lora_name not in [l.get('name') for l in lora_list]:
-                                                                                    lora_list.append({
-                                                                                        'name': lora_name,
-                                                                                        'strength': float(strength) if isinstance(strength, (int, float)) else None,
-                                                                                        'hash': _get_file_hash(path_value) if os.path.exists(path_value) else None
-                                                                                    })
-                                                                                    print(f"          Added LoRA to list: {lora_name}")
-                                                                                    found_lora = True
-                                                                                break
-                                                                    
-                                                                    # If no direct path found, check weights and loaded_keys
-                                                                    if not found_lora:
-                                                                        # Check weights attribute - might contain file references
-                                                                        if hasattr(lora_adapter, 'weights'):
-                                                                            weights = getattr(lora_adapter, 'weights')
-                                                                            print(f"          weights type: {type(weights)}")
-                                                                            if hasattr(weights, 'items'):
-                                                                                # If it's a dict-like, check a few keys
-                                                                                for key in list(weights.keys())[:3]:
-                                                                                    print(f"            weights[{key}]: {type(weights[key])}")
-                                                                            elif hasattr(weights, '__dict__'):
-                                                                                # If it has attributes, check them
-                                                                                weight_attrs = [attr for attr in dir(weights) if not attr.startswith('_')][:5]
-                                                                                for attr in weight_attrs:
-                                                                                    try:
-                                                                                        weight_attr_val = getattr(weights, attr)
-                                                                                        print(f"            weights.{attr}: {type(weight_attr_val)} - {str(weight_attr_val)[:30]}...")
-                                                                                        if isinstance(weight_attr_val, str) and ('.safetensors' in weight_attr_val or '.pt' in weight_attr_val):
-                                                                                            lora_name = _extract_model_name(weight_attr_val)
-                                                                                            print(f"          *** FOUND LoRA in weights.{attr}: {lora_name} ***")
-                                                                                            found_lora = True
-                                                                                            break
-                                                                                    except:
-                                                                                        continue
-                                                                        
-                                                                        # Check loaded_keys attribute
-                                                                        if hasattr(lora_adapter, 'loaded_keys') and not found_lora:
-                                                                            loaded_keys = getattr(lora_adapter, 'loaded_keys')
-                                                                            print(f"          loaded_keys: {loaded_keys}")
-                                                                            if hasattr(loaded_keys, '__dict__'):
-                                                                                keys_attrs = [attr for attr in dir(loaded_keys) if not attr.startswith('_')][:5]
-                                                                                for attr in keys_attrs:
-                                                                                    try:
-                                                                                        keys_attr_val = getattr(loaded_keys, attr)
-                                                                                        if isinstance(keys_attr_val, str) and ('.safetensors' in keys_attr_val or '.pt' in keys_attr_val):
-                                                                                            lora_name = _extract_model_name(keys_attr_val)
-                                                                                            print(f"          *** FOUND LoRA in loaded_keys.{attr}: {lora_name} ***")
-                                                                                            found_lora = True
-                                                                                            break
-                                                                                    except:
-                                                                                        continue
-                                                                    
-                                                                    # If still no LoRA found, add a generic entry with the strength
-                                                                    if not found_lora:
-                                                                        generic_name = f"LoRA_strength_{strength}"
-                                                                        if generic_name not in [l.get('name') for l in lora_list]:
-                                                                            lora_list.append({
-                                                                                'name': generic_name,
-                                                                                'strength': float(strength) if isinstance(strength, (int, float)) else None,
-                                                                                'hash': None
-                                                                            })
-                                                                            print(f"          Added generic LoRA entry: {generic_name}")
-                                                                    
-                                                                    # Also check for nested attributes that might contain path info
-                                                                    if not found_lora:
-                                                                        for attr in lora_attrs[:5]:  # Check first 5 attrs
-                                                                            try:
-                                                                                attr_value = getattr(lora_adapter, attr)
-                                                                                if hasattr(attr_value, 'filename') or hasattr(attr_value, 'model_path'):
-                                                                                    nested_path = getattr(attr_value, 'filename', None) or getattr(attr_value, 'model_path', None)
-                                                                                    if nested_path and isinstance(nested_path, str):
-                                                                                        print(f"          Nested path in {attr}: {nested_path}")
-                                                                                        if '.safetensors' in nested_path or '.pt' in nested_path:
-                                                                                            lora_name = _extract_model_name(nested_path)
-                                                                                            if lora_name and lora_name not in [l.get('name') for l in lora_list]:
-                                                                                                lora_list.append({
-                                                                                                    'name': lora_name,
-                                                                                                    'strength': float(strength) if isinstance(strength, (int, float)) else None,
-                                                                                                    'hash': _get_file_hash(nested_path) if os.path.exists(nested_path) else None
-                                                                                                })
-                                                                                                print(f"          Added nested LoRA: {lora_name}")
-                                                                                                break
-                                                                            except:
-                                                                                continue
-                                        
-                                        if lora_list:
-                                            # Store as JSON string to match metadata format
-                                            model_info['loras_json'] = json.dumps(lora_list)
-                                            print(f"      *** Extracted {len(lora_list)} LoRAs from patches ***")
-                                    
-                                    if hasattr(model, 'additional_models') and model.additional_models:
-                                        print(f"  Target has {len(model.additional_models)} additional_models")
-                                        for add_key, add_model in model.additional_models.items():
-                                            print(f"    Target additional: {add_key} -> {type(add_model)}")
-                                            if hasattr(add_model, 'model_path'):
-                                                print(f"      Target additional path: {add_model.model_path}")
-                                    print()
-                            except Exception as e:
-                                print(f"🧜‍♀️ Save Siren Debug: model_management scanning error: {e}")
-                                import traceback
-                                traceback.print_exc()
-                                
-                                # Check loaded_models if current_loaded_models didn't work
-                                if not model_info.get("name") and hasattr(module, 'loaded_models') and module.loaded_models:
-                                    loaded_models = module.loaded_models
-                                    print(f"🧜‍♀️ Save Siren Debug: loaded_models: {loaded_models}")
-                                    # Try to get the most recently loaded model
-                                    if isinstance(loaded_models, list) and loaded_models:
-                                        recent_model = loaded_models[-1]  # Last loaded
-                                        print(f"🧜‍♀️ Save Siren Debug: recent_model type: {type(recent_model)}")
-                                        if hasattr(recent_model, 'model_path') or hasattr(recent_model, 'filename'):
-                                            path = getattr(recent_model, 'model_path', None) or getattr(recent_model, 'filename', None)
-                                            if path and os.path.exists(path):
-                                                model_info["name"] = _extract_model_name(path)
-                                                model_info["hash"] = _get_file_hash(path)
-                                                print(f"🧜‍♀️ Save Siren Debug: Found model via loaded_models: {model_info['name']}")
-                                                break
-                            except Exception as e:
-                                print(f"🧜‍♀️ Save Siren Debug: model_management scanning error: {e}")
-                        
-                        # Look for any checkpoint or model path attributes in other modules
-                        for attr in dir(module):
-                            if any(keyword in attr.lower() for keyword in ['checkpoint', 'model_path', 'current_model', 'loaded_model']):
-                                try:
-                                    value = getattr(module, attr)
-                                    if isinstance(value, str) and any(ext in value for ext in ['.safetensors', '.ckpt', '.pt']):
-                                        print(f"🧜‍♀️ Save Siren Debug: Found model path in {full_name}.{attr}: {value}")
-                                        if os.path.exists(value):
-                                            model_info["name"] = _extract_model_name(value)
-                                            model_info["hash"] = _get_file_hash(value)
-                                            break
-                                except:
-                                    continue
-                        if model_info.get("name"):
-                            break
-                            
-                # Final attempt: Use folder_paths to check for recently accessed checkpoints
-                if not model_info.get("name"):
-                    try:
-                        import folder_paths
-                        # Get list of available checkpoints and try to match with current model object
-                        checkpoint_files = folder_paths.get_filename_list('checkpoints')
-                        if checkpoint_files:
-                            # Try to correlate with model object properties
-                            # This is a heuristic - take the first checkpoint as fallback
-                            # (In a real workflow, the user would know which one they loaded)
-                            first_checkpoint = checkpoint_files[0]
-                            full_path = folder_paths.get_full_path('checkpoints', first_checkpoint)
-                            if full_path and os.path.exists(full_path):
-                                model_info["name"] = _extract_model_name(full_path)
-                                model_info["hash"] = _get_file_hash(full_path)
-                                print(f"🧜‍♀️ Save Siren Debug: Fallback to first checkpoint: {model_info['name']} (may not be accurate)")
-                    except Exception as e:
-                        print(f"🧜‍♀️ Save Siren Debug: folder_paths fallback error: {e}")
-                        
-            except Exception as e:
-                print(f"🧜‍♀️ Save Siren Debug: execution context scan error: {e}")
+        # If workflow extraction failed, try introspection fallback
+        if not model_info.get("name"):
+            fallback_info = _extract_model_info(model)
+            if fallback_info.get("name"):
+                model_info = fallback_info
         
         # Build compact metadata payload
         payload = {}
         
-        # Process LoRA info if present
-        if 'loras_json' in model_info and model_info['loras_json']:
-            try:
-                loras_data = json.loads(model_info['loras_json'])
-                # Add LoRAs as separate field in model_info
-                model_info['loras'] = loras_data
-                # Remove the temporary JSON field
-                del model_info['loras_json']
-            except:
-                # If parsing fails, just remove the temp field
-                if 'loras_json' in model_info:
-                    del model_info['loras_json']
+        # Flat structure for external site compatibility
+        # Based on analysis of site JS: expects hash, model, positiveprompt, negativeprompt, cfg, etc.
         
-        # Only include non-null values to keep JSON compact
-        if size_str:
-            payload["size"] = size_str
-        if positive and positive.strip():
-            payload["prompt"] = positive.strip()
-        if negative and negative.strip():
-            payload["negative_prompt"] = negative.strip()
-        if isinstance(seed, int) and seed >= 0:
-            payload["seed"] = seed
-            
-        # Always include these core generation params
+        # Core generation parameters
         payload["steps"] = steps
-        payload["cfg_scale"] = round(cfg, 2)  # Round to 2 decimal places
+        payload["cfg"] = round(cfg, 2)  # Changed from cfg_scale to cfg for site compatibility
         payload["sampler"] = sampler
         payload["is_adetailer"] = bool(used_detailer)
-        payload["model"] = model_info
+        
+        # Model info at top level (not nested)
+        payload["model"] = model_info.get("name")  # Flat model name
+        payload["hash"] = model_info.get("hash")   # Flat model hash
+        
+        # Prompts with site-expected field names
+        if positive and positive.strip():
+            payload["positiveprompt"] = positive.strip()  # Changed from "prompt" 
+        if negative and negative.strip():
+            payload["negativeprompt"] = negative.strip()  # Changed from "negative_prompt"
+        
+        # Optional fields
+        if isinstance(seed, int) and seed >= 0:
+            payload["seed"] = seed
+        if size_str:
+            payload["size"] = size_str
+            
+        # LoRAs as separate top-level array for easier parsing
+        if loras:
+            payload["loras"] = loras
+        
+        payload["saved_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # Keep raw nested structure commented out for potential future use
+        # # Original nested structure (commented out):
+        # # model_payload = {"name": model_info.get("name"), "hash": model_info.get("hash")}
+        # # if loras:
+        # #     model_payload["loras"] = loras
+        # # payload["model"] = model_payload
+        
         payload["saved_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Create compact JSON (no spaces, sorted keys for consistency)
         meta_json = json.dumps(payload, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
+        
+        # ALSO create A1111 format for external site compatibility
+        a1111_params = _build_a1111_parameters(payload, loras)
 
         # Build filename 
         timestamp = _now_str()
@@ -910,23 +743,37 @@ class SaveSiren:
         # Embed our compact JSON under custom key
         pnginfo.add_text("vt_json", meta_json)
         
-        # Optional: add a minimal 'parameters' field for basic compatibility
-        # Some tools look for this standard key
-        if positive or steps or cfg:
-            basic_params = []
-            if positive and positive.strip():
-                basic_params.append(f"prompt: {positive.strip()[:100]}")  # Truncate long prompts
-            basic_params.append(f"steps: {steps}")
-            basic_params.append(f"cfg: {cfg}")
-            basic_params.append(f"sampler: {sampler}")
-            pnginfo.add_text("parameters", ", ".join(basic_params))
+        # Add A1111 format 'parameters' field for external site compatibility
+        pnginfo.add_text("parameters", a1111_params)
+        
+        # Additional metadata that some sites may look for
+        # Add individual resource info for better site compatibility
+        model_name = model_info.get("name")
+        if model_name:
+            pnginfo.add_text("model_name", str(model_name))
+        model_hash = model_info.get("hash") 
+        if model_hash:
+            pnginfo.add_text("model_hash", str(model_hash))  # Full hash for Civitai lookup
+        
+        # Add LoRA info in multiple formats for better site recognition
+        if loras:
+            # JSON array format for programmatic access
+            loras_json = json.dumps(loras, separators=(",", ":"))
+            pnginfo.add_text("loras", loras_json)
+            
+            # Simple LoRA names list
+            lora_names = [lora.get("filename", lora.get("name", "")) for lora in loras if lora.get("name")]
+            if lora_names:
+                pnginfo.add_text("lora_names", ", ".join(lora_names))
 
         # Save PNG with metadata
         pil_image.save(file_path, format="PNG", pnginfo=pnginfo, optimize=True)
 
         print(f"🧜‍♀️ Save Siren: Saved {filename} ({os.path.getsize(file_path)} bytes)")
         
-        return (meta_json,)
+        # Return A1111 format metadata for node output (same as what we save)
+        return (a1111_params,)
+
 
 # Node registration
 NODE_CLASS_MAPPINGS = {"SaveSiren": SaveSiren}
