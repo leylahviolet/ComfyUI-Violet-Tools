@@ -504,12 +504,13 @@ class SaveSiren:
                                                 if 'model_path' in opts and opts['model_path']:
                                                     model_path = opts['model_path']
                                                     print(f"  Found model_path: {model_path}")
-                                                    if is_target_model and os.path.exists(model_path):
+                                                    if os.path.exists(model_path):
+                                                        # Use this model regardless of target match since we need a model
                                                         model_info["name"] = _extract_model_name(model_path)
                                                         model_info["hash"] = _get_file_hash(model_path)
-                                                        print(f"  *** Using this as primary model: {model_info['name']} ***")
+                                                        print(f"  *** Using model: {model_info['name']} (target={is_target_model}) ***")
                                             
-                                            # Check for patches (where LoRAs usually live)
+                                            # Check for patches (where LoRAs usually live) - check all models
                                             if hasattr(model_patch, 'patches') and model_patch.patches:
                                                 print(f"  Has patches: {len(model_patch.patches)} items")
                                                 for patch_key in list(model_patch.patches.keys())[:5]:  # Show first 5
@@ -518,7 +519,7 @@ class SaveSiren:
                                                     if hasattr(patch_data, '__len__') and len(patch_data) > 0:
                                                         print(f"      Patch data sample: {str(patch_data)[:100]}...")
                                             
-                                            # Check additional_models (LoRAs often stored here)
+                                            # Check additional_models (LoRAs often stored here) - check all models
                                             if hasattr(model_patch, 'additional_models') and model_patch.additional_models:
                                                 print(f"  Additional models: {len(model_patch.additional_models)} items")
                                                 lora_list = []  # Create local list for LoRAs
@@ -542,6 +543,24 @@ class SaveSiren:
                                                     import json
                                                     model_info['loras_json'] = json.dumps(lora_list)
                                                     print(f"      Added {len(lora_list)} LoRAs to metadata")
+                                            else:
+                                                print(f"  No additional_models found")
+                                            
+                                            # Also check for direct model path attributes on ModelPatcher
+                                            path_attrs = [attr for attr in dir(model_patch) if 'path' in attr.lower() or 'file' in attr.lower()]
+                                            if path_attrs:
+                                                print(f"  Path-related attrs: {path_attrs}")
+                                                for attr in path_attrs:
+                                                    try:
+                                                        value = getattr(model_patch, attr)
+                                                        if isinstance(value, str) and any(ext in value for ext in ['.safetensors', '.ckpt', '.pt']):
+                                                            print(f"    {attr}: {value}")
+                                                            if os.path.exists(value) and not model_info.get("name"):
+                                                                model_info["name"] = _extract_model_name(value)
+                                                                model_info["hash"] = _get_file_hash(value)
+                                                                print(f"    *** Using model from {attr}: {model_info['name']} ***")
+                                                    except:
+                                                        pass
                                             
                                             # Check for LoRA-specific attributes
                                             lora_attrs = [attr for attr in dir(model_patch) if 'lora' in attr.lower()]
@@ -563,6 +582,25 @@ class SaveSiren:
                                             if loras_json:
                                                 loras = json.loads(loras_json)
                                                 print(f"🧜‍♀️ Save Siren Debug: Found {len(loras)} LoRAs: {[l['name'] for l in loras]}")
+                                    
+                                    # Additional debug: inspect our target model directly
+                                    print(f"🧜‍♀️ Save Siren Debug: === Direct Target Model Inspection ===")
+                                    print(f"  Target model type: {type(model)}")
+                                    print(f"  Target model id: {id(model)}")
+                                    for lm in loaded_models:
+                                        if hasattr(lm, 'model'):
+                                            print(f"  LoadedModel.model id: {id(lm.model)} (match: {lm.model is model})")
+                                    
+                                    # Check if target model has patches or additional_models directly
+                                    if hasattr(model, 'patches') and model.patches:
+                                        print(f"  Target has {len(model.patches)} patches")
+                                    if hasattr(model, 'additional_models') and model.additional_models:
+                                        print(f"  Target has {len(model.additional_models)} additional_models")
+                                        for add_key, add_model in model.additional_models.items():
+                                            print(f"    Target additional: {add_key} -> {type(add_model)}")
+                                            if hasattr(add_model, 'model_path'):
+                                                print(f"      Target additional path: {add_model.model_path}")
+                                    print()
                             except Exception as e:
                                 print(f"🧜‍♀️ Save Siren Debug: model_management scanning error: {e}")
                                 import traceback
