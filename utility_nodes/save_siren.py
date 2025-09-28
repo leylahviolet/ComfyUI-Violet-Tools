@@ -677,6 +677,7 @@ class SaveSiren:
                                                                     print(f"          LoRA adapter attrs: {lora_attrs[:10]}")
                                                                     
                                                                     # Try to extract file path/name from LoRA adapter
+                                                                    found_lora = False
                                                                     for path_attr in ['filename', 'model_path', 'file_path', 'path', 'name']:
                                                                         if hasattr(lora_adapter, path_attr):
                                                                             path_value = getattr(lora_adapter, path_attr)
@@ -693,27 +694,83 @@ class SaveSiren:
                                                                                         'hash': _get_file_hash(path_value) if os.path.exists(path_value) else None
                                                                                     })
                                                                                     print(f"          Added LoRA to list: {lora_name}")
+                                                                                    found_lora = True
                                                                                 break
                                                                     
+                                                                    # If no direct path found, check weights and loaded_keys
+                                                                    if not found_lora:
+                                                                        # Check weights attribute - might contain file references
+                                                                        if hasattr(lora_adapter, 'weights'):
+                                                                            weights = getattr(lora_adapter, 'weights')
+                                                                            print(f"          weights type: {type(weights)}")
+                                                                            if hasattr(weights, 'items'):
+                                                                                # If it's a dict-like, check a few keys
+                                                                                for key in list(weights.keys())[:3]:
+                                                                                    print(f"            weights[{key}]: {type(weights[key])}")
+                                                                            elif hasattr(weights, '__dict__'):
+                                                                                # If it has attributes, check them
+                                                                                weight_attrs = [attr for attr in dir(weights) if not attr.startswith('_')][:5]
+                                                                                for attr in weight_attrs:
+                                                                                    try:
+                                                                                        weight_attr_val = getattr(weights, attr)
+                                                                                        print(f"            weights.{attr}: {type(weight_attr_val)} - {str(weight_attr_val)[:30]}...")
+                                                                                        if isinstance(weight_attr_val, str) and ('.safetensors' in weight_attr_val or '.pt' in weight_attr_val):
+                                                                                            lora_name = _extract_model_name(weight_attr_val)
+                                                                                            print(f"          *** FOUND LoRA in weights.{attr}: {lora_name} ***")
+                                                                                            found_lora = True
+                                                                                            break
+                                                                                    except:
+                                                                                        continue
+                                                                        
+                                                                        # Check loaded_keys attribute
+                                                                        if hasattr(lora_adapter, 'loaded_keys') and not found_lora:
+                                                                            loaded_keys = getattr(lora_adapter, 'loaded_keys')
+                                                                            print(f"          loaded_keys: {loaded_keys}")
+                                                                            if hasattr(loaded_keys, '__dict__'):
+                                                                                keys_attrs = [attr for attr in dir(loaded_keys) if not attr.startswith('_')][:5]
+                                                                                for attr in keys_attrs:
+                                                                                    try:
+                                                                                        keys_attr_val = getattr(loaded_keys, attr)
+                                                                                        if isinstance(keys_attr_val, str) and ('.safetensors' in keys_attr_val or '.pt' in keys_attr_val):
+                                                                                            lora_name = _extract_model_name(keys_attr_val)
+                                                                                            print(f"          *** FOUND LoRA in loaded_keys.{attr}: {lora_name} ***")
+                                                                                            found_lora = True
+                                                                                            break
+                                                                                    except:
+                                                                                        continue
+                                                                    
+                                                                    # If still no LoRA found, add a generic entry with the strength
+                                                                    if not found_lora:
+                                                                        generic_name = f"LoRA_strength_{strength}"
+                                                                        if generic_name not in [l.get('name') for l in lora_list]:
+                                                                            lora_list.append({
+                                                                                'name': generic_name,
+                                                                                'strength': float(strength) if isinstance(strength, (int, float)) else None,
+                                                                                'hash': None
+                                                                            })
+                                                                            print(f"          Added generic LoRA entry: {generic_name}")
+                                                                    
                                                                     # Also check for nested attributes that might contain path info
-                                                                    for attr in lora_attrs[:5]:  # Check first 5 attrs
-                                                                        try:
-                                                                            attr_value = getattr(lora_adapter, attr)
-                                                                            if hasattr(attr_value, 'filename') or hasattr(attr_value, 'model_path'):
-                                                                                nested_path = getattr(attr_value, 'filename', None) or getattr(attr_value, 'model_path', None)
-                                                                                if nested_path and isinstance(nested_path, str):
-                                                                                    print(f"          Nested path in {attr}: {nested_path}")
-                                                                                    if '.safetensors' in nested_path or '.pt' in nested_path:
-                                                                                        lora_name = _extract_model_name(nested_path)
-                                                                                        if lora_name and lora_name not in [l.get('name') for l in lora_list]:
-                                                                                            lora_list.append({
-                                                                                                'name': lora_name,
-                                                                                                'strength': float(strength) if isinstance(strength, (int, float)) else None,
-                                                                                                'hash': _get_file_hash(nested_path) if os.path.exists(nested_path) else None
-                                                                                            })
-                                                                                            print(f"          Added nested LoRA: {lora_name}")
-                                                                        except:
-                                                                            continue
+                                                                    if not found_lora:
+                                                                        for attr in lora_attrs[:5]:  # Check first 5 attrs
+                                                                            try:
+                                                                                attr_value = getattr(lora_adapter, attr)
+                                                                                if hasattr(attr_value, 'filename') or hasattr(attr_value, 'model_path'):
+                                                                                    nested_path = getattr(attr_value, 'filename', None) or getattr(attr_value, 'model_path', None)
+                                                                                    if nested_path and isinstance(nested_path, str):
+                                                                                        print(f"          Nested path in {attr}: {nested_path}")
+                                                                                        if '.safetensors' in nested_path or '.pt' in nested_path:
+                                                                                            lora_name = _extract_model_name(nested_path)
+                                                                                            if lora_name and lora_name not in [l.get('name') for l in lora_list]:
+                                                                                                lora_list.append({
+                                                                                                    'name': lora_name,
+                                                                                                    'strength': float(strength) if isinstance(strength, (int, float)) else None,
+                                                                                                    'hash': _get_file_hash(nested_path) if os.path.exists(nested_path) else None
+                                                                                                })
+                                                                                                print(f"          Added nested LoRA: {lora_name}")
+                                                                                                break
+                                                                            except:
+                                                                                continue
                                         
                                         if lora_list:
                                             # Store as JSON string to match metadata format
