@@ -468,15 +468,49 @@ class SaveSiren:
                                     loaded_models = module.current_loaded_models
                                     print(f"🧜‍♀️ Save Siren Debug: current_loaded_models: {loaded_models}")
                                     # current_loaded_models is usually a list of loaded model objects
-                                    for loaded_model in loaded_models:
-                                        print(f"🧜‍♀️ Save Siren Debug: loaded_model type: {type(loaded_model)}")
-                                        if hasattr(loaded_model, 'model_path') or hasattr(loaded_model, 'filename'):
-                                            path = getattr(loaded_model, 'model_path', None) or getattr(loaded_model, 'filename', None)
-                                            if path and os.path.exists(path):
-                                                model_info["name"] = _extract_model_name(path)
-                                                model_info["hash"] = _get_file_hash(path)
-                                                print(f"🧜‍♀️ Save Siren Debug: Found model via current_loaded_models: {model_info['name']}")
-                                                break
+                                    for i, loaded_model in enumerate(loaded_models):
+                                        print(f"🧜‍♀️ Save Siren Debug: loaded_model[{i}] type: {type(loaded_model)}")
+                                        print(f"🧜‍♀️ Save Siren Debug: loaded_model[{i}] attrs: {[attr for attr in dir(loaded_model) if not attr.startswith('_')]}")
+                                        
+                                        # Check common path attributes
+                                        path_found = False
+                                        for path_attr in ['model_path', 'filename', 'file_path', 'path', 'checkpoint_path']:
+                                            if hasattr(loaded_model, path_attr):
+                                                path = getattr(loaded_model, path_attr)
+                                                print(f"🧜‍♀️ Save Siren Debug: loaded_model[{i}].{path_attr} = {path}")
+                                                if path and isinstance(path, str) and os.path.exists(path):
+                                                    model_info["name"] = _extract_model_name(path)
+                                                    model_info["hash"] = _get_file_hash(path)
+                                                    print(f"🧜‍♀️ Save Siren Debug: Found model via current_loaded_models[{i}].{path_attr}: {model_info['name']}")
+                                                    path_found = True
+                                                    break
+                                        
+                                        if path_found:
+                                            break
+                                        
+                                        # Check if LoadedModel has a model attribute that might contain path info
+                                        if hasattr(loaded_model, 'model'):
+                                            inner_model = loaded_model.model
+                                            print(f"🧜‍♀️ Save Siren Debug: loaded_model[{i}].model type: {type(inner_model)}")
+                                            # Check if this inner model matches our model_obj (same object reference)
+                                            if inner_model is model:
+                                                print(f"🧜‍♀️ Save Siren Debug: Found matching model object at index {i}!")
+                                                # This LoadedModel wraps our current model - check its attributes more thoroughly
+                                                for attr in dir(loaded_model):
+                                                    if not attr.startswith('_'):
+                                                        try:
+                                                            value = getattr(loaded_model, attr)
+                                                            print(f"🧜‍♀️ Save Siren Debug: matching_model.{attr} = {value}")
+                                                            if isinstance(value, str) and any(ext in value for ext in ['.safetensors', '.ckpt', '.pt']):
+                                                                if os.path.exists(value):
+                                                                    model_info["name"] = _extract_model_name(value)
+                                                                    model_info["hash"] = _get_file_hash(value)
+                                                                    print(f"🧜‍♀️ Save Siren Debug: Found model via matching LoadedModel.{attr}: {model_info['name']}")
+                                                                    break
+                                                        except:
+                                                            continue
+                                                if model_info.get("name"):
+                                                    break
                                 
                                 # Check loaded_models if current_loaded_models didn't work
                                 if not model_info.get("name") and hasattr(module, 'loaded_models') and module.loaded_models:
