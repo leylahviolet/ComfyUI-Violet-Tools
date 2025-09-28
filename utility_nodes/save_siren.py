@@ -101,7 +101,55 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
             except Exception as e:
                 print(f"🧜‍♀️ Save Siren Debug: model_management error: {e}")
         
-        # Additional debug for ModelPatcher
+        # Method 0c: Try folder_paths checkpoint tracking
+        if not name:
+            try:
+                import folder_paths
+                # Sometimes ComfyUI stores recently used checkpoints
+                if hasattr(folder_paths, 'folder_names_and_paths'):
+                    checkpoints_info = folder_paths.folder_names_and_paths.get('checkpoints', None)
+                    print(f"🧜‍♀️ Save Siren Debug: checkpoints folder info: {checkpoints_info}")
+                
+                # Try to get the currently loaded model files
+                if hasattr(folder_paths, 'get_filename_list'):
+                    try:
+                        checkpoint_files = folder_paths.get_filename_list('checkpoints')
+                        print(f"🧜‍♀️ Save Siren Debug: available checkpoints: {checkpoint_files[:5]}...")  # First 5 only
+                    except Exception as e:
+                        print(f"🧜‍♀️ Save Siren Debug: get_filename_list error: {e}")
+                        
+            except ImportError:
+                print("🧜‍♀️ Save Siren Debug: folder_paths not available")
+            except Exception as e:
+                print(f"🧜‍♀️ Save Siren Debug: folder_paths error: {e}")
+        
+        # Method 0d: Try to inspect the ModelPatcher's model_state_dict or backup for hints
+        if not name and type(model_obj).__name__ == 'ModelPatcher':
+            try:
+                # Sometimes the model path is in backup info
+                if hasattr(model_obj, 'backup') and model_obj.backup:
+                    print(f"🧜‍♀️ Save Siren Debug: ModelPatcher.backup type: {type(model_obj.backup)}")
+                    if hasattr(model_obj.backup, 'items'):
+                        backup_keys = list(model_obj.backup.keys())[:10]  # First 10 keys only
+                        print(f"🧜‍♀️ Save Siren Debug: backup keys sample: {backup_keys}")
+                
+                # Check if there are any string attributes that might contain paths
+                all_attrs = [attr for attr in dir(model_obj) if not attr.startswith('_')]
+                for attr_name in all_attrs:
+                    try:
+                        attr_value = getattr(model_obj, attr_name)
+                        if isinstance(attr_value, str) and ('.safetensors' in attr_value or '.ckpt' in attr_value or '.pt' in attr_value):
+                            print(f"🧜‍♀️ Save Siren Debug: Found model file reference in {attr_name}: {attr_value}")
+                            if os.path.exists(attr_value):
+                                name = _extract_model_name(attr_value)
+                                model_hash = _get_file_hash(attr_value)
+                                print(f"🧜‍♀️ Save Siren Debug: Found model via string scan: {name}")
+                                break
+                    except:
+                        continue
+                        
+            except Exception as e:
+                print(f"🧜‍♀️ Save Siren Debug: ModelPatcher inspection error: {e}")
         if type(model_obj).__name__ == 'ModelPatcher':
             print(f"🧜‍♀️ Save Siren Debug: ModelPatcher-specific attrs: {[attr for attr in dir(model_obj) if 'model' in attr.lower() or 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]}")
             if hasattr(model_obj, 'model_options'):
@@ -394,8 +442,40 @@ class SaveSiren:
         w, h = _shape_wh(image)
         size_str = f"{w}x{h}" if (w and h) else None
         
-        # Extract model info  
+        # Extract model info with fallback to execution context scanning
         model_info = _extract_model_info(model)
+        
+        # If model extraction failed, try to get it from global ComfyUI context
+        if model_info.get("name") is None:
+            try:
+                # Try to access execution context for model references
+                import sys
+                if hasattr(sys.modules.get('execution', None), 'current_execution') or hasattr(sys.modules.get('execution', None), 'last_execution'):
+                    print("🧜‍♀️ Save Siren Debug: Found execution module, checking for model references")
+                
+                # Alternative: scan all modules for recent checkpoint loading
+                for module_name in ['model_management', 'sd', 'checkpoint_state', 'execution']:
+                    full_name = f"comfy.{module_name}"
+                    if full_name in sys.modules:
+                        module = sys.modules[full_name]
+                        print(f"🧜‍♀️ Save Siren Debug: Found {full_name}, attrs: {[a for a in dir(module) if 'model' in a.lower() or 'checkpoint' in a.lower()]}")
+                        # Look for any checkpoint or model path attributes
+                        for attr in dir(module):
+                            if any(keyword in attr.lower() for keyword in ['checkpoint', 'model_path', 'current_model', 'loaded_model']):
+                                try:
+                                    value = getattr(module, attr)
+                                    if isinstance(value, str) and any(ext in value for ext in ['.safetensors', '.ckpt', '.pt']):
+                                        print(f"🧜‍♀️ Save Siren Debug: Found model path in {full_name}.{attr}: {value}")
+                                        if os.path.exists(value):
+                                            model_info["name"] = _extract_model_name(value)
+                                            model_info["hash"] = _get_file_hash(value)
+                                            break
+                                except:
+                                    continue
+                        if model_info.get("name"):
+                            break
+            except Exception as e:
+                print(f"🧜‍♀️ Save Siren Debug: execution context scan error: {e}")
         
         # Build compact metadata payload
         payload = {}
