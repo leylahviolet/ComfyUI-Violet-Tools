@@ -459,7 +459,44 @@ class SaveSiren:
                     if full_name in sys.modules:
                         module = sys.modules[full_name]
                         print(f"🧜‍♀️ Save Siren Debug: Found {full_name}, attrs: {[a for a in dir(module) if 'model' in a.lower() or 'checkpoint' in a.lower()]}")
-                        # Look for any checkpoint or model path attributes
+                        
+                        # Special handling for model_management module
+                        if module_name == 'model_management':
+                            try:
+                                # Check current_loaded_models
+                                if hasattr(module, 'current_loaded_models') and module.current_loaded_models:
+                                    loaded_models = module.current_loaded_models
+                                    print(f"🧜‍♀️ Save Siren Debug: current_loaded_models: {loaded_models}")
+                                    # current_loaded_models is usually a list of loaded model objects
+                                    for loaded_model in loaded_models:
+                                        print(f"🧜‍♀️ Save Siren Debug: loaded_model type: {type(loaded_model)}")
+                                        if hasattr(loaded_model, 'model_path') or hasattr(loaded_model, 'filename'):
+                                            path = getattr(loaded_model, 'model_path', None) or getattr(loaded_model, 'filename', None)
+                                            if path and os.path.exists(path):
+                                                model_info["name"] = _extract_model_name(path)
+                                                model_info["hash"] = _get_file_hash(path)
+                                                print(f"🧜‍♀️ Save Siren Debug: Found model via current_loaded_models: {model_info['name']}")
+                                                break
+                                
+                                # Check loaded_models if current_loaded_models didn't work
+                                if not model_info.get("name") and hasattr(module, 'loaded_models') and module.loaded_models:
+                                    loaded_models = module.loaded_models
+                                    print(f"🧜‍♀️ Save Siren Debug: loaded_models: {loaded_models}")
+                                    # Try to get the most recently loaded model
+                                    if isinstance(loaded_models, list) and loaded_models:
+                                        recent_model = loaded_models[-1]  # Last loaded
+                                        print(f"🧜‍♀️ Save Siren Debug: recent_model type: {type(recent_model)}")
+                                        if hasattr(recent_model, 'model_path') or hasattr(recent_model, 'filename'):
+                                            path = getattr(recent_model, 'model_path', None) or getattr(recent_model, 'filename', None)
+                                            if path and os.path.exists(path):
+                                                model_info["name"] = _extract_model_name(path)
+                                                model_info["hash"] = _get_file_hash(path)
+                                                print(f"🧜‍♀️ Save Siren Debug: Found model via loaded_models: {model_info['name']}")
+                                                break
+                            except Exception as e:
+                                print(f"🧜‍♀️ Save Siren Debug: model_management scanning error: {e}")
+                        
+                        # Look for any checkpoint or model path attributes in other modules
                         for attr in dir(module):
                             if any(keyword in attr.lower() for keyword in ['checkpoint', 'model_path', 'current_model', 'loaded_model']):
                                 try:
@@ -474,6 +511,26 @@ class SaveSiren:
                                     continue
                         if model_info.get("name"):
                             break
+                            
+                # Final attempt: Use folder_paths to check for recently accessed checkpoints
+                if not model_info.get("name"):
+                    try:
+                        import folder_paths
+                        # Get list of available checkpoints and try to match with current model object
+                        checkpoint_files = folder_paths.get_filename_list('checkpoints')
+                        if checkpoint_files:
+                            # Try to correlate with model object properties
+                            # This is a heuristic - take the first checkpoint as fallback
+                            # (In a real workflow, the user would know which one they loaded)
+                            first_checkpoint = checkpoint_files[0]
+                            full_path = folder_paths.get_full_path('checkpoints', first_checkpoint)
+                            if full_path and os.path.exists(full_path):
+                                model_info["name"] = _extract_model_name(full_path)
+                                model_info["hash"] = _get_file_hash(full_path)
+                                print(f"🧜‍♀️ Save Siren Debug: Fallback to first checkpoint: {model_info['name']} (may not be accurate)")
+                    except Exception as e:
+                        print(f"🧜‍♀️ Save Siren Debug: folder_paths fallback error: {e}")
+                        
             except Exception as e:
                 print(f"🧜‍♀️ Save Siren Debug: execution context scan error: {e}")
         
