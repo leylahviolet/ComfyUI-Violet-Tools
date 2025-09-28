@@ -50,7 +50,7 @@ No unreleased changes.
 ### 🧰 Internals
 
 - Web: `vt-node-styling.js` injects Curator buttons and overlay UI.
-- Server: `lib/character_sync.py` adds name listing (`_list_character_names`) and bumps saved payload `violet_tools_version` to `2.0.0`.
+- Server: `node_resources/character_sync.py` adds name listing (`_list_character_names`) and bumps saved payload `violet_tools_version` to `2.0.0`.
 - Kept all existing string type identifiers and return orders stable for compatibility.
 
 ## [1.5.0] - 2025-09-26
