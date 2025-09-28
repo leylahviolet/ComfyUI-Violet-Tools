@@ -59,7 +59,17 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
     try:
         # Debug: Print model object structure (remove this after debugging)
         print(f"🧜‍♀️ Save Siren Debug: Model object type: {type(model_obj)}")
-        print(f"🧜‍♀️ Save Siren Debug: Model object attrs: {[attr for attr in dir(model_obj) if not attr.startswith('_')][:10]}")
+        print(f"🧜‍♀️ Save Siren Debug: Model object attrs: {[attr for attr in dir(model_obj) if not attr.startswith('_')][:15]}")
+        
+        # Additional debug for ModelPatcher
+        if type(model_obj).__name__ == 'ModelPatcher':
+            print(f"🧜‍♀️ Save Siren Debug: ModelPatcher-specific attrs: {[attr for attr in dir(model_obj) if 'model' in attr.lower() or 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]}")
+            if hasattr(model_obj, 'model_options'):
+                print(f"🧜‍♀️ Save Siren Debug: model_options = {model_obj.model_options}")
+            if hasattr(model_obj, 'model_config'):
+                print(f"🧜‍♀️ Save Siren Debug: has model_config")
+            if hasattr(model_obj, 'model'):
+                print(f"🧜‍♀️ Save Siren Debug: has model attribute")
         
         # Method 1: Try model.model.model_config.unet_config approach
         if hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_config'):
@@ -83,6 +93,53 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
                     name = _extract_model_name(model_path)
                     model_hash = _get_file_hash(model_path)
                     print(f"🧜‍♀️ Save Siren Debug: Found via method 2: {name}")
+        
+        # Method 2b: The model object IS the ModelPatcher (direct case)
+        if not name and type(model_obj).__name__ == 'ModelPatcher':
+            print(f"🧜‍♀️ Save Siren Debug: Model object IS ModelPatcher, checking for model path...")
+            # Check if ModelPatcher has model_options
+            if hasattr(model_obj, 'model_options') and isinstance(model_obj.model_options, dict):
+                print(f"🧜‍♀️ Save Siren Debug: ModelPatcher.model_options keys: {list(model_obj.model_options.keys())}")
+                model_path = model_obj.model_options.get('model_path')
+                if model_path:
+                    print(f"🧜‍♀️ Save Siren Debug: Found model_path: {model_path}")
+                    if os.path.exists(model_path):
+                        name = _extract_model_name(model_path)
+                        model_hash = _get_file_hash(model_path)
+                        print(f"🧜‍♀️ Save Siren Debug: Found via method 2b: {name}")
+                    else:
+                        print(f"🧜‍♀️ Save Siren Debug: model_path does not exist: {model_path}")
+            
+            # Also try folder_paths approach for ModelPatcher
+            if not name:
+                try:
+                    import folder_paths
+                    # ModelPatcher might store just the filename, need to resolve full path
+                    if hasattr(model_obj, 'model_options'):
+                        model_opts = model_obj.model_options
+                        # Try different keys that might contain the model file
+                        for key in ['model_path', 'ckpt_name', 'checkpoint', 'filename']:
+                            if key in model_opts and model_opts[key]:
+                                model_file = model_opts[key]
+                                print(f"🧜‍♀️ Save Siren Debug: Trying key '{key}': {model_file}")
+                                # If it's just a filename, try to resolve full path
+                                if not os.path.isabs(model_file):
+                                    full_path = folder_paths.get_full_path("checkpoints", model_file)
+                                    if full_path and os.path.exists(full_path):
+                                        name = _extract_model_name(full_path)
+                                        model_hash = _get_file_hash(full_path)
+                                        print(f"🧜‍♀️ Save Siren Debug: Found via folder_paths resolution: {name}")
+                                        break
+                                else:
+                                    if os.path.exists(model_file):
+                                        name = _extract_model_name(model_file)
+                                        model_hash = _get_file_hash(model_file)
+                                        print(f"🧜‍♀️ Save Siren Debug: Found via absolute path: {name}")
+                                        break
+                except ImportError:
+                    print("🧜‍♀️ Save Siren Debug: folder_paths not available")
+                except Exception as e:
+                    print(f"🧜‍♀️ Save Siren Debug: folder_paths resolution error: {e}")
         
         # Method 3: Try direct model patcher approach
         if not name and hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_patcher'):
