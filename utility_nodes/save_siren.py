@@ -67,9 +67,35 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
             if hasattr(model_obj, 'model_options'):
                 print(f"🧜‍♀️ Save Siren Debug: model_options = {model_obj.model_options}")
             if hasattr(model_obj, 'model_config'):
-                print(f"🧜‍♀️ Save Siren Debug: has model_config")
+                print("🧜‍♀️ Save Siren Debug: has model_config")
             if hasattr(model_obj, 'model'):
-                print(f"🧜‍♀️ Save Siren Debug: has model attribute")
+                print("🧜‍♀️ Save Siren Debug: has model attribute")
+                # Let's explore the nested model object
+                model_inner = model_obj.model
+                print(f"🧜‍♀️ Save Siren Debug: Inner model type: {type(model_inner)}")
+                print(f"🧜‍♀️ Save Siren Debug: Inner model attrs: {[attr for attr in dir(model_inner) if not attr.startswith('_')][:15]}")
+                # Look for path-related attributes in inner model
+                path_attrs = [attr for attr in dir(model_inner) if 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower()]
+                if path_attrs:
+                    print(f"🧜‍♀️ Save Siren Debug: Inner model path attrs: {path_attrs}")
+                    for attr in path_attrs:
+                        try:
+                            value = getattr(model_inner, attr)
+                            print(f"🧜‍♀️ Save Siren Debug: Inner model.{attr} = {value}")
+                        except:
+                            pass
+            
+            # Also check if ModelPatcher itself has any direct path attributes
+            all_attrs = [attr for attr in dir(model_obj) if not attr.startswith('_')]
+            path_attrs = [attr for attr in all_attrs if 'path' in attr.lower() or 'file' in attr.lower() or 'ckpt' in attr.lower() or 'checkpoint' in attr.lower()]
+            if path_attrs:
+                print(f"🧜‍♀️ Save Siren Debug: ModelPatcher path attrs: {path_attrs}")
+                for attr in path_attrs:
+                    try:
+                        value = getattr(model_obj, attr)
+                        print(f"🧜‍♀️ Save Siren Debug: ModelPatcher.{attr} = {value}")
+                    except:
+                        pass
         
         # Method 1: Try model.model.model_config.unet_config approach
         if hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_config'):
@@ -150,6 +176,19 @@ def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
                     name = _extract_model_name(model_path)
                     model_hash = _get_file_hash(model_path)
                     print(f"🧜‍♀️ Save Siren Debug: Found via method 3: {name}")
+        
+        # Method 3b: Check inner model object for path attributes
+        if not name and hasattr(model_obj, 'model'):
+            inner_model = model_obj.model
+            # Check common path attributes on inner model
+            for attr_name in ['model_path', 'checkpoint_path', 'ckpt_path', 'file_path', 'path']:
+                if hasattr(inner_model, attr_name):
+                    model_path = getattr(inner_model, attr_name)
+                    if model_path and isinstance(model_path, str) and os.path.exists(model_path):
+                        name = _extract_model_name(model_path)
+                        model_hash = _get_file_hash(model_path)
+                        print(f"🧜‍♀️ Save Siren Debug: Found via method 3b ({attr_name}): {name}")
+                        break
         
         # Method 4: Look for checkpoint_path attribute (another pattern)
         if not name:
