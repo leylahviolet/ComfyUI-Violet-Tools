@@ -4,6 +4,15 @@
 
 No unreleased changes.
 
+## [2.1.1] - 2025-09-27
+
+### 🐛 Critical Fix
+
+- **Character Sync Distribution**: Moved `character_sync.py` from ignored `lib/` folder to `node_resources/` folder
+  - Fixes "works on my machine" issue where character sync functionality was only available locally
+  - All users now receive character sync endpoints and functionality
+  - Updated import paths accordingly
+
 ## [2.1.0] - 2025-09-26
 
 ### 🔮 Oracle's Override (Refined)
