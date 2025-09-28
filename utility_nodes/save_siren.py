@@ -654,7 +654,7 @@ class SaveSiren:
                                                 print(f"    get_additional_models(): {additional}")
                                                 
                                             # Sample a few patches to see their structure
-                                            for i, (patch_key, patch_data) in enumerate(list(model.patches.items())[:3]):
+                                            for i, (patch_key, patch_data) in enumerate(list(model.patches.items())[:5]):
                                                 print(f"    Patch {i}: {patch_key} -> {type(patch_data)}")
                                                 if hasattr(patch_data, '__len__') and len(patch_data) > 0:
                                                     print(f"      Patch data structure: {[type(item) for item in patch_data] if hasattr(patch_data, '__iter__') else 'Not iterable'}")
@@ -663,6 +663,57 @@ class SaveSiren:
                                                             if j >= 3:  # Only show first 3 items
                                                                 break
                                                             print(f"        Item {j}: {type(item)} - {str(item)[:50]}...")
+                                                            
+                                                            # If this is a tuple (strength, lora_adapter), extract LoRA info
+                                                            if isinstance(item, tuple) and len(item) >= 2:
+                                                                strength, lora_adapter = item[0], item[1]
+                                                                print(f"          Strength: {strength}")
+                                                                print(f"          LoRA adapter: {type(lora_adapter)}")
+                                                                
+                                                                # Check if this is a LoRA adapter object
+                                                                if hasattr(lora_adapter, '__class__') and 'lora' in str(lora_adapter.__class__).lower():
+                                                                    # Look for common LoRA attributes
+                                                                    lora_attrs = [attr for attr in dir(lora_adapter) if not attr.startswith('_')]
+                                                                    print(f"          LoRA adapter attrs: {lora_attrs[:10]}")
+                                                                    
+                                                                    # Try to extract file path/name from LoRA adapter
+                                                                    for path_attr in ['filename', 'model_path', 'file_path', 'path', 'name']:
+                                                                        if hasattr(lora_adapter, path_attr):
+                                                                            path_value = getattr(lora_adapter, path_attr)
+                                                                            print(f"          LoRA {path_attr}: {path_value}")
+                                                                            if isinstance(path_value, str) and ('.safetensors' in path_value or '.pt' in path_value):
+                                                                                lora_name = _extract_model_name(path_value)
+                                                                                print(f"          *** FOUND LoRA: {lora_name} (strength: {strength}) ***")
+                                                                                
+                                                                                # Add to our LoRA list
+                                                                                if lora_name and lora_name not in [l.get('name') for l in lora_list]:
+                                                                                    lora_list.append({
+                                                                                        'name': lora_name,
+                                                                                        'strength': float(strength) if isinstance(strength, (int, float)) else None,
+                                                                                        'hash': _get_file_hash(path_value) if os.path.exists(path_value) else None
+                                                                                    })
+                                                                                    print(f"          Added LoRA to list: {lora_name}")
+                                                                                break
+                                                                    
+                                                                    # Also check for nested attributes that might contain path info
+                                                                    for attr in lora_attrs[:5]:  # Check first 5 attrs
+                                                                        try:
+                                                                            attr_value = getattr(lora_adapter, attr)
+                                                                            if hasattr(attr_value, 'filename') or hasattr(attr_value, 'model_path'):
+                                                                                nested_path = getattr(attr_value, 'filename', None) or getattr(attr_value, 'model_path', None)
+                                                                                if nested_path and isinstance(nested_path, str):
+                                                                                    print(f"          Nested path in {attr}: {nested_path}")
+                                                                                    if '.safetensors' in nested_path or '.pt' in nested_path:
+                                                                                        lora_name = _extract_model_name(nested_path)
+                                                                                        if lora_name and lora_name not in [l.get('name') for l in lora_list]:
+                                                                                            lora_list.append({
+                                                                                                'name': lora_name,
+                                                                                                'strength': float(strength) if isinstance(strength, (int, float)) else None,
+                                                                                                'hash': _get_file_hash(nested_path) if os.path.exists(nested_path) else None
+                                                                                            })
+                                                                                            print(f"          Added nested LoRA: {lora_name}")
+                                                                        except:
+                                                                            continue
                                         
                                         if lora_list:
                                             # Store as JSON string to match metadata format
