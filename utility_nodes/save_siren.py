@@ -1,244 +1,259 @@
-# -*- coding: utf-8 -*-
-"""
-🧜‍♀️ Save Siren — Violet Tools Utility Node
-
-Purpose: Attach a compact, standardized JSON metadata blob to PNG outputs without
-leaking full ComfyUI workflow graphs. Also emits the JSON for downstream nodes
-(e.g., Save Image Extended) to consume.
-
-Inputs
-- image: IMAGE (required)
-- ckpt_name: STRING (socket only)
-- positive: STRING (multiline, socket only)
-- negative: STRING (multiline, socket only)
-- cfg_scale: FLOAT (socket only)
-- sampler: STRING (socket only)
-- steps: INT (socket only)
-- seed: INT (socket only)
-- is_adetailer: BOOLEAN
-- loras: STRING (JSON list of {lora, weight, civitai_model_id}) (socket only)
-- civitai_model_ids: STRING (JSON list of ints) (socket only)
-- save_image: BOOLEAN (default True)
-- human_readable_text_chunks: BOOLEAN (default True)
-
-Outputs
-- image: passthrough IMAGE
-- metadata: STRING (metadata JSON)
-
-Notes
-- Pillow (PIL) is expected to be available in ComfyUI runtime.
-- If `save_image==True`, writes PNG text chunks using Mini Meta Mapper.
-"""
-
-from __future__ import annotations
-import json
 import os
-from typing import Any, Dict, Optional
+import json
+import datetime
+import hashlib
+from typing import Any, Dict, Optional, Tuple
 
-# Import the mini meta mapper helper dynamically
-try:
-    import importlib.util
-    _pkg_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    _mmm_path = os.path.join(_pkg_root, 'node_resources', 'mini-meta-mapper.py')
-    _spec = importlib.util.spec_from_file_location('vt_mini_meta_mapper', _mmm_path)
-    if _spec and _spec.loader:
-        vt_mmm = importlib.util.module_from_spec(_spec)
-        _spec.loader.exec_module(vt_mmm)  # type: ignore
+from PIL import Image, PngImagePlugin
+import numpy as np
+
+def _now_str() -> str:
+    """Local time string for filename"""
+    return datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]]:
+    """Extract width/height from ComfyUI IMAGE tensor"""
+    if image is None:
+        return None, None
+    arr = image
+    if isinstance(arr, list):  # Some nodes pass lists
+        arr = arr[0]
+    if arr.ndim == 4:  # B,H,W,C -> take first
+        _, h, w, _ = arr.shape
+    elif arr.ndim == 3:  # H,W,C
+        h, w, _ = arr.shape
     else:
-        vt_mmm = None
-except Exception:
-    vt_mmm = None
+        return None, None
+    return w, h
 
+def _to_pil(image: Optional[np.ndarray]) -> Image.Image:
+    """Convert ComfyUI IMAGE to PIL Image. Creates 1x1 placeholder if no image."""
+    if image is None:
+        return Image.new("RGB", (1, 1), (0, 0, 0))
+    arr = image
+    if isinstance(arr, list):
+        arr = arr[0]
+    if arr.ndim == 4:
+        arr = arr[0]
+    # Convert from 0..1 float to 0..255 uint8
+    arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(arr)
+
+def _extract_model_info(model_obj: Any) -> Dict[str, Optional[str]]:
+    """
+    Extract model name and hash from ComfyUI MODEL object.
+    Based on patterns from save_image_extended.py and utils_info.py.
+    """
+    if model_obj is None:
+        return {"name": None, "hash": None}
+    
+    name = None
+    model_hash = None
+    
+    try:
+        # Try to get model config/path info (ComfyUI model objects usually have these)
+        if hasattr(model_obj, 'model') and hasattr(model_obj.model, 'model_config'):
+            config = model_obj.model.model_config
+            if hasattr(config, 'unet_config') and hasattr(config.unet_config, 'model_path'):
+                model_path = config.unet_config.model_path
+                if model_path:
+                    # Extract name from path
+                    name = os.path.splitext(os.path.basename(model_path))[0]
+                    # Remove common model extensions  
+                    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
+                        name = name.removesuffix(ext)
+                    
+                    # Calculate hash if file exists
+                    if os.path.exists(model_path):
+                        model_hash = _get_file_hash(model_path)
+        
+        # Alternative: try to get from model patcher (another ComfyUI pattern)
+        elif hasattr(model_obj, 'model_patcher'):
+            patcher = model_obj.model_patcher
+            if hasattr(patcher, 'model_options') and 'model_path' in patcher.model_options:
+                model_path = patcher.model_options['model_path']
+                if model_path:
+                    name = os.path.splitext(os.path.basename(model_path))[0]
+                    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
+                        name = name.removesuffix(ext)
+                    if os.path.exists(model_path):
+                        model_hash = _get_file_hash(model_path)
+        
+        # Try model.model.diffusion_model.checkpoint_path (yet another pattern)
+        elif hasattr(model_obj, 'model') and hasattr(model_obj.model, 'diffusion_model'):
+            diff_model = model_obj.model.diffusion_model  
+            if hasattr(diff_model, 'checkpoint_path'):
+                model_path = diff_model.checkpoint_path
+                if model_path:
+                    name = os.path.splitext(os.path.basename(model_path))[0]
+                    for ext in ['.safetensors', '.ckpt', '.pt', '.bin', '.pth']:
+                        name = name.removesuffix(ext)
+                    if os.path.exists(model_path):
+                        model_hash = _get_file_hash(model_path)
+                        
+    except Exception:
+        # Silent fallback - don't break the node if model introspection fails
+        pass
+    
+    return {"name": name, "hash": model_hash}
+
+def _get_file_hash(file_path: str, truncate_length: int = 12) -> Optional[str]:
+    """Calculate SHA256 hash of file, truncated for compact metadata"""
+    if not file_path or not os.path.exists(file_path):
+        return None
+    
+    try:
+        BUF_SIZE = 1024 * 128  # 128KB chunks
+        sha256_hash = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(BUF_SIZE), b""):
+                sha256_hash.update(chunk)
+        # Return first N characters for compact metadata
+        return sha256_hash.hexdigest()[:truncate_length]
+    except Exception:
+        return None
 
 class SaveSiren:
+    """
+    🧜‍♀️ Save Siren — Save PNG with compact Violet Tools metadata
+    
+    Saves images with a minimal JSON metadata block containing only the essential 
+    generation parameters. Designed to avoid ComfyUI's massive workflow bloat 
+    for uploading to sites with strict file size limits.
+    """
+
     @classmethod
     def INPUT_TYPES(cls):
+        # Auto-populate sampler choices if available
+        sampler_input = ("STRING", {"default": "euler_ancestral"})
+        try:
+            # Try to get KSampler choices - this is the most common pattern
+            import nodes
+            if hasattr(nodes, 'KSampler') and hasattr(nodes.KSampler, 'INPUT_TYPES'):
+                ksampler_inputs = nodes.KSampler.INPUT_TYPES()
+                if 'required' in ksampler_inputs and 'sampler_name' in ksampler_inputs['required']:
+                    sampler_choices = ksampler_inputs['required']['sampler_name']
+                    if isinstance(sampler_choices, (list, tuple)) and len(sampler_choices) > 0:
+                        sampler_input = (sampler_choices[0], {"default": sampler_choices[0][0] if sampler_choices[0] else "euler_ancestral"})
+        except Exception:
+            # Fallback to common samplers
+            common_samplers = ["euler_ancestral", "euler", "dpmpp_2m", "dpmpp_sde", "heun", "dpm_2", "lms"]
+            sampler_input = (common_samplers, {"default": "euler_ancestral"})
+
         return {
             "required": {
-                "image": ("IMAGE", {"forceInput": True}),
-                "save_image": ("BOOLEAN", {"default": True, "tooltip": "Write compact metadata into PNG chunks"}),
-                "human_readable_text_chunks": ("BOOLEAN", {"default": True, "tooltip": "Also write Prompt/Steps/etc. text chunks"}),
+                "steps": ("INT", {"default": 25, "min": 1, "max": 1000}),
+                "cfg": ("FLOAT", {"default": 7.5, "min": 0.0, "max": 100.0, "step": 0.1}),
+                "sampler": sampler_input,
+                "used_detailer": ("BOOLEAN", {"default": False}),
+                "filename_prefix": ("STRING", {"default": "vt", "tooltip": "Prefix for saved filename"})
             },
             "optional": {
-                # Socket-only parameters (no inline widgets); play nice with cg-use-everywhere
-                "ckpt_name": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": False}),
-                "positive": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": True}),
-                "negative": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": True}),
-                "cfg_scale": ("FLOAT", {"forceInput": True}),
-                "sampler": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": False}),
-                "steps": ("INT", {"forceInput": True}),
-                # Prevent ComfyUI seed widget: socket-only INT input, no default/min/max UI
-                "seed": ("INT", {"forceInput": True}),
-                "is_adetailer": ("BOOLEAN", {"forceInput": True}),
-                "loras": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": True, "tooltip": "JSON list: [{\"lora\":\"name\", \"weight\":0.8, \"civitai_model_id\":123}]"}),
-                "civitai_model_ids": ("STRING", {"forceInput": True, "defaultInput": True, "multiline": False, "tooltip": "JSON list of integers"}),
+                "image": ("IMAGE", {"tooltip": "Image to save (creates 1x1 placeholder if missing)"}),
+                "model": ("MODEL", {"tooltip": "Model object to extract name/hash from"}),  
+                "positive": ("STRING", {"forceInput": True, "tooltip": "Positive prompt"}),
+                "negative": ("STRING", {"forceInput": True, "tooltip": "Negative prompt"}),
+                "seed": ("INT", {"forceInput": True, "tooltip": "Generation seed"})
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "STRING")
-    RETURN_NAMES = ("image", "metadata")
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("metadata",)
     FUNCTION = "save"
     CATEGORY = "Violet Tools 💅/Utility"
+    OUTPUT_NODE = True
 
-    def _infer_dimensions(self, image) -> tuple[Optional[int], Optional[int]]:
-        # Try PIL path first
+    def save(
+        self,
+        steps: int,
+        cfg: float,
+        sampler: str,
+        used_detailer: bool,
+        filename_prefix: str,
+        image: Optional[np.ndarray] = None,
+        model: Any = None,
+        positive: Optional[str] = None,
+        negative: Optional[str] = None,
+        seed: Optional[int] = None
+    ) -> Tuple[str]:
+        
+        # Extract image dimensions
+        w, h = _shape_wh(image)
+        size_str = f"{w}x{h}" if (w and h) else None
+        
+        # Extract model info  
+        model_info = _extract_model_info(model)
+        
+        # Build compact metadata payload
+        payload = {}
+        
+        # Only include non-null values to keep JSON compact
+        if size_str:
+            payload["size"] = size_str
+        if positive and positive.strip():
+            payload["prompt"] = positive.strip()
+        if negative and negative.strip():
+            payload["negative_prompt"] = negative.strip()
+        if isinstance(seed, int) and seed >= 0:
+            payload["seed"] = seed
+            
+        # Always include these core generation params
+        payload["steps"] = steps
+        payload["cfg_scale"] = round(cfg, 2)  # Round to 2 decimal places
+        payload["sampler"] = sampler
+        payload["is_adetailer"] = bool(used_detailer)
+        payload["model"] = model_info
+        payload["saved_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Create compact JSON (no spaces, sorted keys for consistency)
+        meta_json = json.dumps(payload, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
+
+        # Build filename 
+        timestamp = _now_str()
+        safe_prefix = (filename_prefix or "vt").strip()
+        # Sanitize prefix for filesystem safety
+        safe_prefix = "".join(c for c in safe_prefix if c.isalnum() or c in "._-")
+        if not safe_prefix:
+            safe_prefix = "vt"
+        filename = f"{safe_prefix}-{timestamp}.png"
+
+        # Determine output directory
+        output_dir = os.path.join(os.getcwd(), "output")
         try:
-            from PIL import Image as PILImage  # type: ignore
-            if hasattr(image, 'to_pil'):
-                pil = image.to_pil()
-                if isinstance(pil, PILImage.Image):
-                    w, h = pil.size
-                    return int(w), int(h)
-            if isinstance(image, PILImage.Image):
-                w, h = image.size
-                return int(w), int(h)
+            import folder_paths
+            output_dir = folder_paths.get_output_directory()
         except Exception:
             pass
-        # Try numpy / tensor shapes
-        try:
-            import numpy as np  # type: ignore
-            arr = image
-            if isinstance(arr, (list, tuple)) and arr:
-                arr = arr[0]
-            if hasattr(arr, 'shape'):
-                shp = tuple(int(x) for x in arr.shape)
-                if len(shp) == 4:
-                    # Assume (B, H, W, C)
-                    return shp[2], shp[1]
-                if len(shp) == 3:
-                    # Assume (H, W, C)
-                    return shp[1], shp[0]
-        except Exception:
-            pass
-        return None, None
+        
+        # Ensure directory exists
+        os.makedirs(output_dir, exist_ok=True)
+        file_path = os.path.join(output_dir, filename)
 
-    def _to_meta(self, image=None, **kwargs) -> Dict[str, Any]:
-        if vt_mmm and hasattr(vt_mmm, 'build_meta'):
-            try:
-                # Parse JSON fields
-                loras = json.loads(kwargs.get('loras') or '[]')
-                civitai_ids = json.loads(kwargs.get('civitai_model_ids') or '[]')
-            except json.JSONDecodeError:
-                loras, civitai_ids = [], []
-            # Auto-infer width/height from image if not explicitly provided
-            w, h = self._infer_dimensions(image)
-            return vt_mmm.build_meta(
-                model_name=kwargs.get('ckpt_name') or None,
-                prompt=kwargs.get('positive') or None,
-                negative_prompt=kwargs.get('negative') or None,
-                width=w,
-                height=h,
-                cfg_scale=(
-                    (lambda v: (float(str(v)) if (v is not None and str(v).strip() != "") else None))(kwargs.get('cfg_scale'))
-                ),
-                sampler=kwargs.get('sampler') or None,
-                steps=(int(kwargs.get('steps')) if kwargs.get('steps') is not None else None),
-                seed=(int(kwargs.get('seed')) if kwargs.get('seed') is not None else None),
-                is_adetailer=(bool(kwargs.get('is_adetailer')) if kwargs.get('is_adetailer') is not None else None),
-                loras=loras or None,
-                civitai_model_ids=civitai_ids or None,
-            )
-        # Minimal fallback if helper missing
-        w, h = self._infer_dimensions(image)
-        meta = {
-            "model_name": kwargs.get('ckpt_name') or None,
-            "prompt": kwargs.get('positive') or None,
-            "negative_prompt": kwargs.get('negative') or None,
-            "width": w,
-            "height": h,
-            "cfg_scale": (float(kwargs.get('cfg_scale')) if kwargs.get('cfg_scale') is not None else None),
-            "sampler": kwargs.get('sampler') or None,
-            "steps": (int(kwargs.get('steps')) if kwargs.get('steps') is not None else None),
-            "seed": (int(kwargs.get('seed')) if kwargs.get('seed') is not None else None),
-            "is_adetailer": (bool(kwargs.get('is_adetailer')) if kwargs.get('is_adetailer') is not None else None),
-        }
-        if w and h:
-            meta["size"] = f"{w}x{h}"
-        # Strip None
-        return {k: v for k, v in meta.items() if v is not None}
+        # Convert to PIL and embed metadata
+        pil_image = _to_pil(image)
+        pnginfo = PngImagePlugin.PngInfo()
+        
+        # Embed our compact JSON under custom key
+        pnginfo.add_text("vt_json", meta_json)
+        
+        # Optional: add a minimal 'parameters' field for basic compatibility
+        # Some tools look for this standard key
+        if positive or steps or cfg:
+            basic_params = []
+            if positive and positive.strip():
+                basic_params.append(f"prompt: {positive.strip()[:100]}")  # Truncate long prompts
+            basic_params.append(f"steps: {steps}")
+            basic_params.append(f"cfg: {cfg}")
+            basic_params.append(f"sampler: {sampler}")
+            pnginfo.add_text("parameters", ", ".join(basic_params))
 
-    def _write_png_chunks(self, image, meta: Dict[str, Any], human_readable: bool):
-        # Attempt non-destructive save into metadata if PIL is around and image has the correct backend
-        try:
-            from PIL import Image as PILImage  # type: ignore
-        except Exception:
-            return image  # PIL missing; skip
+        # Save PNG with metadata
+        pil_image.save(file_path, format="PNG", pnginfo=pnginfo, optimize=True)
 
-        # ComfyUI IMAGE is typically a tensor-like object. We'll try best-effort conversion.
-        # If `image` already carries a PIL Image in first element (e.g., from Load Image), reuse it.
-        pil = None
-        try:
-            # Common pattern: image is a dict or list with 'pil' or direct PIL object
-            if hasattr(image, 'to_pil'):
-                pil = image.to_pil()
-            elif isinstance(image, PILImage.Image):
-                pil = image
-        except Exception:
-            pil = None
+        print(f"🧜‍♀️ Save Siren: Saved {filename} ({os.path.getsize(file_path)} bytes)")
+        
+        return (meta_json,)
 
-        if pil is None:
-            # Last resort: attempt to extract from numpy if present
-            try:
-                import numpy as np  # type: ignore
-                if isinstance(image, np.ndarray):
-                    pil = PILImage.fromarray(image)
-            except Exception:
-                pil = None
-
-        if pil is None:
-            # If we cannot access PIL image representation, we skip embedding but still return pass-through
-            return image
-
-        try:
-            if vt_mmm and hasattr(vt_mmm, 'add_png_text_chunks'):
-                vt_mmm.add_png_text_chunks(pil, meta, human_readable=human_readable)
-            # We won't write to disk here; this utility's role is to attach metadata for downstream save nodes.
-            # Some downstream nodes (like Save Image Extended) can accept metadata dicts directly; we surface JSON instead.
-        except Exception:
-            pass
-        return image
-
-    def save(self,
-             image,
-             save_image: bool,
-             human_readable_text_chunks: bool,
-             ckpt_name: Optional[str] = None,
-             positive: Optional[str] = None,
-             negative: Optional[str] = None,
-             cfg_scale: Optional[float] = None,
-             sampler: Optional[str] = None,
-             steps: Optional[int] = None,
-             seed: Optional[int] = None,
-             is_adetailer: Optional[bool] = None,
-             loras: Optional[str] = None,
-             civitai_model_ids: Optional[str] = None):
-        # Build compact metadata JSON
-        meta = self._to_meta(
-            image=image,
-            ckpt_name=ckpt_name,
-            positive=positive,
-            negative=negative,
-            cfg_scale=cfg_scale,
-            sampler=sampler,
-            steps=steps,
-            seed=seed,
-            is_adetailer=is_adetailer,
-            loras=loras,
-            civitai_model_ids=civitai_model_ids,
-        )
-        json_str = json.dumps(meta, ensure_ascii=False)
-
-        # Optionally attach text chunks (best effort) — pass-through image regardless
-        if save_image:
-            image = self._write_png_chunks(image, meta, human_readable_text_chunks)
-
-        return (image, json_str)
-
-
-NODE_CLASS_MAPPINGS = {
-    "SaveSiren": SaveSiren,
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    "SaveSiren": "🧜‍♀️ Save Siren",
-}
+# Node registration
+NODE_CLASS_MAPPINGS = {"SaveSiren": SaveSiren}
+NODE_DISPLAY_NAME_MAPPINGS = {"SaveSiren": "🧜‍♀️ Save Siren"}
