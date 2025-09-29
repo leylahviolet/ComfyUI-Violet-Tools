@@ -4,6 +4,25 @@
 
 No unreleased changes.
 
+## [2.2.0] - 2025-09-28
+
+### 🧜‍♀️ Save Siren (New Node)
+
+- **A1111 Format Compatibility**: Professional image saving with A1111-compatible metadata format
+- **Universal Website Support**: Perfect compatibility with stable diffusion image uploaders and sharing platforms
+- **Automatic Model Detection**: Extracts model and LoRA information directly from ComfyUI workflows
+- **Civitai Integration**: Resolves actual filenames from hashes for maximum site recognition
+- **Dual Metadata Format**: Embeds both compact JSON and full A1111 parameter strings
+- **LoRA Tag Injection**: Automatically adds `<lora:name:strength>` tags to positive prompts
+- **Hash Formatting**: Proper AUTOV2/AUTOV3 hash formats for external site compatibility
+
+### 🔧 Technical Improvements
+
+- Enhanced workflow parsing for robust model and LoRA detection
+- Civitai API integration for filename resolution
+- Optimized metadata embedding with multiple format support
+- Perfect A1111 parameter format matching for seamless ecosystem integration
+
 ## [2.1.2] - 2025-09-28
 
 ### 🐛 Critical Fixes

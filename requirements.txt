@@ -3,3 +3,4 @@
 
 PyYAML>=6.0
 rapidfuzz>=3.0
+requests>=2.31

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "comfyui-violet-tools"
 description = "Aesthetic-focused custom nodes for ComfyUI with sophisticated style and prompt management"
-version = "2.1.2"
+version = "2.2.0"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
