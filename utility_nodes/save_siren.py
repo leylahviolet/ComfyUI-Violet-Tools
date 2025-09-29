@@ -93,7 +93,11 @@ def _get_civitai_name(file_hash: str, model_type: str = "unknown") -> Optional[s
 
 
 def _get_civitai_info(file_hash: str, model_type: str = "unknown") -> tuple[Optional[str], Optional[str]]:
-    """Get both name and correct hash from Civitai API"""
+    """Get both filename and correct hash from Civitai API
+    
+    Returns the actual filename (not display name) for maximum compatibility 
+    with sites like socialdiff.net that require exact filename matches.
+    """
     if not file_hash:
         return None, None
     
@@ -105,51 +109,47 @@ def _get_civitai_info(file_hash: str, model_type: str = "unknown") -> tuple[Opti
         if response.status_code == 200:
             data = response.json()
             
-            # Get model name
-            model_name = data.get('model', {}).get('name', '')
-            version_name = data.get('name', '')
-            
-            if model_name and version_name:
-                final_name = f"{model_name} - {version_name}"
-            elif model_name:
-                final_name = model_name
-            elif version_name:
-                final_name = version_name
-            else:
-                final_name = None
-            
-            # Get the correct hash from files array
+            # Get the actual filename from files array - this is key for socialdiff.net recognition!
             files = data.get('files', [])
+            filename = None
             correct_hash = None
+            
             for file_info in files:
                 hashes = file_info.get('hashes', {})
+                
                 # Choose hash type based on model_type
+                target_hash = None
                 if model_type == "checkpoints":
                     # Models should use AUTOV2
                     if 'AutoV2' in hashes:
-                        correct_hash = hashes['AutoV2'].lower()  # Force lowercase!
-                        break
+                        target_hash = hashes['AutoV2'].lower()  # Force lowercase!
                 elif model_type == "loras":
                     # LoRAs should use AUTOV3
                     if 'AutoV3' in hashes:
-                        correct_hash = hashes['AutoV3'].lower()  # Force lowercase!
-                        break
+                        target_hash = hashes['AutoV3'].lower()  # Force lowercase!
                 
                 # If we didn't find the preferred type, fall back to any available
-                if not correct_hash:
+                if not target_hash:
                     if 'AutoV3' in hashes:
-                        correct_hash = hashes['AutoV3'].lower()
-                        break
+                        target_hash = hashes['AutoV3'].lower()
                     elif 'AutoV2' in hashes:
-                        correct_hash = hashes['AutoV2'].lower()
-                        break
+                        target_hash = hashes['AutoV2'].lower()
                     elif 'SHA256' in hashes:
                         # Last resort: truncated SHA256
                         sha256 = hashes['SHA256']
-                        correct_hash = (sha256[:12] if len(sha256) > 12 else sha256).lower()
-                        break
+                        target_hash = (sha256[:12] if len(sha256) > 12 else sha256).lower()
+                
+                if target_hash:
+                    correct_hash = target_hash
+                    # Extract actual filename - remove extension for cleaner name
+                    raw_filename = file_info.get('name', '')
+                    if raw_filename:
+                        # Remove .safetensors, .ckpt, .pt extensions for metadata
+                        import os
+                        filename = os.path.splitext(raw_filename)[0]
+                    break
             
-            return final_name, correct_hash
+            return filename, correct_hash
                 
     except Exception:
         pass  # Silently handle API failures
@@ -292,89 +292,143 @@ def extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True):
 
     if wf:
         nodes, linkmap = _index_workflow(wf)
-        me = _find_this_node(nodes)
-        if me:
-            upstream_model_node = _link_src_for_input(nodes, linkmap, me, "model")
-            if upstream_model_node is not None:
-                ckpt_name, lora_nodes = _walk_model_chain(nodes, linkmap, upstream_model_node)
+        
+        # Since we removed the model input, scan ALL nodes for checkpoint loaders and LoRAs
+        ckpt_name = None
+        lora_nodes: List[Dict[str, Any]] = []
+        
+        print(f"🧜‍♀️ Save Siren: Scanning {len(nodes)} workflow nodes...")
+        
+        for node in nodes.values():
+            ntype = node.get("type") or node.get("title") or ""
+            
+            # Find checkpoint loaders
+            if any(keyword in ntype for keyword in ["CheckpointLoader", "CheckpointLoaderSimple", "Checkpoint"]) or ntype in ["Load Checkpoint", "ModelLoader"]:
+                # Try to get checkpoint name from inputs
+                inputs = node.get("inputs", [])
+                for i in inputs:
+                    input_name = i.get("name", "")
+                    input_value = i.get("value", "")
+                    if input_name in ["ckpt_name", "model_name", "checkpoint_name", "name"] and input_value:
+                        ckpt_name = input_value.strip()
+                        break
+                
+                # If no inputs, check widgets (most common case)
+                if not ckpt_name:
+                    widgets = node.get("widgets_values", [])
+                    if widgets and len(widgets) > 0 and widgets[0]:
+                        ckpt_name = widgets[0].strip()
+                        break  # Take first checkpoint loader found
+            
+            # Find LoRA loaders
+            elif any(keyword in ntype for keyword in ["LoraLoader", "LoRA", "Lora", "Power"]):
+                print(f"🧜‍♀️ LoRA Found: type='{ntype}', node_id={node.get('id')}")
+                lora_nodes.append(node)
 
-                # Model name + hash
-                if ckpt_name:
-                    model_info["name"] = _clean_filename(ckpt_name)
+        # Process model if found
+        if ckpt_name:
+            model_info["name"] = _clean_filename(ckpt_name)
+            if want_hashes:
+                p = _resolve_path("checkpoints", ckpt_name)
+                full_hash = _sha256(p, short=64) if p else None  # Get full hash for Civitai lookup
+                
+                # Try to get real name and correct hash from Civitai
+                if full_hash:
+                    civitai_name, correct_hash = _get_civitai_info(full_hash, "checkpoints")
+                    if civitai_name:
+                        model_info["name"] = civitai_name
+                    if correct_hash:
+                        model_info["hash"] = correct_hash  # Use Civitai's AUTOV2 hash!
+                    else:
+                        # Fallback to truncated SHA256
+                        model_info["hash"] = full_hash[:10].lower()  # Force lowercase!
+                else:
+                    model_info["hash"] = None
+
+        # Process LoRAs
+        print(f"🧜‍♀️ Processing {len(lora_nodes)} LoRA nodes...")
+        for ln in lora_nodes:
+            print(f"🧜‍♀️ Processing LoRA node: {ln.get('type', 'unknown')} (id: {ln.get('id')})")
+            lora_entries = []
+            ntype = ln.get("type") or ln.get("title") or ""
+            
+            # Handle rgthree Power Lora Loader (complex widget structure)
+            if "Power Lora Loader" in ntype:
+                print(f"🧜‍♀️ Power LoRA Loader detected")
+                widgets = ln.get("widgets_values", [])
+                print(f"🧜‍♀️ Power LoRA widgets: {widgets}")
+                for widget in widgets:
+                    if isinstance(widget, dict) and widget.get("on") and widget.get("lora"):
+                        name = widget.get("lora")
+                        strength = widget.get("strength", 1.0)
+                        # Power Lora Loader uses single strength for both model and clip
+                        lora_entries.append((name, strength, strength))
+                        print(f"🧜‍♀️ Power LoRA entry: {name} @ {strength}")
+            else:
+                # Handle standard LoraLoader
+                print(f"🧜‍♀️ Standard LoRA Loader detected")
+                name, sm, sc = None, None, None
+                
+                # First try inputs (for connected LoRAs)
+                for i in ln.get("inputs", []):
+                    if i.get("name") == "lora_name":
+                        name = (i.get("value") or "").strip() or name
+                    elif i.get("name") == "strength_model":
+                        sm = i.get("value")
+                    elif i.get("name") == "strength_clip":
+                        sc = i.get("value")
+                
+                # If no inputs, try widgets (most common for LoRA nodes)
+                if not name:
+                    widgets = ln.get("widgets_values", [])
+                    print(f"🧜‍♀️ Standard LoRA widgets: {widgets}")
+                    if len(widgets) >= 1:  # LoraLoader typically: [name, strength_model, strength_clip]
+                        name = widgets[0] if widgets[0] else None
+                    if len(widgets) >= 2:
+                        try:
+                            sm = float(widgets[1]) if widgets[1] is not None else None
+                        except (ValueError, TypeError):
+                            sm = None
+                    if len(widgets) >= 3:
+                        try:
+                            sc = float(widgets[2]) if widgets[2] is not None else None
+                        except (ValueError, TypeError):
+                            sc = None
+                
+                if name and name.strip():
+                    lora_entries.append((name, sm, sc))
+                    print(f"🧜‍♀️ Standard LoRA entry: {name} @ model:{sm} clip:{sc}")
+            
+            # Process all LoRA entries from this node
+            for name, sm, sc in lora_entries:
+                if name and name.strip():
+                    clean_name = _clean_filename(name.strip())
+                    lhash = None
+                    civitai_name = None
+                    
                     if want_hashes:
-                        p = _resolve_path("checkpoints", ckpt_name)
-                        full_hash = _sha256(p, short=64) if p else None  # Get full hash for Civitai lookup
-                        
-                        # Try to get real name and correct hash from Civitai
-                        if full_hash:
-                            civitai_name, correct_hash = _get_civitai_info(full_hash, "checkpoints")
-                            if civitai_name:
-                                model_info["name"] = civitai_name
-                            if correct_hash:
-                                model_info["hash"] = correct_hash  # Use Civitai's AUTOV2 hash!
-                            else:
-                                # Fallback to truncated SHA256
-                                model_info["hash"] = full_hash[:10].lower()  # Force lowercase!
-                        else:
-                            model_info["hash"] = None
-
-                # Each LoRA
-                for ln in lora_nodes:
-                    name, sm, sc = None, None, None
-                    
-                    # First try inputs (for connected LoRAs)
-                    for i in ln.get("inputs", []):
-                        if i.get("name") == "lora_name":
-                            name = (i.get("value") or "").strip() or name
-                        elif i.get("name") == "strength_model":
-                            sm = i.get("value")
-                        elif i.get("name") == "strength_clip":
-                            sc = i.get("value")
-                    
-                    # If no inputs, try widgets (most common for LoRA nodes)
-                    if not name:
-                        widgets = ln.get("widgets_values", [])
-                        if len(widgets) >= 1:  # LoraLoader typically: [name, strength_model, strength_clip]
-                            name = widgets[0] if widgets[0] else None
-                        if len(widgets) >= 2:
-                            try:
-                                sm = float(widgets[1]) if widgets[1] is not None else None
-                            except (ValueError, TypeError):
-                                sm = None
-                        if len(widgets) >= 3:
-                            try:
-                                sc = float(widgets[2]) if widgets[2] is not None else None
-                            except (ValueError, TypeError):
-                                sc = None
-                    
-                    if name and name.strip():
-                        clean_name = _clean_filename(name.strip())
-                        lhash = None
-                        civitai_name = None
-                        
-                        if want_hashes:
-                            lp = _resolve_any_lora_path(name)
-                            if lp:
-                                full_hash = _sha256(lp, short=64)  # Full hash for Civitai lookup
-                                
-                                # Try to get real name and correct hash from Civitai
-                                if full_hash:
-                                    civitai_name, correct_hash = _get_civitai_info(full_hash, "loras")
-                                    if correct_hash:
-                                        lhash = correct_hash  # Use Civitai's AUTOV3 hash!
-                                    else:
-                                        # Fallback to truncated SHA256
-                                        lhash = full_hash[:12].lower()  # Force lowercase!
+                        lp = _resolve_any_lora_path(name)
+                        if lp:
+                            full_hash = _sha256(lp, short=64)  # Full hash for Civitai lookup
+                            
+                            # Try to get real name and correct hash from Civitai
+                            if full_hash:
+                                civitai_name, correct_hash = _get_civitai_info(full_hash, "loras")
+                                if correct_hash:
+                                    lhash = correct_hash  # Use Civitai's AUTOV3 hash!
                                 else:
-                                    lhash = None
-                        
-                        loras_out.append({
-                            "name": civitai_name if civitai_name else clean_name,
-                            "filename": clean_name,  # Keep original filename for reference
-                            "hash": lhash,
-                            "strength_model": round(sm, 2) if sm is not None else None,
-                            "strength_clip": round(sc, 2) if sc is not None else None
-                        })
+                                    # Fallback to truncated SHA256
+                                    lhash = full_hash[:12].lower()  # Force lowercase!
+                            else:
+                                lhash = None
+                    
+                    loras_out.append({
+                        "name": civitai_name if civitai_name else clean_name,
+                        "filename": clean_name,  # Keep original filename for reference
+                        "hash": lhash,
+                        "strength_model": round(sm, 2) if sm is not None else None,
+                        "strength_clip": round(sc, 2) if sc is not None else None
+                    })
 
     return model_info, loras_out
 
@@ -383,8 +437,29 @@ def _build_a1111_parameters(payload: Dict[str, Any], loras: List[Dict[str, Any]]
     """Build A1111 format parameters string matching exact reference format"""
     parts = []
     
-    # Line 1: Positive prompt only (no label, no LoRA tags embedded)
+    # Line 1: Positive prompt with LoRA tags appended
     prompt = payload.get("positiveprompt", "")
+    
+    # Add LoRA tags to positive prompt (essential for external site recognition)
+    if loras:
+        lora_tags = []
+        for lora in loras:
+            # Use civitai name for the tag
+            name = lora.get("name", lora.get("filename", "unknown"))
+            # Use model strength for the tag (standard A1111 practice)
+            strength = lora.get("strength_model")
+            if strength is not None:
+                lora_tags.append(f"<lora:{name}:{strength}>")
+            else:
+                lora_tags.append(f"<lora:{name}:1.0>")  # Default strength
+        
+        if lora_tags:
+            # Append LoRA tags to prompt with proper spacing
+            if prompt.strip():
+                prompt = f"{prompt.rstrip()}, {', '.join(lora_tags)},"
+            else:
+                prompt = f"{', '.join(lora_tags)},"
+    
     parts.append(prompt)
     
     # Line 2: Negative prompt with exact label format
@@ -419,20 +494,22 @@ def _build_a1111_parameters(payload: Dict[str, Any], loras: List[Dict[str, Any]]
         settings.append(f"Size: {payload['size']}")
     
     # Model hash (10-digit AUTOV2, lowercase)
-    if "hash" in payload:
+    if "hash" in payload and payload['hash']:
         model_hash = payload['hash']
         short_model_hash = model_hash[:10] if len(model_hash) > 10 else model_hash
         settings.append(f"Model hash: {short_model_hash.lower()}")
     
     # Model name
-    if "model" in payload:
+    if "model" in payload and payload['model']:
         settings.append(f"Model: {payload['model']}")
     
     # Lora hashes (exact capitalization and format from reference)
     if loras:
         lora_hashes = []
         for lora in loras:
-            name = lora.get("filename", lora.get("name", "unknown"))
+            # Use civitai name (stored in "name") for socialdiff.net compatibility
+            # Fall back to filename only if civitai name unavailable
+            name = lora.get("name", lora.get("filename", "unknown"))
             hash_val = lora.get("hash", "unknown")
             if hash_val and hash_val != "unknown":
                 # 12-digit AUTOV3 hash, lowercase
@@ -616,12 +693,10 @@ class SaveSiren:
                 "steps": ("INT", {"default": 25, "min": 1, "max": 1000}),
                 "cfg": ("FLOAT", {"default": 7.5, "min": 0.0, "max": 100.0, "step": 0.1}),
                 "sampler": sampler_input,
-                "used_detailer": ("BOOLEAN", {"default": False}),
-                "filename_prefix": ("STRING", {"default": "vt", "tooltip": "Prefix for saved filename"})
+                "filename_prefix": ("STRING", {"default": "Violet", "tooltip": "Prefix for saved filename"})
             },
             "optional": {
                 "image": ("IMAGE", {"tooltip": "Image to save (creates 1x1 placeholder if missing)"}),
-                "model": ("MODEL", {"tooltip": "Model object to extract name/hash from"}),  
                 "positive": ("STRING", {"forceInput": True, "tooltip": "Positive prompt"}),
                 "negative": ("STRING", {"forceInput": True, "tooltip": "Negative prompt"}),
                 "seed": ("INT", {"forceInput": True, "tooltip": "Generation seed"})
@@ -643,10 +718,8 @@ class SaveSiren:
         steps: int,
         cfg: float,
         sampler: str,
-        used_detailer: bool,
         filename_prefix: str,
         image: Optional[np.ndarray] = None,
-        model: Any = None,
         positive: Optional[str] = None,
         negative: Optional[str] = None,
         seed: Optional[int] = None,
@@ -657,14 +730,8 @@ class SaveSiren:
         w, h = _shape_wh(image)
         size_str = f"{w}x{h}" if (w and h) else None
         
-        # Extract model and LoRA info via workflow (preferred) or fallback to introspection
+        # Extract model and LoRA info via workflow
         model_info, loras = extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True)
-        
-        # If workflow extraction failed, try introspection fallback
-        if not model_info.get("name"):
-            fallback_info = _extract_model_info(model)
-            if fallback_info.get("name"):
-                model_info = fallback_info
         
         # Build compact metadata payload
         payload = {}
@@ -676,7 +743,6 @@ class SaveSiren:
         payload["steps"] = steps
         payload["cfg"] = round(cfg, 2)  # Changed from cfg_scale to cfg for site compatibility
         payload["sampler"] = sampler
-        payload["is_adetailer"] = bool(used_detailer)
         
         # Model info at top level (not nested)
         payload["model"] = model_info.get("name")  # Flat model name
