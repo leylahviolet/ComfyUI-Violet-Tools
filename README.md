@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-2.1.1-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -63,6 +63,15 @@ Pose and positioning control node with separate categories for different content
 ### 🚫 Negativity Nullifier
 
 Negative prompt management system with smart defaults and customizable exclusions.
+
+### 🧜‍♀️ Save Siren
+
+Advanced image saving utility that creates A1111-format metadata for maximum compatibility with stable diffusion websites and upload services:
+
+- A1111-compatible parameter format with embedded LoRA tags and proper hash formatting
+- Automatic model and LoRA detection from workflow with Civitai filename resolution
+- Compact metadata embedding with both JSON and A1111 formats
+- Perfect compatibility with image uploaders and sharing platforms across the stable diffusion ecosystem
 
 ### 🪪 Character System (Wireless)
 

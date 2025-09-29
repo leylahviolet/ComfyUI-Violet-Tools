@@ -292,143 +292,108 @@ def extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True):
 
     if wf:
         nodes, linkmap = _index_workflow(wf)
-        
-        # Since we removed the model input, scan ALL nodes for checkpoint loaders and LoRAs
-        ckpt_name = None
-        lora_nodes: List[Dict[str, Any]] = []
-        
-        print(f"🧜‍♀️ Save Siren: Scanning {len(nodes)} workflow nodes...")
-        
-        for node in nodes.values():
-            ntype = node.get("type") or node.get("title") or ""
-            
-            # Find checkpoint loaders
-            if any(keyword in ntype for keyword in ["CheckpointLoader", "CheckpointLoaderSimple", "Checkpoint"]) or ntype in ["Load Checkpoint", "ModelLoader"]:
-                # Try to get checkpoint name from inputs
-                inputs = node.get("inputs", [])
-                for i in inputs:
-                    input_name = i.get("name", "")
-                    input_value = i.get("value", "")
-                    if input_name in ["ckpt_name", "model_name", "checkpoint_name", "name"] and input_value:
-                        ckpt_name = input_value.strip()
-                        break
-                
-                # If no inputs, check widgets (most common case)
-                if not ckpt_name:
-                    widgets = node.get("widgets_values", [])
-                    if widgets and len(widgets) > 0 and widgets[0]:
-                        ckpt_name = widgets[0].strip()
-                        break  # Take first checkpoint loader found
-            
-            # Find LoRA loaders
-            elif any(keyword in ntype for keyword in ["LoraLoader", "LoRA", "Lora", "Power"]):
-                print(f"🧜‍♀️ LoRA Found: type='{ntype}', node_id={node.get('id')}")
-                lora_nodes.append(node)
+        me = _find_this_node(nodes)
+        if me:
+            upstream_model_node = _link_src_for_input(nodes, linkmap, me, "model")
+            if upstream_model_node is not None:
+                ckpt_name, lora_nodes = _walk_model_chain(nodes, linkmap, upstream_model_node)
 
-        # Process model if found
-        if ckpt_name:
-            model_info["name"] = _clean_filename(ckpt_name)
-            if want_hashes:
-                p = _resolve_path("checkpoints", ckpt_name)
-                full_hash = _sha256(p, short=64) if p else None  # Get full hash for Civitai lookup
-                
-                # Try to get real name and correct hash from Civitai
-                if full_hash:
-                    civitai_name, correct_hash = _get_civitai_info(full_hash, "checkpoints")
-                    if civitai_name:
-                        model_info["name"] = civitai_name
-                    if correct_hash:
-                        model_info["hash"] = correct_hash  # Use Civitai's AUTOV2 hash!
-                    else:
-                        # Fallback to truncated SHA256
-                        model_info["hash"] = full_hash[:10].lower()  # Force lowercase!
-                else:
-                    model_info["hash"] = None
-
-        # Process LoRAs
-        print(f"🧜‍♀️ Processing {len(lora_nodes)} LoRA nodes...")
-        for ln in lora_nodes:
-            print(f"🧜‍♀️ Processing LoRA node: {ln.get('type', 'unknown')} (id: {ln.get('id')})")
-            lora_entries = []
-            ntype = ln.get("type") or ln.get("title") or ""
-            
-            # Handle rgthree Power Lora Loader (complex widget structure)
-            if "Power Lora Loader" in ntype:
-                print(f"🧜‍♀️ Power LoRA Loader detected")
-                widgets = ln.get("widgets_values", [])
-                print(f"🧜‍♀️ Power LoRA widgets: {widgets}")
-                for widget in widgets:
-                    if isinstance(widget, dict) and widget.get("on") and widget.get("lora"):
-                        name = widget.get("lora")
-                        strength = widget.get("strength", 1.0)
-                        # Power Lora Loader uses single strength for both model and clip
-                        lora_entries.append((name, strength, strength))
-                        print(f"🧜‍♀️ Power LoRA entry: {name} @ {strength}")
-            else:
-                # Handle standard LoraLoader
-                print(f"🧜‍♀️ Standard LoRA Loader detected")
-                name, sm, sc = None, None, None
-                
-                # First try inputs (for connected LoRAs)
-                for i in ln.get("inputs", []):
-                    if i.get("name") == "lora_name":
-                        name = (i.get("value") or "").strip() or name
-                    elif i.get("name") == "strength_model":
-                        sm = i.get("value")
-                    elif i.get("name") == "strength_clip":
-                        sc = i.get("value")
-                
-                # If no inputs, try widgets (most common for LoRA nodes)
-                if not name:
-                    widgets = ln.get("widgets_values", [])
-                    print(f"🧜‍♀️ Standard LoRA widgets: {widgets}")
-                    if len(widgets) >= 1:  # LoraLoader typically: [name, strength_model, strength_clip]
-                        name = widgets[0] if widgets[0] else None
-                    if len(widgets) >= 2:
-                        try:
-                            sm = float(widgets[1]) if widgets[1] is not None else None
-                        except (ValueError, TypeError):
-                            sm = None
-                    if len(widgets) >= 3:
-                        try:
-                            sc = float(widgets[2]) if widgets[2] is not None else None
-                        except (ValueError, TypeError):
-                            sc = None
-                
-                if name and name.strip():
-                    lora_entries.append((name, sm, sc))
-                    print(f"🧜‍♀️ Standard LoRA entry: {name} @ model:{sm} clip:{sc}")
-            
-            # Process all LoRA entries from this node
-            for name, sm, sc in lora_entries:
-                if name and name.strip():
-                    clean_name = _clean_filename(name.strip())
-                    lhash = None
-                    civitai_name = None
-                    
+                # Model name + hash
+                if ckpt_name:
+                    model_info["name"] = _clean_filename(ckpt_name)
                     if want_hashes:
-                        lp = _resolve_any_lora_path(name)
-                        if lp:
-                            full_hash = _sha256(lp, short=64)  # Full hash for Civitai lookup
-                            
-                            # Try to get real name and correct hash from Civitai
-                            if full_hash:
-                                civitai_name, correct_hash = _get_civitai_info(full_hash, "loras")
-                                if correct_hash:
-                                    lhash = correct_hash  # Use Civitai's AUTOV3 hash!
-                                else:
-                                    # Fallback to truncated SHA256
-                                    lhash = full_hash[:12].lower()  # Force lowercase!
+                        p = _resolve_path("checkpoints", ckpt_name)
+                        full_hash = _sha256(p, short=64) if p else None  # Get full hash for Civitai lookup
+                        
+                        # Try to get real name and correct hash from Civitai
+                        if full_hash:
+                            civitai_name, correct_hash = _get_civitai_info(full_hash, "checkpoints")
+                            if civitai_name:
+                                model_info["name"] = civitai_name
+                            if correct_hash:
+                                model_info["hash"] = correct_hash  # Use Civitai's AUTOV2 hash!
                             else:
-                                lhash = None
+                                # Fallback to truncated SHA256
+                                model_info["hash"] = full_hash[:10].lower()  # Force lowercase!
+                        else:
+                            model_info["hash"] = None
+
+                # Each LoRA
+                for ln in lora_nodes:
+                    lora_entries = []
+                    ntype = ln.get("type") or ln.get("title") or ""
                     
-                    loras_out.append({
-                        "name": civitai_name if civitai_name else clean_name,
-                        "filename": clean_name,  # Keep original filename for reference
-                        "hash": lhash,
-                        "strength_model": round(sm, 2) if sm is not None else None,
-                        "strength_clip": round(sc, 2) if sc is not None else None
-                    })
+                    # Handle rgthree Power Lora Loader (complex widget structure)
+                    if "Power Lora Loader" in ntype:
+                        widgets = ln.get("widgets_values", [])
+                        for widget in widgets:
+                            if isinstance(widget, dict) and widget.get("on") and widget.get("lora"):
+                                name = widget.get("lora")
+                                strength = widget.get("strength", 1.0)
+                                # Power Lora Loader uses single strength for both model and clip
+                                lora_entries.append((name, strength, strength))
+                    else:
+                        # Handle standard LoraLoader
+                        name, sm, sc = None, None, None
+                        
+                        # First try inputs (for connected LoRAs)
+                        for i in ln.get("inputs", []):
+                            if i.get("name") == "lora_name":
+                                name = (i.get("value") or "").strip() or name
+                            elif i.get("name") == "strength_model":
+                                sm = i.get("value")
+                            elif i.get("name") == "strength_clip":
+                                sc = i.get("value")
+                        
+                        # If no inputs, try widgets (most common for LoRA nodes)
+                        if not name:
+                            widgets = ln.get("widgets_values", [])
+                            if len(widgets) >= 1:  # LoraLoader typically: [name, strength_model, strength_clip]
+                                name = widgets[0] if widgets[0] else None
+                            if len(widgets) >= 2:
+                                try:
+                                    sm = float(widgets[1]) if widgets[1] is not None else None
+                                except (ValueError, TypeError):
+                                    sm = None
+                            if len(widgets) >= 3:
+                                try:
+                                    sc = float(widgets[2]) if widgets[2] is not None else None
+                                except (ValueError, TypeError):
+                                    sc = None
+                        
+                        if name and name.strip():
+                            lora_entries.append((name, sm, sc))
+                    
+                    # Process all LoRA entries from this node
+                    for name, sm, sc in lora_entries:
+                        if name and name.strip():
+                            clean_name = _clean_filename(name.strip())
+                            lhash = None
+                            civitai_name = None
+                            
+                            if want_hashes:
+                                lp = _resolve_any_lora_path(name)
+                                if lp:
+                                    full_hash = _sha256(lp, short=64)  # Full hash for Civitai lookup
+                                    
+                                    # Try to get real name and correct hash from Civitai
+                                    if full_hash:
+                                        civitai_name, correct_hash = _get_civitai_info(full_hash, "loras")
+                                        if correct_hash:
+                                            lhash = correct_hash  # Use Civitai's AUTOV3 hash!
+                                        else:
+                                            # Fallback to truncated SHA256
+                                            lhash = full_hash[:12].lower()  # Force lowercase!
+                                    else:
+                                        lhash = None
+                            
+                            loras_out.append({
+                                "name": civitai_name if civitai_name else clean_name,
+                                "filename": clean_name,  # Keep original filename for reference
+                                "hash": lhash,
+                                "strength_model": round(sm, 2) if sm is not None else None,
+                            "strength_clip": round(sc, 2) if sc is not None else None
+                        })
 
     return model_info, loras_out
 
@@ -494,13 +459,13 @@ def _build_a1111_parameters(payload: Dict[str, Any], loras: List[Dict[str, Any]]
         settings.append(f"Size: {payload['size']}")
     
     # Model hash (10-digit AUTOV2, lowercase)
-    if "hash" in payload and payload['hash']:
+    if "hash" in payload:
         model_hash = payload['hash']
         short_model_hash = model_hash[:10] if len(model_hash) > 10 else model_hash
         settings.append(f"Model hash: {short_model_hash.lower()}")
     
     # Model name
-    if "model" in payload and payload['model']:
+    if "model" in payload:
         settings.append(f"Model: {payload['model']}")
     
     # Lora hashes (exact capitalization and format from reference)
@@ -697,6 +662,7 @@ class SaveSiren:
             },
             "optional": {
                 "image": ("IMAGE", {"tooltip": "Image to save (creates 1x1 placeholder if missing)"}),
+                "model": ("MODEL", {"tooltip": "Model object to extract name/hash from"}),  
                 "positive": ("STRING", {"forceInput": True, "tooltip": "Positive prompt"}),
                 "negative": ("STRING", {"forceInput": True, "tooltip": "Negative prompt"}),
                 "seed": ("INT", {"forceInput": True, "tooltip": "Generation seed"})
@@ -720,6 +686,7 @@ class SaveSiren:
         sampler: str,
         filename_prefix: str,
         image: Optional[np.ndarray] = None,
+        model: Any = None,
         positive: Optional[str] = None,
         negative: Optional[str] = None,
         seed: Optional[int] = None,
@@ -730,8 +697,14 @@ class SaveSiren:
         w, h = _shape_wh(image)
         size_str = f"{w}x{h}" if (w and h) else None
         
-        # Extract model and LoRA info via workflow
+        # Extract model and LoRA info via workflow (preferred) or fallback to introspection
         model_info, loras = extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True)
+        
+        # If workflow extraction failed, try introspection fallback
+        if not model_info.get("name"):
+            fallback_info = _extract_model_info(model)
+            if fallback_info.get("name"):
+                model_info = fallback_info
         
         # Build compact metadata payload
         payload = {}
