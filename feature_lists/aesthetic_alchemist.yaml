@@ -1,7 +1,7 @@
 fem:
   Alt Streetwear: "asymmetrical designs, harnesses, see-through mesh top, leather straps and buckles, layered {shorts|skirt}, combat boots, off-shoulder jacket, high-waist mesh thong, edgy urban vibe, confident"
   Provocative Nightlife: "glamorous, provocative clothing, seductive, nightlife vibe, confident, thong, bright-colored lingerie, high heels, revealing silhouette"
-  Cottagecore: "rustic countryside, sundress, see-through backlit fabric, floral motifs, cozy interior, lace accents, natural textures, warm tones"
+  Cottagecore: "rustic countryside, sundress, backlit fabric, floral motifs, cozy interior, lace accents, natural textures, warm tones"
   Innocent: "modest vibe, pastel fabrics, lace, full coverage bra, high-waist bikini briefs, delicate features, purity themes, pretty, soft colors"
   Academia: "school uniform, tailored blazer, pleated skirt, knee-high socks, muted color palette, leather satchel, white blouse, antique books, scholarly vibe, structured tailoring"
   Mesh & Fishnets: "fishnet {tights|thighhighs}, mesh top, see-through fabrics, punk layering, contrasting textures, edgy vibe, mesh lingerie, mesh thumb-hole gloves and sleeves"
@@ -14,11 +14,12 @@ fem:
   Y2K: "metallic accents, low-rise jeans, panty straps, whale_tail, thong, butterfly clips, crop top, chunky sneakers, playful accessories, retro technology, bold colors, nostalgic vibes"
   Post-Apocalyptic: "ruins and decay, rusted metal, scavenged clothing, dusty wind, survival gear, biker boots, damaged leather jacket, gritty textures, makeshift outfit, desolate environment"
   Athleisure: "sporty chic, comfortable fabrics, yoga pants, crop top, sneakers, leggings, sports bra, joggers, high-waist athletic briefs, bold colors, activewear vibe"
+  Fantasy: "fantasy clothing, flowing fabrics, intricate embroidery, nature-inspired designs, fantasy setting, delicate accessories, magical ambiance, soft lighting"
 
 masc:
   Alt Streetwear: "asymmetrical designs, harnesses, see-through mesh shirt, leather straps and buckles, layered pants, {jacket|bomber jacket}, combat boots, high-waisted mesh briefs, edgy urban vibe, confident"
   Provocative Nightlife: "glamorous, provocative clothing, seductive, nightlife vibe, confident, bright-colored {briefs|underwear}, polished shoes, revealing silhouette"
-  Cottagecore: "rustic countryside, loose linen shirt, see-through backlit fabric, floral motifs, cozy interior, lace-trimmed details, natural textures, warm tones"
+  Cottagecore: "rustic countryside, loose linen shirt, backlit fabric, floral motifs, cozy interior, lace-trimmed details, natural textures, warm tones"
   Innocent: "modest vibe, pastel fabrics, lace, undershirt, cotton {briefs|boxers|underwear}, subtle grooming, delicate features, purity themes, pretty, soft colors"
   Academia: "school uniform, tailored blazer, pleated trousers, socks, muted color palette, leather satchel, white button-up shirt, antique books, scholarly vibe, structured tailoring"
   Mesh & Fishnets: "mesh {shirt|undershirt}, sheer fabrics, punk layering, contrasting textures, edgy vibe, mesh briefs, mesh thumb-hole gloves and sleeves"
@@ -31,3 +32,4 @@ masc:
   Y2K: "metallic accents, low-rise jeans, spiky hairstyle, crop top, chunky sneakers, playful accessories, retro technology, bold colors, nostalgic vibes"
   Post-Apocalyptic: "ruins and decay, rusted metal, scavenged clothing, dusty wind, survival gear, biker boots, damaged leather jacket, gritty textures, makeshift outfit, desolate environment"
   Athleisure: "sporty chic, comfortable fabrics, track pants, fitted tank top, sneakers, joggers, compression shorts, hoodie, athletic shorts, bold colors, activewear vibe"
+  Fantasy: "fantasy clothing, flowing fabrics, intricate embroidery, nature-inspired designs, fantasy setting, delicate accessories, magical ambiance, soft lighting"
