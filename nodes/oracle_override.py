@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 import time, random, re
 from typing import Optional
+import sys
+import os
+
+# Add node_resources directory to path for prompt_dedupe import
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), "node_resources"))
+from prompt_dedupe import dedupe_and_clean_prompt
 
 
 class OracleOverride:
@@ -62,6 +68,8 @@ class OracleOverride:
             if text.strip():
                 parts.append(text.strip())
             combined = ", ".join(parts)
+            # Deduplicate phrases and clean up comma issues
+            combined = dedupe_and_clean_prompt(combined)
             return (combined,)
         return (None,)
 

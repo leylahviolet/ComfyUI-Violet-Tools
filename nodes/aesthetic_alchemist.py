@@ -1,6 +1,11 @@
 import yaml
 import os
 import random
+import sys
+
+# Add node_resources directory to path for prompt_dedupe import
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), "node_resources"))
+from prompt_dedupe import dedupe_and_clean_prompt
 
 class AestheticAlchemist:
     """
@@ -129,6 +134,8 @@ class AestheticAlchemist:
             pos_parts.append(_resolve_wildcards(extra))
 
         aesthetic = ", ".join(filter(None, pos_parts))
+        # Deduplicate phrases and clean up comma issues
+        aesthetic = dedupe_and_clean_prompt(aesthetic)
 
         meta = {
             "aesthetic_1": selected_1,

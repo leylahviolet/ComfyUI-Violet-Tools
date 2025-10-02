@@ -1,10 +1,26 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-2.2.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.1-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
 ## Features
+
+### 🧹 Automatic Prompt Deduplication (New in 2.2.1)
+
+All Violet Tools prompt nodes now include intelligent deduplication to handle repetitive outputs from T5 models and other dynamic prompt sources:
+
+- **Phrase-Level Deduplication**: Removes duplicate comma-separated phrases while preserving order
+  - Example: `"mystical landscape, mystical landscape, mystical landscape"` → `"mystical landscape"`
+  - Only deduplicates exact matches—different phrases with the same words are preserved
+  - `"purple hair, purple fingernails"` → both kept (doesn't remove "purple" from either)
+- **Comma Cleanup**: Fixes malformed comma sequences automatically
+  - `"text,, more text"` → `"text, more text"`
+  - Normalizes spacing around commas
+- **Case-Sensitive**: Treats `"Film Grain"`, `"film grain"`, and `"film_grain"` as different phrases
+- **Zero Configuration**: Works automatically on all prompt outputs—no setup needed
+
+This feature dramatically improves prompt quality when using less sophisticated text encoders that tend to repeat phrases, reducing a typical clumsy T5 output from 36 phrases to 23 unique phrases.
 
 ### 🧬 Encoding Enchantress
 

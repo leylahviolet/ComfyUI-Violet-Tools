@@ -1,6 +1,11 @@
 import yaml
 import os
 import random
+import sys
+
+# Add node_resources directory to path for prompt_dedupe import
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), "node_resources"))
+from prompt_dedupe import dedupe_and_clean_prompt
 
 class BodyBard:
     """
@@ -92,6 +97,8 @@ class BodyBard:
                 parts.append(extra)
 
         body = ", ".join(parts)
+        # Deduplicate phrases and clean up comma issues
+        body = dedupe_and_clean_prompt(body)
 
         # Capture raw selections for persistence
         meta = {}

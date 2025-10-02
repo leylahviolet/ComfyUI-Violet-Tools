@@ -4,6 +4,33 @@
 
 No unreleased changes.
 
+## [2.2.1] - 2025-10-01
+
+### ✨ Feature: Prompt Deduplication
+
+- **Phrase-Level Deduplication**: All prompt nodes now automatically deduplicate repeated comma-separated phrases
+  - Handles clumsy T5 model outputs that repeat phrases like "a mystical landscape" dozens of times
+  - Preserves first occurrence and maintains phrase order
+  - Case-sensitive matching (aligns with Stable Diffusion prompt behavior)
+  - Example: `"mystical landscape, mystical landscape, mystical landscape"` → `"mystical landscape"`
+- **Comma Cleanup**: Fixes malformed comma sequences in generated prompts
+  - Cleans up double commas: `"text,, more"` → `"text, more"`
+  - Normalizes spacing: `"text, , more"` or `"text,        , more"` → `"text, more"`
+- **Smart Word Preservation**: Only deduplicates whole phrases, not individual words
+  - `"purple hair, purple fingernails"` → both phrases kept (doesn't dedupe "purple")
+  - `"film_grain, film grain"` → both kept (treats underscore/space as different phrases)
+
+### 🔧 Technical Implementation
+
+- New `node_resources/prompt_dedupe.py` module with shared `dedupe_and_clean_prompt()` utility
+- Applied to all 8 prompt generation nodes: Oracle Override, Quality Queen, Scene Seductress, Aesthetic Alchemist, Body Bard, Glamour Goddess, Pose Priestess, Negativity Nullifier
+- Zero breaking changes: maintains all existing node signatures and return types
+- Automatic application: no user configuration needed
+
+### 📊 Impact Example
+
+Real T5 output reduced from 36 phrases to 23 unique phrases by removing 13 duplicate instances and cleaning comma formatting—dramatically improving prompt efficiency for dynamic inputs.
+
 ## [2.2.0] - 2025-09-28
 
 ### 🧜‍♀️ Save Siren (New Node)
