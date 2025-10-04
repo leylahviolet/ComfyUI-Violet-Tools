@@ -199,7 +199,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🎯 Enhanced Nodes
 
-- **Glamour Goddess** (11 color fields): hair_color, highlight_color, dip_dye_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
+- **Glamour Goddess** (11 color fields): hair_color, highlight_color, hair_tips_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
 - **Body Bard** (4 color fields): skin_tone, areola_shade, pubic_hair_color, armpit_hair_color
 
 ### 🔧 Technical Implementation

@@ -94,6 +94,9 @@ hair_color:
   brown: brown hair
   light brown: light brown hair
   dark brown: dark brown hair
+  blonde: blonde hair
+  light blonde: light blonde hair
+  dark blonde: dark blonde hair
   red: red hair
   light red: light red hair
   dark red: dark red hair
@@ -172,6 +175,9 @@ highlight_color:
   brown: brown highlights
   light brown: light brown highlights
   dark brown: dark brown highlights
+  blonde: blonde highlights
+  light blonde: light blonde highlights
+  dark blonde: dark blonde highlights
   red: red highlights
   light red: light red highlights
   dark red: dark red highlights
@@ -241,84 +247,87 @@ highlight_color:
   rose-red: rose-red highlights
   light rose-red: light rose-red highlights
   dark rose-red: dark rose-red highlights
-dip_dye_color:
-  white: white dip-dyed hair
-  silver: silver dip-dyed hair
-  gray: gray dip-dyed hair
-  black: black dip-dyed hair
-  charcoal: charcoal dip-dyed hair
-  brown: brown dip-dyed hair
-  light brown: light brown dip-dyed hair
-  dark brown: dark brown dip-dyed hair
-  red: red dip-dyed hair
-  light red: light red dip-dyed hair
-  dark red: dark red dip-dyed hair
-  red-orange: red-orange dip-dyed hair
-  light red-orange: light red-orange dip-dyed hair
-  dark red-orange: dark red-orange dip-dyed hair
-  orange: orange dip-dyed hair
-  light orange: light orange dip-dyed hair
-  dark orange: dark orange dip-dyed hair
-  yellow-orange: yellow-orange dip-dyed hair
-  light yellow-orange: light yellow-orange dip-dyed hair
-  dark yellow-orange: dark yellow-orange dip-dyed hair
-  yellow: yellow dip-dyed hair
-  light yellow: light yellow dip-dyed hair
-  dark yellow: dark yellow dip-dyed hair
-  yellow-green: yellow-green dip-dyed hair
-  light yellow-green: light yellow-green dip-dyed hair
-  dark yellow-green: dark yellow-green dip-dyed hair
-  lime-green: lime-green dip-dyed hair
-  light lime-green: light lime-green dip-dyed hair
-  dark lime-green: dark lime-green dip-dyed hair
-  green: green dip-dyed hair
-  light green: light green dip-dyed hair
-  dark green: dark green dip-dyed hair
-  teal-green: teal-green dip-dyed hair
-  light teal-green: light teal-green dip-dyed hair
-  dark teal-green: dark teal-green dip-dyed hair
-  teal: teal dip-dyed hair
-  light teal: light teal dip-dyed hair
-  dark teal: dark teal dip-dyed hair
-  cyan-teal: cyan-teal dip-dyed hair
-  light cyan-teal: light cyan-teal dip-dyed hair
-  dark cyan-teal: dark cyan-teal dip-dyed hair
-  cyan: cyan dip-dyed hair
-  light cyan: light cyan dip-dyed hair
-  dark cyan: dark cyan dip-dyed hair
-  sky-blue: sky-blue dip-dyed hair
-  light sky-blue: light sky-blue dip-dyed hair
-  dark sky-blue: dark sky-blue dip-dyed hair
-  blue: blue dip-dyed hair
-  light blue: light blue dip-dyed hair
-  dark blue: dark blue dip-dyed hair
-  blue-indigo: blue-indigo dip-dyed hair
-  light blue-indigo: light blue-indigo dip-dyed hair
-  dark blue-indigo: dark blue-indigo dip-dyed hair
-  indigo: indigo dip-dyed hair
-  light indigo: light indigo dip-dyed hair
-  dark indigo: dark indigo dip-dyed hair
-  blue-violet: blue-violet dip-dyed hair
-  light blue-violet: light blue-violet dip-dyed hair
-  dark blue-violet: dark blue-violet dip-dyed hair
-  violet: violet dip-dyed hair
-  light violet: light violet dip-dyed hair
-  dark violet: dark violet dip-dyed hair
-  purple: purple dip-dyed hair
-  light purple: light purple dip-dyed hair
-  dark purple: dark purple dip-dyed hair
-  magenta: magenta dip-dyed hair
-  light magenta: light magenta dip-dyed hair
-  dark magenta: dark magenta dip-dyed hair
-  pink-magenta: pink-magenta dip-dyed hair
-  light pink-magenta: light pink-magenta dip-dyed hair
-  dark pink-magenta: dark pink-magenta dip-dyed hair
-  pink: pink dip-dyed hair
-  light pink: light pink dip-dyed hair
-  dark pink: dark pink dip-dyed hair
-  rose-red: rose-red dip-dyed hair
-  light rose-red: light rose-red dip-dyed hair
-  dark rose-red: dark rose-red dip-dyed hair
+hair_tips_color:
+  white: white hair tips
+  silver: silver hair tips
+  gray: gray hair tips
+  black: black hair tips
+  charcoal: charcoal hair tips
+  brown: brown hair tips
+  light brown: light brown hair tips
+  dark brown: dark brown hair tips
+  blonde: blonde hair tips
+  light blonde: light blonde hair tips
+  dark blonde: dark blonde hair tips
+  red: red hair tips
+  light red: light red hair tips
+  dark red: dark red hair tips
+  red-orange: red-orange hair tips
+  light red-orange: light red-orange hair tips
+  dark red-orange: dark red-orange hair tips
+  orange: orange hair tips
+  light orange: light orange hair tips
+  dark orange: dark orange hair tips
+  yellow-orange: yellow-orange hair tips
+  light yellow-orange: light yellow-orange hair tips
+  dark yellow-orange: dark yellow-orange hair tips
+  yellow: yellow hair tips
+  light yellow: light yellow hair tips
+  dark yellow: dark yellow hair tips
+  yellow-green: yellow-green hair tips
+  light yellow-green: light yellow-green hair tips
+  dark yellow-green: dark yellow-green hair tips
+  lime-green: lime-green hair tips
+  light lime-green: light lime-green hair tips
+  dark lime-green: dark lime-green hair tips
+  green: green hair tips
+  light green: light green hair tips
+  dark green: dark green hair tips
+  teal-green: teal-green hair tips
+  light teal-green: light teal-green hair tips
+  dark teal-green: dark teal-green hair tips
+  teal: teal hair tips
+  light teal: light teal hair tips
+  dark teal: dark teal hair tips
+  cyan-teal: cyan-teal hair tips
+  light cyan-teal: light cyan-teal hair tips
+  dark cyan-teal: dark cyan-teal hair tips
+  cyan: cyan hair tips
+  light cyan: light cyan hair tips
+  dark cyan: dark cyan hair tips
+  sky-blue: sky-blue hair tips
+  light sky-blue: light sky-blue hair tips
+  dark sky-blue: dark sky-blue hair tips
+  blue: blue hair tips
+  light blue: light blue hair tips
+  dark blue: dark blue hair tips
+  blue-indigo: blue-indigo hair tips
+  light blue-indigo: light blue-indigo hair tips
+  dark blue-indigo: dark blue-indigo hair tips
+  indigo: indigo hair tips
+  light indigo: light indigo hair tips
+  dark indigo: dark indigo hair tips
+  blue-violet: blue-violet hair tips
+  light blue-violet: light blue-violet hair tips
+  dark blue-violet: dark blue-violet hair tips
+  violet: violet hair tips
+  light violet: light violet hair tips
+  dark violet: dark violet hair tips
+  purple: purple hair tips
+  light purple: light purple hair tips
+  dark purple: dark purple hair tips
+  magenta: magenta hair tips
+  light magenta: light magenta hair tips
+  dark magenta: dark magenta hair tips
+  pink-magenta: pink-magenta hair tips
+  light pink-magenta: light pink-magenta hair tips
+  dark pink-magenta: dark pink-magenta hair tips
+  pink: pink hair tips
+  light pink: light pink hair tips
+  dark pink: dark pink hair tips
+  rose-red: rose-red hair tips
+  light rose-red: light rose-red hair tips
+  dark rose-red: dark rose-red hair tips
 eye_color:
   white: white eyes
   silver: silver eyes

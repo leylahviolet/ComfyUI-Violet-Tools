@@ -532,22 +532,25 @@ glamour_features:
     rose-red: rose-red highlights
     light rose-red: light rose-red highlights
     dark rose-red: dark rose-red highlights
-  dip_dye_color:
-    white: white dip-dyed hair
-    silver: silver dip-dyed hair
-    gray: gray dip-dyed hair
-    black: black dip-dyed hair
-    charcoal: charcoal dip-dyed hair
-    brown: brown dip-dyed hair
-    light brown: light brown dip-dyed hair
-    dark brown: dark brown dip-dyed hair
-    red: red dip-dyed hair
-    light red: light red dip-dyed hair
-    dark red: dark red dip-dyed hair
-    red-orange: red-orange dip-dyed hair
-    light red-orange: light red-orange dip-dyed hair
-    dark red-orange: dark red-orange dip-dyed hair
-    orange: orange dip-dyed hair
+  hair_tips_color:
+    white: white hair tips
+    silver: silver hair tips
+    gray: gray hair tips
+    black: black hair tips
+    charcoal: charcoal hair tips
+    brown: brown hair tips
+    light brown: light brown hair tips
+    dark brown: dark brown hair tips
+    blonde: blonde hair tips
+    light blonde: light blonde hair tips
+    dark blonde: dark blonde hair tips
+    red: red hair tips
+    light red: light red hair tips
+    dark red: dark red hair tips
+    red-orange: red-orange hair tips
+    light red-orange: light red-orange hair tips
+    dark red-orange: dark red-orange hair tips
+    orange: orange hair tips
     light orange: light orange dip-dyed hair
     dark orange: dark orange dip-dyed hair
     yellow-orange: yellow-orange dip-dyed hair

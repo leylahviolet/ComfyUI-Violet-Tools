@@ -14,6 +14,9 @@
             "brown": "#8B4513",
             "light brown": "#CD853F",
             "dark brown": "#654321",
+            "blonde": "#F0E68C",
+            "light blonde": "#FFFACD",
+            "dark blonde": "#D4AF37",
             "red": "#FF0000",
             "light red": "#FF6666",
             "dark red": "#CC0000",
@@ -93,6 +96,9 @@
             "brown": "#8B4513",
             "light brown": "#CD853F",
             "dark brown": "#654321",
+            "blonde": "#F0E68C",
+            "light blonde": "#FFFACD",
+            "dark blonde": "#D4AF37",
             "red": "#FF0000",
             "light red": "#FF6666",
             "dark red": "#CC0000",
@@ -163,7 +169,7 @@
             "light rose-red": "#FF69B4",
             "dark rose-red": "#CC0066"
         },
-        "dip_dye_color": {
+        "hair_tips_color": {
             "white": "#FFFFFF",
             "silver": "#C0C0C0",
             "gray": "#808080",
@@ -172,6 +178,9 @@
             "brown": "#8B4513",
             "light brown": "#CD853F",
             "dark brown": "#654321",
+            "blonde": "#F0E68C",
+            "light blonde": "#FFFACD",
+            "dark blonde": "#D4AF37",
             "red": "#FF0000",
             "light red": "#FF6666",
             "dark red": "#CC0000",

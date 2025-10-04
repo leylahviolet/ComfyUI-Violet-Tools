@@ -121,7 +121,7 @@ Revolutionary visual color selection interface that transforms tedious dropdown 
 
 **Supported Color Fields:**
 
-- **Glamour Goddess**: hair_color, highlight_color, dip_dye_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
+- **Glamour Goddess**: hair_color, highlight_color, hair_tips_color, eye_color, eyeliner_color, blush_color, eyeshadow_color, lipstick_color, brow_color, fingernail_color, toenail_color
 - **Body Bard**: skin_tone, areola_shade, pubic_hair_color, armpit_hair_color
 
 The color chips automatically appear below color dropdown widgets in supported nodes (now with streamlined single JS implementation), providing immediate visual feedback and dramatically faster color selection. No more scrolling through 60+ options to find the perfect shade!
