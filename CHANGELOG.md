@@ -4,6 +4,25 @@
 
 No unreleased changes.
 
+## [2.2.2] - 2025-10-04
+
+### 🔧 Refactor: Hair Tips Color
+
+- **Renamed Field**: `dip_dye_color` → `hair_tips_color` for clearer, more intuitive terminology
+- **Updated Suffix**: Changed from `{color} dip-dyed hair` to `{color} hair tips`
+- **Added Blonde Variants**: 
+  - `blonde hair tips`
+  - `light blonde hair tips`
+  - `dark blonde hair tips`
+- Updated across all configuration files: glamour_goddess.yaml, palette.json, feature_lists.yaml
+- Updated documentation in README.md and CHANGELOG.md
+
+### 🐛 Fix: Sweet Descriptor
+
+- Added "sweet" to allowlist to prevent fuzzy matching to "sweets"
+- Preserves "sweet" as an aesthetic/vibe descriptor instead of being canonicalized to "sweets" (candy)
+- Fixes unwanted candy appearing in images when using "sweet" for atmosphere or mood
+
 ## [2.2.1] - 2025-10-01
 
 ### ✨ Feature: Prompt Deduplication
