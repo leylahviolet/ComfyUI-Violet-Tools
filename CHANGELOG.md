@@ -4,6 +4,36 @@
 
 No unreleased changes.
 
+## [2.3.0] - 2025-11-12
+
+### ✨ Feature: Save Siren Folder Support
+
+- **Folder Organization**: `filename_prefix` now supports folder paths for better file organization
+  - Examples: `"portraits/Violet"`, `"fantasy/characters/Violet"`, `"projects/client1/Violet"`
+  - Automatically creates subdirectories within ComfyUI's output folder
+  - Cross-platform path handling (supports both `/` and `\`)
+- **Security**: Robust path sanitization prevents directory traversal attacks
+- **Backward Compatible**: Simple prefixes like `"Violet"` work exactly as before
+- Updated tooltip to explain new folder syntax
+
+### ✨ Feature: Prompt Node Chaining
+
+- **Modular Prompt Building**: All prompt nodes now support chaining via optional `extra_input`
+- **Smart Concatenation**: Changes from override system to additive chaining
+  - Old behavior: `extra_input` replaced `extra` field entirely
+  - New behavior: `extra_input + ", " + extra` field content
+- **Affected Nodes**: Quality Queen, Scene Seductress, Aesthetic Alchemist, Body Bard, Glamour Goddess, Negativity Nullifier, Pose Priestess
+- **Workflow Enhancement**: Users can wire prompt outputs together AND add custom text in fields
+- **Zero Breaking Changes**: Existing workflows continue to work unchanged
+
+### 🐛 Fix: Save Siren Batch Processing
+
+- **Critical Bug Fix**: Save Siren now properly handles image batches instead of only saving first image
+- **Batch Filenames**: Multiple images get unique filenames with batch index (`-000`, `-001`, etc.)
+- **Seed Increment**: Each image in batch gets incremented seed for natural variation
+- **Complete Metadata**: Every image gets its own full metadata embedding
+- **Robust Detection**: Handles both 3D single images and 4D batches correctly
+
 ## [2.2.2] - 2025-10-04
 
 ### 🔧 Refactor: Hair Tips Color

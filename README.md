@@ -1,6 +1,6 @@
 # ComfyUI Violet Tools 💅
 
-[![Version](https://img.shields.io/badge/version-2.2.2-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.0-8A2BE2?style=for-the-badge&logoColor=white)](CHANGELOG.md)
 
 A collection of aesthetic-focused custom nodes for ComfyUI that enhance AI image generation with sophisticated style and prompt management capabilities. These nodes provide curated aesthetic options, quality controls, persona-preserving workflows, and prompt enhancement tools designed for creating high-quality, stylistically consistent AI-generated images.
 
@@ -21,6 +21,30 @@ All Violet Tools prompt nodes now include intelligent deduplication to handle re
 - **Zero Configuration**: Works automatically on all prompt outputs—no setup needed
 
 This feature dramatically improves prompt quality when using less sophisticated text encoders that tend to repeat phrases, reducing a typical clumsy T5 output from 36 phrases to 23 unique phrases.
+
+### 🔗 Modular Prompt Chaining (New in 2.3.0)
+
+All prompt nodes now support **additive chaining** for building complex prompts modularly:
+
+- **Optional Wire Input**: Each prompt node has an `extra_input` that can be wired from other nodes
+- **Smart Concatenation**: `extra_input + ", " + extra field` (not override!)
+  - Wire in upstream prompt content AND add custom text in the field
+  - Perfect for building sophisticated prompts across multiple connected nodes
+- **Backward Compatible**: Existing workflows work unchanged
+- **Example Workflow**: Quality Queen → Scene Seductress → Aesthetic Alchemist → combined output
+
+### 🧜‍♀️ Enhanced Save Siren (New in 2.3.0)
+
+Save Siren now includes powerful organizational and batch processing improvements:
+
+- **Folder Support**: Use folder paths in `filename_prefix` for automatic organization
+  - `"portraits/Violet"` → saves to `output/portraits/Violet-timestamp.png`
+  - `"projects/client1/fantasy/Violet"` → creates nested folder structure automatically
+  - Cross-platform path handling with security sanitization
+- **Batch Processing Fix**: Critical fix for image batches—now saves ALL images, not just the first
+  - Batch filenames: `Violet-timestamp-000.png`, `Violet-timestamp-001.png`, etc.
+  - Automatic seed increment for each image in batch
+  - Complete metadata embedding for every image
 
 ### 🧬 Encoding Enchantress
 
