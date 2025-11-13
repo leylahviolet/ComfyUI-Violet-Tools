@@ -35,7 +35,9 @@ class BodyBard:
                     {"default": "Unspecified"}
                 )
         types["required"]["extra"] = ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"})
-        types["optional"] = {}
+        types["optional"] = {
+            "extra_input": ("STRING", {"multiline": True, "forceInput": True, "tooltip": "Optional chained input - will be prepended to extra field with ', '"})
+        }
         return types
 
     RETURN_TYPES = ("BODY_STRING",)
@@ -92,9 +94,23 @@ class BodyBard:
                     out = pattern.sub(repl, out)
                 return out.strip()
 
-            extra = _resolve_wildcards(kwargs["extra"]) if kwargs["extra"] else ""
-            if extra:
-                parts.append(extra)
+            # Chain extra_input + extra with chaining logic
+            extra_parts = []
+            
+            # Add optional chained input first
+            extra_input = kwargs.get("extra_input", "")
+            if extra_input and extra_input.strip():
+                extra_parts.append(_resolve_wildcards(extra_input.strip()))
+            
+            # Add extra field content second  
+            extra = kwargs.get("extra", "")
+            if extra and extra.strip():
+                extra_parts.append(_resolve_wildcards(extra.strip()))
+            
+            # Combine with ", " separator and add to parts if anything exists
+            if extra_parts:
+                extra_combined = ", ".join(extra_parts)
+                parts.append(extra_combined)
 
         body = ", ".join(parts)
         # Deduplicate phrases and clean up comma issues

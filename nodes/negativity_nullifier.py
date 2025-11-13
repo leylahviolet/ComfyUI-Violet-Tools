@@ -22,6 +22,9 @@ class NegativityNullifier:
             "required": {
                 "include_boilerplate": ("BOOLEAN", {"default": True}),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
+            },
+            "optional": {
+                "extra_input": ("STRING", {"multiline": True, "forceInput": True, "tooltip": "Optional chained input - will be prepended to extra field with ', '"})
             }
         }
 
@@ -35,29 +38,42 @@ class NegativityNullifier:
         import time
         return time.time()
 
-    def purify(self, include_boilerplate, extra):
+    def purify(self, include_boilerplate, extra, extra_input=None):
         parts = []
 
         if include_boilerplate and self.boilerplate:
             parts.extend(self.boilerplate)
 
+        # Chain extra_input + extra with chaining logic
+        def _resolve_wildcards(text: str) -> str:
+            if not text or "{" not in text:
+                return text.strip() if text else text
+            import re, random
+            pattern = re.compile(r"\{([^{}]+)\}")
+            def repl(m):
+                opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
+                return random.choice(opts) if opts else ""
+            prev = None
+            out = text
+            while out != prev:
+                prev = out
+                out = pattern.sub(repl, out)
+            return out.strip()
+        
+        extra_parts = []
+        
+        # Add optional chained input first
+        if extra_input and extra_input.strip():
+            extra_parts.append(_resolve_wildcards(extra_input.strip()))
+        
+        # Add extra field content second  
         if extra and extra.strip():
-            def _resolve_wildcards(text: str) -> str:
-                if not text or "{" not in text:
-                    return text.strip() if text else text
-                import re, random
-                pattern = re.compile(r"\{([^{}]+)\}")
-                def repl(m):
-                    opts = [o.strip() for o in m.group(1).split("|") if o.strip()]
-                    return random.choice(opts) if opts else ""
-                prev = None
-                out = text
-                while out != prev:
-                    prev = out
-                    out = pattern.sub(repl, out)
-                return out.strip()
-
-            parts.append(_resolve_wildcards(extra))
+            extra_parts.append(_resolve_wildcards(extra.strip()))
+        
+        # Combine with ", " separator and add to parts if anything exists
+        if extra_parts:
+            extra_combined = ", ".join(extra_parts)
+            parts.append(extra_combined)
 
         nullifier = ", ".join(parts).strip()
         # Deduplicate phrases and clean up comma issues

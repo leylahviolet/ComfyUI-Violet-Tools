@@ -36,6 +36,9 @@ class PosePriestess:
                 "arm_gesture": (arm_gestures, { "default": arm_gestures[1] }),
                 "arm_gesture_strength": ("FLOAT", { "default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05 }),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
+            },
+            "optional": {
+                "extra_input": ("STRING", {"multiline": True, "forceInput": True, "tooltip": "Optional chained input - will be prepended to extra field with ', '"})
             }
         }
 
@@ -55,7 +58,7 @@ class PosePriestess:
         import time
         return time.time()
 
-    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra):
+    def generate(self, general_pose, general_pose_strength, arm_gesture, arm_gesture_strength, extra, extra_input=None):
         # Compose a pose prompt with optional weighting and extra
         general_poses = list(self.pose_prompts.get("general_poses", {}).keys())
         arm_gestures = list(self.pose_prompts.get("arm_gestures", {}).keys())
@@ -104,8 +107,21 @@ class PosePriestess:
                 out = pattern.sub(repl, out)
             return out.strip()
 
+        # Chain extra_input + extra with chaining logic
+        extra_parts = []
+        
+        # Add optional chained input first
+        if extra_input and extra_input.strip():
+            extra_parts.append(_resolve_wildcards(extra_input.strip()))
+        
+        # Add extra field content second  
         if extra and extra.strip():
-            pose_parts.append(_resolve_wildcards(extra))
+            extra_parts.append(_resolve_wildcards(extra.strip()))
+        
+        # Combine with ", " separator and add to pose_parts if anything exists
+        if extra_parts:
+            extra_combined = ", ".join(extra_parts)
+            pose_parts.append(extra_combined)
 
         pose = ", ".join(filter(None, pose_parts))
         # Deduplicate phrases and clean up comma issues
