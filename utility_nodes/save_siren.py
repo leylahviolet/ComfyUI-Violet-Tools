@@ -658,7 +658,7 @@ class SaveSiren:
                 "steps": ("INT", {"default": 25, "min": 1, "max": 1000}),
                 "cfg": ("FLOAT", {"default": 7.5, "min": 0.0, "max": 100.0, "step": 0.1}),
                 "sampler": sampler_input,
-                "filename_prefix": ("STRING", {"default": "Violet", "tooltip": "Prefix for saved filename"})
+                "filename_prefix": ("STRING", {"default": "Violet", "tooltip": "Prefix for saved filename. Supports folders: 'folder/Violet', 'portraits/fantasy/Violet', etc."})
             },
             "optional": {
                 "image": ("IMAGE", {"tooltip": "Image to save (creates 1x1 placeholder if missing)"}),
@@ -754,14 +754,43 @@ class SaveSiren:
         # ALSO create A1111 format for external site compatibility
         a1111_params = _build_a1111_parameters(payload, loras)
 
-        # Build filename 
+        # Build filename with folder support
         timestamp = _now_str()
-        safe_prefix = (filename_prefix or "vt").strip()
-        # Sanitize prefix for filesystem safety
-        safe_prefix = "".join(c for c in safe_prefix if c.isalnum() or c in "._-")
-        if not safe_prefix:
-            safe_prefix = "vt"
-        filename = f"{safe_prefix}-{timestamp}.png"
+        raw_prefix = (filename_prefix or "vt").strip()
+        
+        # Split prefix into folder path and filename components
+        # Convert backslashes to forward slashes for consistent handling
+        normalized_prefix = raw_prefix.replace("\\", "/")
+        
+        # Split into folder path and filename prefix
+        if "/" in normalized_prefix:
+            folder_parts = normalized_prefix.split("/")
+            filename_part = folder_parts[-1]  # Last part is filename prefix
+            folder_path = "/".join(folder_parts[:-1])  # Everything else is folder path
+        else:
+            folder_path = ""
+            filename_part = normalized_prefix
+        
+        # Sanitize folder path components for filesystem safety
+        if folder_path:
+            safe_folder_parts = []
+            for part in folder_path.split("/"):
+                # Remove any dangerous characters and ensure each part is valid
+                safe_part = "".join(c for c in part.strip() if c.isalnum() or c in "._- ")
+                safe_part = safe_part.strip()  # Remove leading/trailing spaces
+                # Prevent directory traversal and invalid folder names
+                if safe_part and safe_part not in [".", ".."] and not safe_part.startswith('.'):
+                    safe_folder_parts.append(safe_part)
+            safe_folder_path = "/".join(safe_folder_parts) if safe_folder_parts else ""
+        else:
+            safe_folder_path = ""
+        
+        # Sanitize filename prefix for filesystem safety
+        safe_filename_prefix = "".join(c for c in filename_part if c.isalnum() or c in "._-")
+        if not safe_filename_prefix:
+            safe_filename_prefix = "vt"
+            
+        filename = f"{safe_filename_prefix}-{timestamp}.png"
 
         # Determine output directory
         output_dir = os.path.join(os.getcwd(), "output")
@@ -771,9 +800,16 @@ class SaveSiren:
         except Exception:
             pass
         
-        # Ensure directory exists
-        os.makedirs(output_dir, exist_ok=True)
-        file_path = os.path.join(output_dir, filename)
+        # Build full path with subfolder support
+        if safe_folder_path:
+            # Create the subfolder path within the output directory
+            full_output_dir = os.path.join(output_dir, safe_folder_path.replace("/", os.sep))
+        else:
+            full_output_dir = output_dir
+        
+        # Ensure directory exists (creates all intermediate directories)
+        os.makedirs(full_output_dir, exist_ok=True)
+        file_path = os.path.join(full_output_dir, filename)
 
         # Convert to PIL and embed metadata
         pil_image = _to_pil(image)
