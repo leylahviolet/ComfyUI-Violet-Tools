@@ -13,7 +13,7 @@ def _now_str() -> str:
 
 
 def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]]:
-    """Extract width/height from ComfyUI IMAGE tensor"""
+    """Extract width/height from single ComfyUI IMAGE tensor [H, W, C]"""
     if image is None:
         return None, None
     arr = image
@@ -22,8 +22,8 @@ def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]
     # Convert tensor to numpy if needed
     if hasattr(arr, 'cpu'):  # PyTorch tensor
         arr = arr.cpu().numpy()
-    if arr.ndim == 4:  # B,H,W,C -> take first
-        _, h, w, _ = arr.shape
+    if arr.ndim == 4:  # This function now expects single images
+        raise ValueError(f"_shape_wh expects single image [H,W,C], got batch shape {arr.shape}. Use batch processing in caller.")
     elif arr.ndim == 3:  # H,W,C
         h, w, _ = arr.shape
     else:
@@ -32,14 +32,18 @@ def _shape_wh(image: Optional[np.ndarray]) -> Tuple[Optional[int], Optional[int]
 
 
 def _to_pil(image: Optional[np.ndarray]) -> Image.Image:
-    """Convert ComfyUI IMAGE to PIL Image. Creates 1x1 placeholder if no image."""
+    """Convert ComfyUI IMAGE to PIL Image. Expects single 3D image [H, W, C]. Creates 1x1 placeholder if no image."""
     if image is None:
         return Image.new("RGB", (1, 1), (0, 0, 0))
     arr = image
     if isinstance(arr, list):
         arr = arr[0]
+    
+    # This function now expects a single 3D image, not a 4D batch
+    # The caller should handle batch iteration
     if arr.ndim == 4:
-        arr = arr[0]
+        raise ValueError(f"_to_pil expects single image [H,W,C], got batch shape {arr.shape}. Use batch processing in caller.")
+    
     # Convert tensor to numpy if needed (ComfyUI passes tensors)
     if hasattr(arr, 'cpu'):  # PyTorch tensor
         arr = arr.cpu().numpy()
@@ -693,11 +697,31 @@ class SaveSiren:
         prompt: Any = None,
         extra_pnginfo: Any = None
     ) -> Tuple[str]:
-        # Extract image dimensions
-        w, h = _shape_wh(image)
-        size_str = f"{w}x{h}" if (w and h) else None
         
-        # Extract model and LoRA info via workflow (preferred) or fallback to introspection
+        if image is None:
+            return ("No image provided",)
+        
+        # Handle batch processing
+        arr = image
+        if isinstance(arr, list):
+            arr = arr[0]
+        
+        # Convert tensor to numpy if needed
+        if hasattr(arr, 'cpu'):  # PyTorch tensor
+            arr = arr.cpu().numpy()
+        
+        # Determine if we have a batch or single image
+        if arr.ndim == 4:  # Batch: [B, H, W, C]
+            batch_size = arr.shape[0]
+            is_batch = batch_size > 1
+        elif arr.ndim == 3:  # Single image: [H, W, C]
+            batch_size = 1
+            is_batch = False
+            arr = arr[None, ...]  # Add batch dimension: [1, H, W, C]
+        else:
+            return (f"Invalid image shape: {arr.shape}",)
+        
+        # Extract model and LoRA info once (same for all images in batch)
         model_info, loras = extract_model_and_loras(prompt, extra_pnginfo, want_hashes=True)
         
         # If workflow extraction failed, try introspection fallback
@@ -706,67 +730,39 @@ class SaveSiren:
             if fallback_info.get("name"):
                 model_info = fallback_info
         
-        # Build compact metadata payload
-        payload = {}
-        
-        # Flat structure for external site compatibility
-        # Based on analysis of site JS: expects hash, model, positiveprompt, negativeprompt, cfg, etc.
+        # Build base metadata payload (same for all images)
+        base_payload = {}
         
         # Core generation parameters
-        payload["steps"] = steps
-        payload["cfg"] = round(cfg, 2)  # Changed from cfg_scale to cfg for site compatibility
-        payload["sampler"] = sampler
+        base_payload["steps"] = steps
+        base_payload["cfg"] = round(cfg, 2)
+        base_payload["sampler"] = sampler
         
         # Model info at top level (not nested)
-        payload["model"] = model_info.get("name")  # Flat model name
-        payload["hash"] = model_info.get("hash")   # Flat model hash
+        base_payload["model"] = model_info.get("name")
+        base_payload["hash"] = model_info.get("hash")
         
         # Prompts with site-expected field names
         if positive and positive.strip():
-            payload["positiveprompt"] = positive.strip()  # Changed from "prompt" 
+            base_payload["positiveprompt"] = positive.strip()
         if negative and negative.strip():
-            payload["negativeprompt"] = negative.strip()  # Changed from "negative_prompt"
+            base_payload["negativeprompt"] = negative.strip()
         
-        # Optional fields
-        if isinstance(seed, int) and seed >= 0:
-            payload["seed"] = seed
-        if size_str:
-            payload["size"] = size_str
-            
         # LoRAs as separate top-level array for easier parsing
         if loras:
-            payload["loras"] = loras
+            base_payload["loras"] = loras
         
-        payload["saved_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        
-        # Keep raw nested structure commented out for potential future use
-        # # Original nested structure (commented out):
-        # # model_payload = {"name": model_info.get("name"), "hash": model_info.get("hash")}
-        # # if loras:
-        # #     model_payload["loras"] = loras
-        # # payload["model"] = model_payload
-        
-        payload["saved_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Create compact JSON (no spaces, sorted keys for consistency)
-        meta_json = json.dumps(payload, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
-        
-        # ALSO create A1111 format for external site compatibility
-        a1111_params = _build_a1111_parameters(payload, loras)
-
-        # Build filename with folder support
+        # Process filename prefix once for folder handling
         timestamp = _now_str()
         raw_prefix = (filename_prefix or "vt").strip()
         
         # Split prefix into folder path and filename components
-        # Convert backslashes to forward slashes for consistent handling
         normalized_prefix = raw_prefix.replace("\\", "/")
         
-        # Split into folder path and filename prefix
         if "/" in normalized_prefix:
             folder_parts = normalized_prefix.split("/")
-            filename_part = folder_parts[-1]  # Last part is filename prefix
-            folder_path = "/".join(folder_parts[:-1])  # Everything else is folder path
+            filename_part = folder_parts[-1]
+            folder_path = "/".join(folder_parts[:-1])
         else:
             folder_path = ""
             filename_part = normalized_prefix
@@ -775,10 +771,8 @@ class SaveSiren:
         if folder_path:
             safe_folder_parts = []
             for part in folder_path.split("/"):
-                # Remove any dangerous characters and ensure each part is valid
                 safe_part = "".join(c for c in part.strip() if c.isalnum() or c in "._- ")
-                safe_part = safe_part.strip()  # Remove leading/trailing spaces
-                # Prevent directory traversal and invalid folder names
+                safe_part = safe_part.strip()
                 if safe_part and safe_part not in [".", ".."] and not safe_part.startswith('.'):
                     safe_folder_parts.append(safe_part)
             safe_folder_path = "/".join(safe_folder_parts) if safe_folder_parts else ""
@@ -789,9 +783,7 @@ class SaveSiren:
         safe_filename_prefix = "".join(c for c in filename_part if c.isalnum() or c in "._-")
         if not safe_filename_prefix:
             safe_filename_prefix = "vt"
-            
-        filename = f"{safe_filename_prefix}-{timestamp}.png"
-
+        
         # Determine output directory
         output_dir = os.path.join(os.getcwd(), "output")
         try:
@@ -802,52 +794,88 @@ class SaveSiren:
         
         # Build full path with subfolder support
         if safe_folder_path:
-            # Create the subfolder path within the output directory
             full_output_dir = os.path.join(output_dir, safe_folder_path.replace("/", os.sep))
         else:
             full_output_dir = output_dir
         
         # Ensure directory exists (creates all intermediate directories)
         os.makedirs(full_output_dir, exist_ok=True)
-        file_path = os.path.join(full_output_dir, filename)
-
-        # Convert to PIL and embed metadata
-        pil_image = _to_pil(image)
-        pnginfo = PngImagePlugin.PngInfo()
         
-        # Embed our compact JSON under custom key
-        pnginfo.add_text("vt_json", meta_json)
+        # Process each image in the batch
+        saved_files = []
         
-        # Add A1111 format 'parameters' field for external site compatibility
-        pnginfo.add_text("parameters", a1111_params)
-        
-        # Additional metadata that some sites may look for
-        # Add individual resource info for better site compatibility
-        model_name = model_info.get("name")
-        if model_name:
-            pnginfo.add_text("model_name", str(model_name))
-        model_hash = model_info.get("hash") 
-        if model_hash:
-            pnginfo.add_text("model_hash", str(model_hash))  # Full hash for Civitai lookup
-        
-        # Add LoRA info in multiple formats for better site recognition
-        if loras:
-            # JSON array format for programmatic access
-            loras_json = json.dumps(loras, separators=(",", ":"))
-            pnginfo.add_text("loras", loras_json)
+        for batch_idx in range(batch_size):
+            # Get single image from batch
+            single_image = arr[batch_idx]  # Shape: [H, W, C]
             
-            # Simple LoRA names list
-            lora_names = [lora.get("filename", lora.get("name", "")) for lora in loras if lora.get("name")]
-            if lora_names:
-                pnginfo.add_text("lora_names", ", ".join(lora_names))
-
-        # Save PNG with metadata
-        pil_image.save(file_path, format="PNG", pnginfo=pnginfo, optimize=True)
-
-        print(f"🧜‍♀️ Save Siren: Saved {filename} ({os.path.getsize(file_path)} bytes)")
+            # Extract dimensions for this specific image
+            w, h = _shape_wh(single_image)
+            size_str = f"{w}x{h}" if (w and h) else None
+            
+            # Create payload for this specific image
+            payload = base_payload.copy()
+            
+            # Add image-specific data
+            if isinstance(seed, int) and seed >= 0:
+                # For batches, increment seed for each image
+                image_seed = seed + batch_idx if is_batch else seed
+                payload["seed"] = image_seed
+            if size_str:
+                payload["size"] = size_str
+            
+            payload["saved_at"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Create filename for this image
+            if is_batch:
+                filename = f"{safe_filename_prefix}-{timestamp}-{batch_idx:03d}.png"
+            else:
+                filename = f"{safe_filename_prefix}-{timestamp}.png"
+            
+            file_path = os.path.join(full_output_dir, filename)
+            
+            # Create compact JSON and A1111 format for this image
+            meta_json = json.dumps(payload, separators=(",", ":"), ensure_ascii=False, sort_keys=True)
+            a1111_params = _build_a1111_parameters(payload, loras)
+            
+            # Convert to PIL and embed metadata
+            pil_image = _to_pil(single_image)
+            pnginfo = PngImagePlugin.PngInfo()
+            
+            # Embed our compact JSON under custom key
+            pnginfo.add_text("vt_json", meta_json)
+            
+            # Add A1111 format 'parameters' field for external site compatibility
+            pnginfo.add_text("parameters", a1111_params)
+            
+            # Additional metadata that some sites may look for
+            model_name = model_info.get("name")
+            if model_name:
+                pnginfo.add_text("model_name", str(model_name))
+            model_hash = model_info.get("hash") 
+            if model_hash:
+                pnginfo.add_text("model_hash", str(model_hash))
+            
+            # Add LoRA info in multiple formats for better site recognition
+            if loras:
+                loras_json = json.dumps(loras, separators=(",", ":"))
+                pnginfo.add_text("loras", loras_json)
+                
+                lora_names = [lora.get("filename", lora.get("name", "")) for lora in loras if lora.get("name")]
+                if lora_names:
+                    pnginfo.add_text("lora_names", ", ".join(lora_names))
+            
+            # Save PNG with metadata
+            pil_image.save(file_path, format="PNG", pnginfo=pnginfo, optimize=True)
+            saved_files.append(filename)
         
-        # Return A1111 format metadata for node output (same as what we save)
-        return (a1111_params,)
+        # Report what we saved
+        if is_batch:
+            print(f"🧜‍♀️ Save Siren: Saved batch of {batch_size} images: {saved_files[0]} ... {saved_files[-1]}")
+            return (f"Saved {batch_size} images: {', '.join(saved_files)}",)
+        else:
+            file_size = os.path.getsize(os.path.join(full_output_dir, saved_files[0]))
+            print(f"🧜‍♀️ Save Siren: Saved {saved_files[0]} ({file_size} bytes)")
+            return (_build_a1111_parameters(base_payload, loras),)
 
 
 # Node registration
