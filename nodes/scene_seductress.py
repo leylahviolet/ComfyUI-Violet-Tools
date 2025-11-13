@@ -49,6 +49,9 @@ class SceneSeductress:
                 "lighting": (["None", "Random"] + list(cls.lighting.keys()), {"default": "Random"}),
                 "lighting_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
+            },
+            "optional": {
+                "extra_input": ("STRING", {"multiline": True, "forceInput": True, "tooltip": "Optional chained input - will be prepended to extra field with ', '"})
             }
         }
         
@@ -72,7 +75,7 @@ class SceneSeductress:
         return time.time()
 
     def generate(self, framing, framing_strength, angle, angle_strength, emotion, emotion_strength, 
-                 time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra):
+                 time_of_day, time_of_day_strength, environment, environment_strength, lighting, lighting_strength, extra, extra_input=None):
         # Generate combined scene prompt from selected categories with weighting and optional extra
         # Get all scene lists
         frames = list(self.framing.keys())
@@ -156,8 +159,21 @@ class SceneSeductress:
                 out = pattern.sub(repl, out)
             return out.strip()
 
+        # Chain extra_input + extra with chaining logic
+        extra_parts = []
+        
+        # Add optional chained input first
+        if extra_input and extra_input.strip():
+            extra_parts.append(_resolve_wildcards(extra_input.strip()))
+        
+        # Add extra field content second  
         if extra and extra.strip():
-            parts.append(_resolve_wildcards(extra))
+            extra_parts.append(_resolve_wildcards(extra.strip()))
+        
+        # Combine with ", " separator and add to parts if anything exists
+        if extra_parts:
+            extra_combined = ", ".join(extra_parts)
+            parts.append(extra_combined)
 
         scene = ", ".join(filter(None, parts))
         # Deduplicate phrases and clean up comma issues

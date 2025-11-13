@@ -49,6 +49,9 @@ class AestheticAlchemist:
                 "aesthetic_2_fem": (["fem", "masc"], {"default": "fem", "label": "", "tooltip": "Choose list for aesthetic_2"}),
                 "aesthetic_2_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.05}),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
+            },
+            "optional": {
+                "extra_input": ("STRING", {"multiline": True, "forceInput": True, "tooltip": "Optional chained input - will be prepended to extra field with ', '"})
             }
         }
 
@@ -71,7 +74,7 @@ class AestheticAlchemist:
         import time
         return time.time()
 
-    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_fem, aesthetic_2_fem, aesthetic_1_strength, aesthetic_2_strength, extra):
+    def infuse(self, aesthetic_1, aesthetic_2, aesthetic_1_fem, aesthetic_2_fem, aesthetic_1_strength, aesthetic_2_strength, extra, extra_input=None):
 
         # Use same style list for logic as we present in the dropdown
         available_styles = self.__class__.extract_style_names()
@@ -130,8 +133,22 @@ class AestheticAlchemist:
             styles.append((selected_2, aesthetic_2_strength, _is_fem(aesthetic_2_fem)))
 
         pos_parts = [weighted_text(style, weight, use_fem) for style, weight, use_fem in styles]
+        
+        # Chain extra_input + extra with chaining logic
+        extra_parts = []
+        
+        # Add optional chained input first
+        if extra_input and extra_input.strip():
+            extra_parts.append(_resolve_wildcards(extra_input.strip()))
+        
+        # Add extra field content second  
         if extra and extra.strip():
-            pos_parts.append(_resolve_wildcards(extra))
+            extra_parts.append(_resolve_wildcards(extra.strip()))
+        
+        # Combine with ", " separator and add to pos_parts if anything exists
+        if extra_parts:
+            extra_combined = ", ".join(extra_parts)
+            pos_parts.append(extra_combined)
 
         aesthetic = ", ".join(filter(None, pos_parts))
         # Deduplicate phrases and clean up comma issues

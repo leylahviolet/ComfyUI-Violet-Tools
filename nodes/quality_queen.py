@@ -36,6 +36,9 @@ class QualityQueen:
                     { "default": "Random" }
                 ),
                 "extra": ("STRING", {"multiline": True, "default": "", "label": "extra, wildcards"}),
+            },
+            "optional": {
+                "extra_input": ("STRING", {"multiline": True, "forceInput": True, "tooltip": "Optional chained input - will be prepended to extra field with ', '"})
             }
         }
 
@@ -55,7 +58,7 @@ class QualityQueen:
         import time
         return time.time()
 
-    def generate(self, include_boilerplate, style, extra):
+    def generate(self, include_boilerplate, style, extra, extra_input=None):
         # Build quality prompt from boilerplate, optional style, and extra instructions
         parts = []
 
@@ -85,8 +88,21 @@ class QualityQueen:
                 out = pattern.sub(repl, out)
             return out.strip()
 
+        # NEW: Chain extra_input + extra with chaining logic
+        extra_parts = []
+        
+        # Add optional chained input first
+        if extra_input and extra_input.strip():
+            extra_parts.append(_resolve_wildcards(extra_input.strip()))
+        
+        # Add extra field content second  
         if extra and extra.strip():
-            parts.append(_resolve_wildcards(extra))
+            extra_parts.append(_resolve_wildcards(extra.strip()))
+        
+        # Combine with ", " separator and add to parts if anything exists
+        if extra_parts:
+            extra_combined = ", ".join(extra_parts)
+            parts.append(extra_combined)
 
         quality = ", ".join(parts).strip()
         # Deduplicate phrases and clean up comma issues
